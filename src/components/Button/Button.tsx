@@ -8,17 +8,13 @@ export interface props {
   color: string;
 }
 
-export default function DrawerButton(props: props) {
+export default function Button(props: props) {
   return (
     <Pressable
       onPress={props.onPress}
       style={{
         ...styles.button_template,
-        ...{
-          backgroundColor: props.color,
-          width: "95%",
-          justifyContent: "flex-start",
-        },
+        ...{ backgroundColor: props.color, width: "50%" },
       }}
     >
       {props.children}

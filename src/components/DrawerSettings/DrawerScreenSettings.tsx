@@ -24,7 +24,7 @@ const DrawerScreenSettings: DrawerNavigationOptions = {
     <View
       style={{ flexDirection: "row", marginRight: 16, alignItems: "center" }}
     >
-      <AppIcon size={32} color={colors.icon_color} />
+      <AppIcon size={32} />
     </View>
   ),
 };

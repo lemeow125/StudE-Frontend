@@ -2,6 +2,7 @@ import * as React from "react";
 import { IconProps } from "../../interfaces/Interfaces";
 
 import { Svg, Path } from "react-native-svg";
+import { colors } from "../../styles";
 
 export default function LogoutIcon(props: IconProps) {
   return (
@@ -11,7 +12,7 @@ export default function LogoutIcon(props: IconProps) {
         height={props.size}
         viewBox="0 0 24 24"
         strokeWidth="2"
-        stroke={props.color}
+        stroke={colors.icon_color}
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"

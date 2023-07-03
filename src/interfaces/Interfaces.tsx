@@ -1,5 +1,9 @@
 export interface IconProps {
   size: number;
+}
+
+export interface ResponsiveIconProps {
+  size: number;
   color: string;
 }
 
@@ -28,6 +32,9 @@ export interface RegistrationParams {
   email: string;
   username: string;
   password: string;
+  first_name: string;
+  last_name: string;
+  student_id_number: string;
 }
 
 export interface LoginParams {

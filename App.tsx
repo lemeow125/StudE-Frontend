@@ -1,6 +1,8 @@
 import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { Provider } from "react-redux";
+import store from "./src/features/redux/Store/Store";
 
 import CustomDrawerContent from "./src/components/DrawerSettings/CustomDrawerContent";
 import DrawerScreenSettings from "./src/components/DrawerSettings/DrawerScreenSettings";
@@ -13,16 +15,18 @@ const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Drawer.Navigator
-        initialRouteName="Home"
-        drawerContent={CustomDrawerContent}
-        screenOptions={DrawerScreenSettings}
-      >
-        <Drawer.Screen name="Home" component={Home} />
-        <Drawer.Screen name="Login" component={Login} />
-        <Drawer.Screen name="Register" component={Register} />
-      </Drawer.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Drawer.Navigator
+          initialRouteName="Home"
+          drawerContent={CustomDrawerContent}
+          screenOptions={DrawerScreenSettings}
+        >
+          <Drawer.Screen name="Home" component={Home} />
+          <Drawer.Screen name="Login" component={Login} />
+          <Drawer.Screen name="Register" component={Register} />
+        </Drawer.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }

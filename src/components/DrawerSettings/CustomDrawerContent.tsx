@@ -22,7 +22,7 @@ export default function CustomDrawerContent(props: {}) {
           ...{ justifyContent: "center" },
         }}
       >
-        <AppIcon size={32} color={colors.icon_color} />
+        <AppIcon size={32} />
         <Text style={styles.text_white_medium}>Stud-E</Text>
       </View>
       <DrawerButton
@@ -31,7 +31,7 @@ export default function CustomDrawerContent(props: {}) {
           navigation.navigate("Home");
         }}
       >
-        <HomeIcon size={32} color={colors.icon_color} />
+        <HomeIcon size={32} />
         <Text style={styles.text_white_medium}>Home</Text>
       </DrawerButton>
       <DrawerButton
@@ -40,7 +40,7 @@ export default function CustomDrawerContent(props: {}) {
           navigation.navigate("Login");
         }}
       >
-        <LoginIcon size={32} color={colors.icon_color} />
+        <LoginIcon size={32} />
         <Text style={styles.text_white_medium}>Login</Text>
       </DrawerButton>
       <DrawerButton
@@ -49,7 +49,7 @@ export default function CustomDrawerContent(props: {}) {
           navigation.navigate("Register");
         }}
       >
-        <SignupIcon size={32} color={colors.icon_color} />
+        <SignupIcon size={32} />
         <Text style={styles.text_white_medium}>Register</Text>
       </DrawerButton>
     </DrawerContentScrollView>
