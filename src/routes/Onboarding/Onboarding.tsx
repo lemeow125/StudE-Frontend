@@ -9,7 +9,10 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
-import { setToken } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import {
+  setUser,
+  clear,
+} from "../../features/redux/slices/AuthSlice/AuthSlice";
 import { colors } from "../../styles";
 import { useState } from "react";
 import LoginIcon from "../../icons/LoginIcon/LoginIcon";
@@ -19,10 +22,10 @@ import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import { UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
 
-export default function Login() {
+export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
-  const dispatch = useDispatch();
-  const creds = useSelector((state: RootState) => state.auth.creds);
+  // const dispatch = useDispatch();
+  // const creds = useSelector((state: RootState) => state.auth.creds);
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -82,8 +85,6 @@ export default function Login() {
             }).then((result) => {
               if (result[0]) {
                 setUser({ ...user, username: "", password: "", error: "" });
-                console.log("Token:", result[1]);
-                dispatch(setToken(result[1]));
                 navigation.navigate("Home");
               } else {
                 setUser({

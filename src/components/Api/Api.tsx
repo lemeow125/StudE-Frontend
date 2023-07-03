@@ -40,7 +40,7 @@ export function UserLogin(user: LoginParams) {
     .post("/api/v1/accounts/token/login/", user)
     .then(async (response) => {
       AsyncStorage.setItem("token", JSON.stringify(response.data.auth_token));
-      return [true];
+      return [true, JSON.stringify(response.data.auth_token)];
     })
     .catch((error) => {
       console.log(
