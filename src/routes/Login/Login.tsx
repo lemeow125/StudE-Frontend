@@ -19,13 +19,15 @@ import LoginIcon from "../../icons/LoginIcon/LoginIcon";
 import Button from "../../components/Button/Button";
 import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
+import { UserLogin } from "../../components/Api/Api";
+import { ParseLoginError } from "../../components/ParseError/ParseError";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
   // const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
   const [user, setUser] = useState({
-    email: "",
+    username: "",
     password: "",
     error: "",
   });
@@ -49,13 +51,14 @@ export default function Login() {
         <View style={{ paddingVertical: 8 }} />
         <TextInput
           style={styles.text_input}
-          placeholder="Email"
+          placeholder="Username"
           placeholderTextColor="white"
-          value={user.email}
+          autoCapitalize="none"
+          value={user.username}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
-            setUser({ ...user, email: e.nativeEvent.text });
+            setUser({ ...user, username: e.nativeEvent.text });
           }}
         />
         <View style={{ paddingVertical: 4 }} />
@@ -71,8 +74,28 @@ export default function Login() {
             setUser({ ...user, password: e.nativeEvent.text });
           }}
         />
+        <View style={{ paddingVertical: 2 }} />
+        <Text style={styles.text_white_small}>{user.error}</Text>
         <View style={{ paddingVertical: 4 }} />
-        <Button onPress={() => console.log("heh")} color={colors.blue_3}>
+        <Button
+          onPress={async () => {
+            await UserLogin({
+              username: user.username,
+              password: user.password,
+            }).then((result) => {
+              if (result[0]) {
+                setUser({ ...user, username: "", password: "", error: "" });
+                navigation.navigate("Home");
+              } else {
+                setUser({
+                  ...user,
+                  error: ParseLoginError(JSON.stringify(result[1])),
+                });
+              }
+            });
+          }}
+          color={colors.blue_3}
+        >
           <Text style={styles.text_white_small}>Login</Text>
         </Button>
         <Button

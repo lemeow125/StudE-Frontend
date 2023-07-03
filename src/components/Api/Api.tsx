@@ -40,11 +40,13 @@ export function UserLogin(user: LoginParams) {
     .post("/api/v1/accounts/token/login/", user)
     .then(async (response) => {
       AsyncStorage.setItem("token", JSON.stringify(response.data.auth_token));
-      return true;
+      return [true];
     })
     .catch((error) => {
-      console.log("Login Failed: " + error);
-      return false;
+      console.log(
+        "Login Failed: " + error.response.status + " " + error.response.data
+      );
+      return [false, error.response.data];
     });
 }
 
