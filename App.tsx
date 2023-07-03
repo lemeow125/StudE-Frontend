@@ -10,6 +10,7 @@ import DrawerScreenSettings from "./src/components/DrawerSettings/DrawerScreenSe
 import Home from "./src/routes/Home/Home";
 import Login from "./src/routes/Login/Login";
 import Register from "./src/routes/Register/Register";
+import Onboarding from "./src/routes/Onboarding/Onboarding";
 
 const Drawer = createDrawerNavigator();
 
@@ -25,6 +26,7 @@ export default function App() {
           <Drawer.Screen name="Home" component={Home} />
           <Drawer.Screen name="Login" component={Login} />
           <Drawer.Screen name="Register" component={Register} />
+          <Drawer.Screen name="Onboarding" component={Onboarding} />
         </Drawer.Navigator>
       </NavigationContainer>
     </Provider>

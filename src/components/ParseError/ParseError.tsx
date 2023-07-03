@@ -1,18 +1,24 @@
 export default function ParseError(text: string) {
-  return text
-    .replaceAll(/[{}()"]/g, " ")
-    .replaceAll(/,/g, "\n")
-    .replaceAll("[", "")
-    .replaceAll("]", "")
-    .replaceAll(".", "");
+  if (text) {
+    return text
+      .replaceAll(/[{}()"]/g, " ")
+      .replaceAll(/,/g, "\n")
+      .replaceAll("[", "")
+      .replaceAll("]", "")
+      .replaceAll(".", "");
+  }
+  return "";
 }
 
 export function ParseLoginError(text: string) {
-  return text
-    .replaceAll(/[{}()"]/g, " ")
-    .replaceAll(/,/g, "\n")
-    .replaceAll("[", "")
-    .replaceAll("]", "")
-    .replaceAll(".", "")
-    .replaceAll("non_field_errors", "");
+  if (text) {
+    return text
+      .replaceAll(/[{}()"]/g, " ")
+      .replaceAll(/,/g, "\n")
+      .replaceAll("[", "")
+      .replaceAll("]", "")
+      .replaceAll(".", "")
+      .replaceAll("non_field_errors", "");
+  }
+  return "";
 }

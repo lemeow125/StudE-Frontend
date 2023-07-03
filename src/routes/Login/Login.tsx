@@ -7,8 +7,7 @@ import {
   NativeSyntheticEvent,
   TextInputChangeEventData,
 } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../features/redux/Store/Store";
+import { useDispatch } from "react-redux";
 import { setToken } from "../../features/redux/slices/AuthSlice/AuthSlice";
 import { colors } from "../../styles";
 import { useState } from "react";
@@ -22,7 +21,6 @@ import { ParseLoginError } from "../../components/ParseError/ParseError";
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
   const dispatch = useDispatch();
-  const creds = useSelector((state: RootState) => state.auth.creds);
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -82,9 +80,19 @@ export default function Login() {
             }).then((result) => {
               if (result[0]) {
                 setUser({ ...user, username: "", password: "", error: "" });
-                console.log("Token:", result[1]);
-                dispatch(setToken(result[1]));
-                navigation.navigate("Home");
+                console.log(
+                  "Access Token:",
+                  result[1],
+                  "\nRefresh Token:",
+                  result[2]
+                );
+                dispatch(
+                  setToken({
+                    access_token: result[1],
+                    refresh_token: result[2],
+                  })
+                );
+                navigation.navigate("Onboarding");
               } else {
                 setUser({
                   ...user,

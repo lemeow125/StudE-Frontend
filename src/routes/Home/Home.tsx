@@ -3,6 +3,10 @@ import styles from "../../styles";
 import { View, Text } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
+import Button from "../../components/Button/Button";
+import { UserLogin } from "../../components/Api/Api";
+import { colors } from "../../styles";
+import axios from "axios";
 
 export default function Home() {
   const creds = useSelector((state: RootState) => state.auth.creds);
@@ -10,7 +14,6 @@ export default function Home() {
     <View style={styles.background}>
       <Text style={styles.text_white_large}>Template Homepage</Text>
       <Text style={styles.text_white_tiny}>{JSON.stringify(creds)}</Text>
-      <Text style={styles.text_white_tiny}>Token: {creds.token}</Text>
     </View>
   );
 }

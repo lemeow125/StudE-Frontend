@@ -8,12 +8,14 @@ export const AuthSlice = createSlice({
       uid: "",
       username: "",
       full_name: "",
-      token: "",
+      refresh_token: "",
+      access_token: "",
     },
   },
   reducers: {
     setToken: (state, action) => {
-      state.creds.token = action.payload;
+      state.creds.access_token = action.payload.access_token;
+      state.creds.refresh_token = action.payload.refresh_token;
     },
     setUser: (state, action) => {
       state.creds = {
@@ -21,7 +23,8 @@ export const AuthSlice = createSlice({
         uid: action.payload.uid,
         username: action.payload.username,
         full_name: action.payload.full_name,
-        token: action.payload.token,
+        access_token: action.payload.access_token,
+        refresh_token: action.payload.refresh_token,
       };
     },
     clear: (state) => {
@@ -30,7 +33,8 @@ export const AuthSlice = createSlice({
         uid: "",
         username: "",
         full_name: "",
-        token: "",
+        refresh_token: "",
+        access_token: "",
       };
     },
   },

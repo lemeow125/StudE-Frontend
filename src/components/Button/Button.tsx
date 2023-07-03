@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, Pressable, GestureResponderEvent } from "react-native";
+import { Pressable, GestureResponderEvent } from "react-native";
 import styles from "../../styles";
 
 export interface props {
