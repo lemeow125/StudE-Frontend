@@ -141,12 +141,7 @@ export default function Register() {
               last_name: user.last_name,
             }).then((result) => {
               console.log(result);
-              try {
-                setUser({
-                  ...user,
-                  feedback: ParseError(JSON.stringify(result[1])),
-                });
-              } catch {
+              if (result[0]) {
                 setUser({
                   ...user,
                   first_name: "",
@@ -157,6 +152,14 @@ export default function Register() {
                   password: "",
                   feedback:
                     "Success! An email has been sent to activate your account",
+                });
+                setTimeout(() => {
+                  navigation.navigate("Login");
+                }, 10000);
+              } else {
+                setUser({
+                  ...user,
+                  feedback: ParseError(JSON.stringify(result[2])),
                 });
               }
             });

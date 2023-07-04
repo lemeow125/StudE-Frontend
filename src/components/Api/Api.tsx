@@ -48,10 +48,10 @@ export function UserRegister(register: RegistrationParams) {
   return instance
     .post("/api/v1/accounts/users/", register)
     .then(async (response) => {
-      return [response.status];
+      return [true, response.status];
     })
     .catch((error) => {
-      return [error.response.status, error.response.data];
+      return [false, error.response.status, error.response.data];
     });
 }
 
