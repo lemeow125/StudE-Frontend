@@ -92,7 +92,7 @@ export async function TokenRefresh() {
         "Token refresh success! New Access Token",
         response.data.access
       );*/
-      return [true, getAccessToken()];
+      return [true, JSON.stringify(response.data.access)];
     })
     .catch((error) => {
       console.log("Refresh Failed: " + JSON.stringify(error.response.data));

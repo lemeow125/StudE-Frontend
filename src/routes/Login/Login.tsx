@@ -8,7 +8,6 @@ import {
   TextInputChangeEventData,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { setToken } from "../../features/redux/slices/AuthSlice/AuthSlice";
 import { colors } from "../../styles";
 import { useState } from "react";
 import LoginIcon from "../../icons/LoginIcon/LoginIcon";
@@ -87,12 +86,6 @@ export default function Login() {
                   "\nRefresh Token:",
                   result[2]
                 );*/
-                dispatch(
-                  setToken({
-                    access_token: result[1],
-                    refresh_token: result[2],
-                  })
-                );
                 navigation.navigate("Onboarding");
               } else {
                 setUser({

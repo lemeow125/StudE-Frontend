@@ -8,14 +8,12 @@ export const AuthSlice = createSlice({
       uid: "",
       username: "",
       full_name: "",
-      refresh_token: "",
-      access_token: "",
+      logged_in: false,
     },
   },
   reducers: {
-    setToken: (state, action) => {
-      state.creds.access_token = action.payload.access_token;
-      state.creds.refresh_token = action.payload.refresh_token;
+    login: (state) => {
+      state.creds.logged_in = true;
     },
     setUser: (state, action) => {
       state.creds = {
@@ -23,8 +21,7 @@ export const AuthSlice = createSlice({
         uid: action.payload.uid,
         username: action.payload.username,
         full_name: action.payload.full_name,
-        access_token: action.payload.access_token,
-        refresh_token: action.payload.refresh_token,
+        logged_in: true,
       };
     },
     clear: (state) => {
@@ -33,14 +30,13 @@ export const AuthSlice = createSlice({
         uid: "",
         username: "",
         full_name: "",
-        refresh_token: "",
-        access_token: "",
+        logged_in: false,
       };
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setToken, setUser, clear } = AuthSlice.actions;
+export const { login, setUser, clear } = AuthSlice.actions;
 
 export default AuthSlice.reducer;

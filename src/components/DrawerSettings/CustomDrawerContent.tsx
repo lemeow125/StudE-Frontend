@@ -53,7 +53,7 @@ export default function CustomDrawerContent(props: {}) {
         <SignupIcon size={32} />
         <Text style={styles.text_white_medium}>Register</Text>
       </DrawerButton>
-      <DrawerButton
+      {/*<DrawerButton
         color={colors.blue_2}
         onPress={() => {
           navigation.navigate("Revalidation");
@@ -71,6 +71,7 @@ export default function CustomDrawerContent(props: {}) {
         <AddIcon size={32} />
         <Text style={styles.text_white_medium}>Activation</Text>
       </DrawerButton>
+      */}
     </DrawerContentScrollView>
   );
 }

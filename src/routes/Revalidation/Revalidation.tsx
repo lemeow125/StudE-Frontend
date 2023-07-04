@@ -1,7 +1,11 @@
 import * as React from "react";
 import styles from "../../styles";
 import { View, Text, ActivityIndicator } from "react-native";
-import { TokenRefresh, UserInfo } from "../../components/Api/Api";
+import {
+  TokenRefresh,
+  UserInfo,
+  setAccessToken,
+} from "../../components/Api/Api";
 import { useDispatch } from "react-redux";
 import { colors } from "../../styles";
 import { useEffect, useState } from "react";
