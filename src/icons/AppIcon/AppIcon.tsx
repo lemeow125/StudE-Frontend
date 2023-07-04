@@ -2,12 +2,13 @@ import * as React from "react";
 import { IconProps } from "../../interfaces/Interfaces";
 
 import { Svg, Path } from "react-native-svg";
+import { colors } from "../../styles";
 
 export default function AppIcon(props: IconProps) {
   return (
     <>
       <Svg
-        fill={props.color}
+        fill={colors.icon_color}
         height={props.size + "px"}
         width={props.size + "px"}
         viewBox="0 0 375.775 375.775"

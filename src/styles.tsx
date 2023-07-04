@@ -8,6 +8,8 @@ export const colors = {
   blue_2: "#77ACC3",
   blue_3: "#1B5D79",
   text_default: "white",
+  text_error: "#e32d1e",
+  text_success: "green",
   icon_color: "white",
 };
 
@@ -24,6 +26,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.orange_1,
     height: "100%",
     width: "100%",
+  },
+  container: {
+    marginTop: "5%",
+    width: "92%",
+    borderRadius: 15,
+    backgroundColor: colors.blue_2,
+    alignItems: "center",
+    alignSelf: "center",
+    paddingTop: 32,
+    paddingBottom: 32,
+    justifyContent: "flex-start",
+    display: "flex",
+    flexDirection: "column",
   },
   flex_row: {
     display: "flex",
@@ -66,14 +81,22 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   button_template: {
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignSelf: "center",
     alignItems: "center",
     display: "flex",
     flexDirection: "row",
-    margin: 8,
+    marginVertical: 4,
+    marginHorizontal: 8,
     padding: 8,
     borderRadius: 16,
+  },
+  text_input: {
+    color: colors.text_default,
+    backgroundColor: colors.blue_1,
+    width: "50%",
+    padding: 10,
+    borderRadius: 8,
   },
 });
 
