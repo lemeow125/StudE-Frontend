@@ -14,9 +14,10 @@ import LoginIcon from "../../icons/LoginIcon/LoginIcon";
 import Button from "../../components/Button/Button";
 import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
-import { UserLogin } from "../../components/Api/Api";
+import { UserInfo, UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import { setUser as setStateUser } from "../../features/redux/slices/AuthSlice/AuthSlice";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -77,10 +78,32 @@ export default function Login() {
             await UserLogin({
               username: user.username,
               password: user.password,
-            }).then((result) => {
+            }).then(async (result) => {
               if (result[0]) {
                 setUser({ ...user, username: "", password: "", error: "" });
-                navigation.navigate("Onboarding");
+                let user_info = await UserInfo();
+                dispatch(setStateUser(user_info));
+                // Redirect to onboarding if no year level, course, or semester specified
+                console.log(
+                  "Debug",
+                  !(
+                    user_info.year_level ||
+                    user_info.course ||
+                    user_info.semester
+                  )
+                );
+                if (
+                  !(
+                    user_info.year_level ||
+                    user_info.course ||
+                    user_info.semester
+                  )
+                ) {
+                  navigation.navigate("Onboarding");
+                } else {
+                  navigation.navigate("Home");
+                }
+                console.log(JSON.stringify(user_info));
               } else {
                 setUser({
                   ...user,

@@ -1,11 +1,7 @@
 import * as React from "react";
 import styles from "../../styles";
 import { View, Text, ActivityIndicator } from "react-native";
-import {
-  TokenRefresh,
-  UserInfo,
-  setAccessToken,
-} from "../../components/Api/Api";
+import { TokenRefresh, UserInfo } from "../../components/Api/Api";
 import { useDispatch } from "react-redux";
 import { colors } from "../../styles";
 import { useEffect, useState } from "react";
@@ -23,12 +19,12 @@ export default function Revalidation() {
     TokenRefresh().then(async (response) => {
       if (response[0]) {
         await dispatch(setUser(await UserInfo()));
-        setTimeout(() => {
+        await setTimeout(() => {
           navigation.navigate("Home");
         }, 700);
       } else {
-        setState("Session expired");
-        setTimeout(() => {
+        await setState("Session expired");
+        await setTimeout(() => {
           navigation.navigate("Login");
         }, 700);
       }

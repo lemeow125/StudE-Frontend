@@ -70,7 +70,7 @@ export function UserLogin(user: LoginParams) {
       return [true];
     })
     .catch((error) => {
-      console.log("Login Failed:" + error.response.data);
+      console.log("Login Failed:" + JSON.stringify(error.response.data));
       return [false, error.response.data];
     });
 }

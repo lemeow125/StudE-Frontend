@@ -49,7 +49,7 @@ export default function CustomDrawerContent(props: {}) {
           onPress={async () => {
             dispatch(await clear());
             await AsyncStorage.clear();
-            navigation.navigate("Home");
+            navigation.navigate("Login");
           }}
         >
           <LogoutIcon size={32} />
