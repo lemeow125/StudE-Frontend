@@ -11,6 +11,7 @@ import HomeIcon from "../../icons/HomeIcon/HomeIcon";
 import LoginIcon from "../../icons/LoginIcon/LoginIcon";
 import SignupIcon from "../../icons/SignupIcon/SignupIcon";
 import DrawerButton from "../Button/DrawerButton";
+import AddIcon from "../../icons/AddIcon/AddIcon";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -51,6 +52,15 @@ export default function CustomDrawerContent(props: {}) {
       >
         <SignupIcon size={32} />
         <Text style={styles.text_white_medium}>Register</Text>
+      </DrawerButton>
+      <DrawerButton
+        color={colors.blue_2}
+        onPress={() => {
+          navigation.navigate("Revalidation");
+        }}
+      >
+        <AddIcon size={32} />
+        <Text style={styles.text_white_medium}>Revalidation</Text>
       </DrawerButton>
     </DrawerContentScrollView>
   );

@@ -21,8 +21,28 @@ const instance = axios.create({
 
 // App APIs
 
-// User APIs
+// Token Handling
+export async function getAccessToken() {
+  const accessToken = await AsyncStorage.getItem("access_token");
+  return accessToken;
+}
 
+export async function getRefreshToken() {
+  const refreshToken = await AsyncStorage.getItem("refresh_token");
+  return refreshToken;
+}
+
+export async function setAccessToken(access: string) {
+  await AsyncStorage.setItem("access_token", access);
+  return true;
+}
+
+export async function setRefreshToken(refresh: string) {
+  await AsyncStorage.setItem("refresh_token", refresh);
+  return true;
+}
+
+// User APIs
 export function UserRegister(register: RegistrationParams) {
   console.log(JSON.stringify(register));
   return instance
@@ -39,15 +59,14 @@ export function UserLogin(user: LoginParams) {
   return instance
     .post("/api/v1/accounts/jwt/create/", user)
     .then(async (response) => {
-      console.log(response.data.access, response.data.refresh);
-      AsyncStorage.setItem(
-        "access_token",
-        JSON.stringify(response.data.access)
+      console.log(
+        "Access Token:",
+        response.data.access,
+        "\nRefresh Token:",
+        response.data.refresh
       );
-      AsyncStorage.setItem(
-        "refresh_token",
-        JSON.stringify(response.data.refresh)
-      );
+      setAccessToken(response.data.access);
+      setRefreshToken(response.data.refresh);
       return [
         true,
         JSON.stringify(response.data.access),
@@ -60,28 +79,41 @@ export function UserLogin(user: LoginParams) {
     });
 }
 
-export function TokenRefresh(token: string) {
+export async function TokenRefresh() {
+  const refresh = await getRefreshToken();
+  // console.log("Refresh token", refresh);
   return instance
-    .post("/api/v1/accounts/jwt/refresh/", token)
+    .post("/api/v1/accounts/jwt/refresh/", {
+      refresh: refresh,
+    })
     .then(async (response) => {
-      AsyncStorage.setItem("token", JSON.stringify(response.data.auth_token));
-      return true;
+      setAccessToken(response.data.access);
+      /*console.log(
+        "Token refresh success! New Access Token",
+        response.data.access
+      );*/
+      return [true, getAccessToken()];
     })
     .catch((error) => {
-      console.log("Login Failed: " + error);
-      return false;
+      console.log("Refresh Failed: " + JSON.stringify(error.response.data));
+      return [false, error.response.data];
     });
 }
 export async function UserInfo() {
-  const token = JSON.parse((await AsyncStorage.getItem("token")) || "{}");
+  const accessToken = await getAccessToken();
   return instance
     .get("/api/v1/accounts/users/me/", {
       headers: {
-        Authorization: "Token " + token,
+        Authorization: `Bearer ${accessToken}`,
       },
     })
     .then((response) => {
+      console.log(JSON.stringify(response.data));
       return response.data;
+    })
+    .catch((error) => {
+      console.log("User Info Error", error.response.data);
+      return [false, error.response.data];
     });
 }
 

@@ -17,6 +17,7 @@ import SignupIcon from "../../icons/SignupIcon/SignupIcon";
 import { UserRegister } from "../../components/Api/Api";
 import IsNumber from "../../components/IsNumber/IsNumber";
 import ParseError from "../../components/ParseError/ParseError";
+import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 
 export default function Register() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -33,7 +34,7 @@ export default function Register() {
   });
   return (
     <View style={styles.background}>
-      <View style={styles.container}>
+      <AnimatedContainer>
         <View
           style={{
             paddingVertical: 4,
@@ -167,7 +168,7 @@ export default function Register() {
         >
           <Text style={styles.text_white_small}>Register</Text>
         </Button>
-      </View>
+      </AnimatedContainer>
     </View>
   );
 }

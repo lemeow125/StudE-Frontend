@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import { UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
+import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -28,7 +29,7 @@ export default function Login() {
   });
   return (
     <View style={styles.background}>
-      <View style={styles.container}>
+      <AnimatedContainer>
         <View
           style={{
             paddingVertical: 4,
@@ -80,12 +81,12 @@ export default function Login() {
             }).then((result) => {
               if (result[0]) {
                 setUser({ ...user, username: "", password: "", error: "" });
-                console.log(
+                /*console.log(
                   "Access Token:",
                   result[1],
                   "\nRefresh Token:",
                   result[2]
-                );
+                );*/
                 dispatch(
                   setToken({
                     access_token: result[1],
@@ -111,7 +112,7 @@ export default function Login() {
         >
           <Text style={styles.text_white_small}>Register</Text>
         </Button>
-      </View>
+      </AnimatedContainer>
     </View>
   );
 }
