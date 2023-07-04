@@ -80,12 +80,6 @@ export default function Login() {
             }).then((result) => {
               if (result[0]) {
                 setUser({ ...user, username: "", password: "", error: "" });
-                /*console.log(
-                  "Access Token:",
-                  result[1],
-                  "\nRefresh Token:",
-                  result[2]
-                );*/
                 navigation.navigate("Onboarding");
               } else {
                 setUser({

@@ -67,11 +67,7 @@ export function UserLogin(user: LoginParams) {
       );
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
-      return [
-        true,
-        JSON.stringify(response.data.access),
-        JSON.stringify(response.data.refresh),
-      ];
+      return [true];
     })
     .catch((error) => {
       console.log("Login Failed:" + error.response.data);
@@ -92,7 +88,7 @@ export async function TokenRefresh() {
         "Token refresh success! New Access Token",
         response.data.access
       );*/
-      return [true, JSON.stringify(response.data.access)];
+      return [true];
     })
     .catch((error) => {
       console.log("Refresh Failed: " + JSON.stringify(error.response.data));
