@@ -84,14 +84,6 @@ export default function Login() {
                 let user_info = await UserInfo();
                 dispatch(setStateUser(user_info));
                 // Redirect to onboarding if no year level, course, or semester specified
-                console.log(
-                  "Debug",
-                  !(
-                    user_info.year_level ||
-                    user_info.course ||
-                    user_info.semester
-                  )
-                );
                 if (
                   !(
                     user_info.year_level ||

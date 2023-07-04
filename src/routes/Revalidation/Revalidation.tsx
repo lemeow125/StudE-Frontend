@@ -18,10 +18,17 @@ export default function Revalidation() {
     setState("Previous session found");
     TokenRefresh().then(async (response) => {
       if (response[0]) {
-        await dispatch(setUser(await UserInfo()));
-        await setTimeout(() => {
-          navigation.navigate("Home");
-        }, 700);
+        let user_info = await UserInfo();
+        await dispatch(setUser(user_info));
+        if (!(user_info.year_level || user_info.course || user_info.semester)) {
+          await setTimeout(() => {
+            navigation.navigate("Onboarding");
+          }, 700);
+        } else {
+          await setTimeout(() => {
+            navigation.navigate("Home");
+          }, 700);
+        }
       } else {
         await setState("Session expired");
         await setTimeout(() => {
