@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "StudE_Frontend",
+    "scheme": "StudE_Frontend",
     "slug": "StudE_Frontend",
     "version": "1.0.0",
     "orientation": "portrait",

@@ -62,6 +62,15 @@ export default function CustomDrawerContent(props: {}) {
         <AddIcon size={32} />
         <Text style={styles.text_white_medium}>Revalidation</Text>
       </DrawerButton>
+      <DrawerButton
+        color={colors.blue_2}
+        onPress={() => {
+          navigation.navigate("Activation");
+        }}
+      >
+        <AddIcon size={32} />
+        <Text style={styles.text_white_medium}>Activation</Text>
+      </DrawerButton>
     </DrawerContentScrollView>
   );
 }
