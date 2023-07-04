@@ -50,8 +50,6 @@ export default function App() {
   }, [initialRoute]);
 
   if (!initialRoute) {
-    console.log("heh");
-    return null;
   }
 
   return (
