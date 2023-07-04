@@ -59,12 +59,12 @@ export function UserLogin(user: LoginParams) {
   return instance
     .post("/api/v1/accounts/jwt/create/", user)
     .then(async (response) => {
-      console.log(
+      /*console.log(
         "Access Token:",
         response.data.access,
         "\nRefresh Token:",
         response.data.refresh
-      );
+      );*/
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
       return [true];
