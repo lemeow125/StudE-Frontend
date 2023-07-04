@@ -1,14 +1,8 @@
 import * as React from "react";
 import styles from "../../styles";
 import { View, Text, ActivityIndicator } from "react-native";
-import Button from "../../components/Button/Button";
-import { TokenRefresh, UserInfo, UserLogin } from "../../components/Api/Api";
-import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../features/redux/Store/Store";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { MotiView } from "moti";
+import { TokenRefresh, UserInfo } from "../../components/Api/Api";
+import { useDispatch } from "react-redux";
 import { colors } from "../../styles";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -19,8 +13,6 @@ import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContai
 export default function Revalidation() {
   const dispatch = useDispatch();
   const navigation = useNavigation<RootDrawerParamList>();
-  const creds = useSelector((state: RootState) => state.auth.creds);
-  console.log(JSON.stringify(creds));
   const [state, setState] = useState("Checking for existing session");
   useEffect(() => {
     setState("Previous session found");

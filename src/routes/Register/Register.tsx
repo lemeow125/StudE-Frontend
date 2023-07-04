@@ -7,7 +7,6 @@ import {
   NativeSyntheticEvent,
   TextInputChangeEventData,
 } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
 import { colors } from "../../styles";
 import { useState } from "react";
 import Button from "../../components/Button/Button";
