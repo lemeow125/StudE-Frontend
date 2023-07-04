@@ -48,7 +48,8 @@ export default function CustomDrawerContent(props: {}) {
           color={colors.blue_2}
           onPress={async () => {
             dispatch(await clear());
-            AsyncStorage.clear();
+            await AsyncStorage.clear();
+            navigation.navigate("Home");
           }}
         >
           <LogoutIcon size={32} />
@@ -90,7 +91,7 @@ export default function CustomDrawerContent(props: {}) {
           color={colors.blue_2}
           onPress={() => {
             dispatch(clear());
-            navigation.navigate("Login");
+            navigation.navigate("Register");
           }}
         >
           <SignupIcon size={32} />

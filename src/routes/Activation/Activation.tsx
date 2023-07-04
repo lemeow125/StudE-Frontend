@@ -2,9 +2,10 @@ import * as React from "react";
 import styles, { colors } from "../../styles";
 import { View, Text, ActivityIndicator } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { UserActivate } from "../../components/Api/Api";
+import { RootDrawerParamList } from "../../interfaces/Interfaces";
 
 interface ActivationRouteParams {
   uid?: string;
@@ -14,26 +15,35 @@ interface ActivationRouteParams {
 export default function Activation() {
   const route = useRoute();
   const { uid, token } = (route.params as ActivationRouteParams) || "";
-
+  const navigation = useNavigation<RootDrawerParamList>();
   const [state, setState] = useState(
     "Activating with UID " + uid + " and Token " + token
   );
   const [loading, setLoading] = useState(true);
-  async function activate() {
-    if (await UserActivate({ uid: String(uid), token: String(token) })) {
-      setTimeout(() => {
-        setState("Activation successful!");
-      }, 1000);
-    } else {
-      setTimeout(() => {
-        setState("Activation unsuccessful\nPlease contact support");
-      }, 1000);
-    }
-    setLoading(false);
-  }
+
   useEffect(() => {
+    async function activate() {
+      let result = await UserActivate({
+        uid: String(uid),
+        token: String(token),
+      });
+      if (result) {
+        setTimeout(() => {
+          setState("Activation successful!");
+        }, 1000);
+        setTimeout(() => {
+          navigation.navigate("Login");
+        }, 2000);
+      } else {
+        setTimeout(() => {
+          setState("Activation unsuccessful\nPlease contact support");
+        }, 1000);
+      }
+      setLoading(false);
+    }
     activate();
-  }, []);
+  }, [uid, token]);
+
   return (
     <View style={styles.background}>
       <AnimatedContainer>
@@ -54,6 +64,7 @@ export default function Activation() {
           color={colors.blue_1}
         />
         <Text style={styles.text_white_medium}>{state}</Text>
+        <Text style={styles.text_white_tiny}>{uid + "\n" + token}</Text>
       </AnimatedContainer>
     </View>
   );
