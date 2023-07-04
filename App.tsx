@@ -48,10 +48,6 @@ export default function App() {
       getInitialURL();
     }
   }, [initialRoute]);
-
-  if (!initialRoute) {
-  }
-
   return (
     <Provider store={store}>
       <NavigationContainer linking={linking}>
