@@ -21,12 +21,16 @@ import {
   GetYearLevels,
   OnboardingUpdateStudentInfo,
 } from "../../components/Api/Api";
+import { useDispatch } from "react-redux";
+import { unsetOnboarding } from "../../features/redux/slices/StatusSlice/StatusSlice";
+import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
+  const [error, setError] = useState("");
   // Semesters
-  const [semester, setSemester] = useState("");
+  const [selected_semester, setSelectedSemester] = useState("");
   const [semesterOpen, setSemesterOpen] = useState(false);
   const [semesters, setSemesters] = useState([
     { label: "1st Semester", value: "1st Sem" },
@@ -44,7 +48,7 @@ export default function Onboarding() {
     },
   });
   // Year Level
-  const [year_level, setYearLevel] = useState("");
+  const [selected_yearlevel, setSelectedYearLevel] = useState("");
   const [yearLevelOpen, setYearLevelOpen] = useState(false);
   const [year_levels, setYearLevels] = useState([
     { label: "1st Year", value: "1st Year" },
@@ -62,7 +66,7 @@ export default function Onboarding() {
     },
   });
   // Course
-  const [course, setCourse] = useState("");
+  const [selected_course, setSelectedCourse] = useState("");
   const [courseOpen, setCourseOpen] = useState(false);
   const [courses, setCourses] = useState([
     {
@@ -127,20 +131,20 @@ export default function Onboarding() {
         <MotiView
           from={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ type: "timing", duration: 900, delay: 2000 }}
+          transition={{ type: "timing", duration: 400, delay: 1700 }}
         >
           <Text style={styles.text_white_medium}>Academic Info</Text>
           <DropDownPicker
             zIndex={3000}
             open={courseOpen}
-            value={course}
+            value={selected_course}
             items={courses}
             setOpen={(open) => {
               setCourseOpen(open);
               setSemesterOpen(false);
               setYearLevelOpen(false);
             }}
-            setValue={setCourse}
+            setValue={setSelectedCourse}
             placeholder="Choose your course"
             containerStyle={{
               ...styles.dropdown_template,
@@ -151,14 +155,14 @@ export default function Onboarding() {
           <DropDownPicker
             zIndex={2000}
             open={semesterOpen}
-            value={semester}
+            value={selected_semester}
             items={semesters}
             setOpen={(open) => {
               setSemesterOpen(open);
               setCourseOpen(false);
               setYearLevelOpen(false);
             }}
-            setValue={setSemester}
+            setValue={setSelectedSemester}
             placeholder="Current semester"
             containerStyle={{
               ...styles.dropdown_template,
@@ -169,14 +173,14 @@ export default function Onboarding() {
           <DropDownPicker
             zIndex={1000}
             open={yearLevelOpen}
-            value={year_level}
+            value={selected_yearlevel}
             items={year_levels}
             setOpen={(open) => {
               setYearLevelOpen(open);
               setSemesterOpen(false);
               setCourseOpen(false);
             }}
-            setValue={setYearLevel}
+            setValue={setSelectedYearLevel}
             placeholder="Your Year Level"
             containerStyle={{
               ...styles.dropdown_template,
@@ -188,18 +192,31 @@ export default function Onboarding() {
         <MotiView
           from={{ opacity: 0 }}
           animate={{ opacity: 1, zIndex: -1 }}
-          transition={{ type: "timing", duration: 900, delay: 2000 }}
+          transition={{ type: "timing", duration: 400, delay: 1700 }}
           style={styles.button_template}
         >
+          <Text style={styles.text_white_small}>{error}</Text>
           <Button
-            disabled={!year_level || !course || !semester}
+            disabled={
+              !selected_yearlevel || !selected_course || !selected_semester
+            }
             onPress={async () => {
-              console.log(semester, course, year_level);
-              await OnboardingUpdateStudentInfo({
-                semester: semester,
-                course: course,
-                year_level: year_level,
+              let result = await OnboardingUpdateStudentInfo({
+                semester: selected_semester,
+                course: selected_course,
+                year_level: selected_yearlevel,
               });
+              if (result[0]) {
+                dispatch(unsetOnboarding());
+                setSelectedCourse("");
+                setSelectedYearLevel("");
+                setSelectedSemester("");
+                setError("Success!");
+                dispatch(setUser(result[1]));
+                navigation.navigate("Home");
+              } else {
+                setError(result[1]);
+              }
             }}
             color={colors.blue_3}
           >
