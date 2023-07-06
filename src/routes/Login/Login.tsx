@@ -17,13 +17,13 @@ import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import { UserInfo, UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
-import { setUser as setStateUser } from "../../features/redux/slices/UserSlice/UserSlice";
+import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
 import { login } from "../../features/redux/slices/AuthSlice/AuthSlice";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
   const dispatch = useDispatch();
-  const [user, setUser] = useState({
+  const [creds, setCreds] = useState({
     username: "",
     password: "",
     error: "",
@@ -51,11 +51,11 @@ export default function Login() {
           placeholder="Username"
           placeholderTextColor="white"
           autoCapitalize="none"
-          value={user.username}
+          value={creds.username}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
-            setUser({ ...user, username: e.nativeEvent.text });
+            setUser({ ...creds, username: e.nativeEvent.text });
           }}
         />
         <View style={{ paddingVertical: 4 }} />
@@ -64,27 +64,27 @@ export default function Login() {
           placeholder="Password"
           placeholderTextColor="white"
           secureTextEntry={true}
-          value={user.password}
+          value={creds.password}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
-            setUser({ ...user, password: e.nativeEvent.text });
+            setUser({ ...creds, password: e.nativeEvent.text });
           }}
         />
         <View style={{ paddingVertical: 2 }} />
-        <Text style={styles.text_white_small}>{user.error}</Text>
+        <Text style={styles.text_white_small}>{creds.error}</Text>
         <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
             await UserLogin({
-              username: user.username,
-              password: user.password,
+              username: creds.username,
+              password: creds.password,
             }).then(async (result) => {
               if (result[0]) {
-                setUser({ ...user, username: "", password: "", error: "" });
+                setUser({ ...creds, username: "", password: "", error: "" });
                 let user_info = await UserInfo();
                 dispatch(login());
-                dispatch(setStateUser(user_info));
+                console.log(dispatch(setUser(user_info[1])));
                 // Redirect to onboarding if no year level, course, or semester specified
                 if (
                   user_info[1].year_level == null ||
@@ -98,7 +98,7 @@ export default function Login() {
                 console.log(JSON.stringify(user_info));
               } else {
                 setUser({
-                  ...user,
+                  ...creds,
                   error: ParseLoginError(JSON.stringify(result[1])),
                 });
               }
