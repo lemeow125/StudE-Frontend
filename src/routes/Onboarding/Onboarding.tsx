@@ -7,52 +7,44 @@ import { colors } from "../../styles";
 import { AnimatePresence, MotiView } from "moti";
 import { useEffect, useState } from "react";
 import Button from "../../components/Button/Button";
+import DropDownPicker from "react-native-dropdown-picker";
+import isStringEmpty from "../../components/IsStringEmpty/IsStringEmpty";
+
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
   // const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
-  const [student_info, setStudentInfo] = useState({
-    year_level: "",
-    course: "",
-    semester: "",
-  });
-  function isStringEmpty(str: string) {
-    return str === "" || str === null || str === undefined;
-  }
+
+  // Semesters
+  const [semester, setSemester] = useState("");
+  const [semesterOpen, setSemesterOpen] = useState(false);
+  const [semesters, setSemesters] = useState([
+    { label: "1st Semester", value: "1st Sem" },
+    { label: "2nd Semester", value: "2nd Sem" },
+  ]);
+  // Year Level
+  const [year_level, setYearLevel] = useState("");
+  const [yearLevelOpen, setYearLevelOpen] = useState(false);
+  const [year_levels, setYearLevels] = useState([
+    { label: "1st Year", value: "1st Year" },
+    { label: "2nd Year", value: "2nd Year" },
+  ]);
+  // Course
+  const [course, setCourse] = useState("");
+  const [courseOpen, setCourseOpen] = useState(false);
+  const [courses, setCourses] = useState([
+    { label: "Bachelor of Science in Information Technology", value: "BSIT" },
+    { label: "Bachelor of Science in Computer Science", value: "BSCS" },
+  ]);
   const [complete, setComplete] = useState(false);
+
   useEffect(() => {
     setComplete(
-      !isStringEmpty(student_info.year_level) &&
-        !isStringEmpty(student_info.course) &&
-        !isStringEmpty(student_info.semester)
+      !isStringEmpty(year_level) &&
+        !isStringEmpty(course) &&
+        !isStringEmpty(semester)
     );
-  }, [student_info]);
-  function Introduction() {
-    const [shown, setShown] = useState(true);
-    useEffect(() => {
-      setTimeout(() => {
-        setShown(false);
-      }, 5000);
-    }, []);
-    return (
-      <AnimatePresence>
-        {shown && (
-          <MotiView
-            from={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            exitTransition={{ type: "timing", duration: 1200, delay: 600 }}
-            transition={{ type: "timing", duration: 1200, delay: 600 }}
-          >
-            <Text style={styles.text_white_small}>
-              We're glad to have you on board {"\n"}
-              Just a few more things before we get started
-            </Text>
-          </MotiView>
-        )}
-      </AnimatePresence>
-    );
-  }
+  }, [year_level, course, semester, complete]);
 
   return (
     <View style={styles.background}>
@@ -75,18 +67,82 @@ export default function Onboarding() {
           }}
         />
         <View style={{ paddingVertical: 4 }} />
-        <Introduction />
+        <MotiView
+          from={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ type: "timing", duration: 1200, delay: 600 }}
+        >
+          <Text style={styles.text_white_small}>
+            We're glad to have you on board {"\n"}
+            Just a few more things before we get started
+          </Text>
+        </MotiView>
         <View style={{ paddingVertical: 8 }} />
+
         <MotiView
           from={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ type: "timing", duration: 900, delay: 2000 }}
         >
           <Text style={styles.text_white_medium}>Academic Info</Text>
+          <DropDownPicker
+            zIndex={3000}
+            open={courseOpen}
+            value={course}
+            items={courses}
+            setOpen={(open) => {
+              setCourseOpen(open);
+              setSemesterOpen(false);
+              setYearLevelOpen(false);
+            }}
+            setValue={setCourse}
+            placeholder="Choose your course"
+            containerStyle={{
+              ...styles.dropdown_template,
+              ...{ zIndex: 3000 },
+            }}
+            dropDownContainerStyle={{ backgroundColor: "white" }}
+          />
+          <DropDownPicker
+            zIndex={2000}
+            open={semesterOpen}
+            value={semester}
+            items={semesters}
+            setOpen={(open) => {
+              setSemesterOpen(open);
+              setCourseOpen(false);
+              setYearLevelOpen(false);
+            }}
+            setValue={setSemester}
+            placeholder="Current semester"
+            containerStyle={{
+              ...styles.dropdown_template,
+              ...{ zIndex: 2000 },
+            }}
+            dropDownContainerStyle={{ backgroundColor: "white" }}
+          />
+          <DropDownPicker
+            zIndex={1000}
+            open={yearLevelOpen}
+            value={year_level}
+            items={year_levels}
+            setOpen={(open) => {
+              setYearLevelOpen(open);
+              setSemesterOpen(false);
+              setCourseOpen(false);
+            }}
+            setValue={setYearLevel}
+            placeholder="Your Year Level"
+            containerStyle={{
+              ...styles.dropdown_template,
+              ...{ zIndex: 1000 },
+            }}
+            dropDownContainerStyle={{ backgroundColor: "white" }}
+          />
         </MotiView>
         <MotiView
           from={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: 1, zIndex: -1 }}
           transition={{ type: "timing", duration: 900, delay: 2000 }}
           style={styles.button_template}
         >

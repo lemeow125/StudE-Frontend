@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Pressable, GestureResponderEvent } from "react-native";
 import styles from "../../styles";
-import { colors } from "../../styles";
 
 export interface props {
   children: React.ReactNode;

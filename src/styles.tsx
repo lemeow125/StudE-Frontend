@@ -99,6 +99,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
   },
+  dropdown_template: {
+    borderRadius: 16,
+    width: "70%",
+    marginVertical: 6,
+  },
 });
 
 export default styles;
