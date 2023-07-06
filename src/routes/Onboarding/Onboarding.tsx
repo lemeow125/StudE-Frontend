@@ -6,6 +6,7 @@ import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import { colors } from "../../styles";
 import { AnimatePresence, MotiView } from "moti";
 import { useEffect, useState } from "react";
+import Button from "../../components/Button/Button";
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
   // const dispatch = useDispatch();
@@ -15,6 +16,17 @@ export default function Onboarding() {
     course: "",
     semester: "",
   });
+  function isStringEmpty(str: string) {
+    return str === "" || str === null || str === undefined;
+  }
+  const [complete, setComplete] = useState(false);
+  useEffect(() => {
+    setComplete(
+      !isStringEmpty(student_info.year_level) &&
+        !isStringEmpty(student_info.course) &&
+        !isStringEmpty(student_info.semester)
+    );
+  }, [student_info]);
   function Introduction() {
     const [shown, setShown] = useState(true);
     useEffect(() => {
@@ -71,6 +83,20 @@ export default function Onboarding() {
           transition={{ type: "timing", duration: 900, delay: 2000 }}
         >
           <Text style={styles.text_white_medium}>Academic Info</Text>
+        </MotiView>
+        <MotiView
+          from={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ type: "timing", duration: 900, delay: 2000 }}
+          style={styles.button_template}
+        >
+          <Button
+            disabled={!complete}
+            onPress={() => console.log(complete)}
+            color={colors.blue_3}
+          >
+            <Text style={styles.text_white_small}>Proceed</Text>
+          </Button>
         </MotiView>
       </View>
     </View>

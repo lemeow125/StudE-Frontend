@@ -11,6 +11,7 @@ export const colors = {
   text_error: "#e32d1e",
   text_success: "green",
   icon_color: "white",
+  blue_disabled: "#C07624",
 };
 
 export const font_sizes = {
