@@ -17,7 +17,7 @@ export default function Revalidation() {
   useEffect(() => {
     setState("Previous session found");
     TokenRefresh().then(async (response) => {
-      if (response[0]) {
+      if (response) {
         let user_info = await UserInfo();
         await dispatch(setUser(user_info));
         if (!(user_info.year_level || user_info.course || user_info.semester)) {

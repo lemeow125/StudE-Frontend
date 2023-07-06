@@ -88,11 +88,11 @@ export async function TokenRefresh() {
         "Token refresh success! New Access Token",
         response.data.access
       );*/
-      return [true];
+      return true;
     })
     .catch((error) => {
-      console.log("Refresh Failed: " + JSON.stringify(error.response.data));
-      return [false, error.response.data];
+      console.log("Refresh Failed: " + JSON.stringify(error.response));
+      return false;
     });
 }
 export async function UserInfo() {
