@@ -85,11 +85,9 @@ export default function Login() {
                 dispatch(setStateUser(user_info));
                 // Redirect to onboarding if no year level, course, or semester specified
                 if (
-                  !(
-                    user_info.year_level ||
-                    user_info.course ||
-                    user_info.semester
-                  )
+                  user_info[1].year_level == null ||
+                  user_info[1].course == null ||
+                  user_info[1].semester == null
                 ) {
                   navigation.navigate("Onboarding");
                 } else {
