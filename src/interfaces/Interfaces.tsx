@@ -64,3 +64,9 @@ export interface CourseParams {
   name: string;
   shortname: string;
 }
+
+export interface OnboardingParams {
+  year_level: string;
+  course: string;
+  semester: string;
+}

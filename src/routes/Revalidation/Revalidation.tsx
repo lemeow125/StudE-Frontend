@@ -17,12 +17,15 @@ export default function Revalidation() {
   useEffect(() => {
     setState("Previous session found");
     TokenRefresh().then(async (response) => {
-      if (response) {
-        let user_info = await UserInfo();
+      let user_info = await UserInfo();
+      if (response && user_info[0]) {
         await dispatch(setUser(user_info));
         if (
-          !(user_info.year_level || user_info.course || user_info.semester) &&
-          (await UserInfo())
+          !(
+            user_info[1].year_level ||
+            user_info[1].course ||
+            user_info[1].semester
+          )
         ) {
           await setTimeout(() => {
             navigation.navigate("Onboarding");

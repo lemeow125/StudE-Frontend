@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   ActivationParams,
   LoginParams,
+  OnboardingParams,
   RegistrationParams,
 } from "../../interfaces/Interfaces";
 
@@ -113,7 +114,7 @@ export async function UserInfo() {
     })
     .then((response) => {
       // console.log(JSON.stringify(response.data));
-      return response.data;
+      return [true, response.data];
     })
     .catch((error) => {
       let error_message = "";
@@ -195,6 +196,26 @@ export async function GetYearLevels() {
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
       console.log("Error getting year levels", error_message);
+      return false;
+    });
+}
+
+export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
+  const accessToken = await getAccessToken();
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  };
+  return instance
+    .patch("/api/v1/accounts/users/me/", info, { headers })
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+      return response.data;
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Error updating onboarding info", error_message);
       return false;
     });
 }

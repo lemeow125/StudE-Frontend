@@ -19,18 +19,18 @@ import {
   GetCourses,
   GetSemesters,
   GetYearLevels,
+  OnboardingUpdateStudentInfo,
 } from "../../components/Api/Api";
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
   // const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
-  const [error, setError] = useState(false);
   // Semesters
   const [semester, setSemester] = useState("");
   const [semesterOpen, setSemesterOpen] = useState(false);
   const [semesters, setSemesters] = useState([
-    { label: "1st Semester", value: "1st Sem", id: "" },
-    { label: "2nd Semester", value: "2nd Sem", id: "" },
+    { label: "1st Semester", value: "1st Sem" },
+    { label: "2nd Semester", value: "2nd Sem" },
   ]);
   const semester_query = useQuery({
     queryKey: ["semesters"],
@@ -38,21 +38,17 @@ export default function Onboarding() {
     onSuccess: (data) => {
       let semesters = data.map((item: SemesterParams) => ({
         label: item.name,
-        value: item.shortname,
-        id: item.id,
+        value: item.name,
       }));
       setSemesters(semesters);
-    },
-    onError: () => {
-      setError(true);
     },
   });
   // Year Level
   const [year_level, setYearLevel] = useState("");
   const [yearLevelOpen, setYearLevelOpen] = useState(false);
   const [year_levels, setYearLevels] = useState([
-    { label: "1st Year", value: "1st Year", id: "" },
-    { label: "2nd Year", value: "2nd Year", id: "" },
+    { label: "1st Year", value: "1st Year" },
+    { label: "2nd Year", value: "2nd Year" },
   ]);
   const yearlevel_query = useQuery({
     queryKey: ["year_levels"],
@@ -60,13 +56,9 @@ export default function Onboarding() {
     onSuccess: (data) => {
       let year_levels = data.map((item: YearLevelParams) => ({
         label: item.name,
-        value: item.shortname,
-        id: item.id,
+        value: item.name,
       }));
       setYearLevels(year_levels);
-    },
-    onError: () => {
-      setError(true);
     },
   });
   // Course
@@ -76,34 +68,21 @@ export default function Onboarding() {
     {
       label: "Bachelor of Science in Information Technology",
       value: "BSIT",
-      id: "",
     },
-    { label: "Bachelor of Science in Computer Science", value: "BSCS", id: "" },
+    { label: "Bachelor of Science in Computer Science", value: "BSCS" },
   ]);
-  const [complete, setComplete] = useState(false);
   const course_query = useQuery({
     queryKey: ["courses"],
     queryFn: GetCourses,
     onSuccess: (data) => {
       let courses = data.map((item: CourseParams) => ({
         label: item.name,
-        value: item.shortname,
-        id: item.id,
+        value: item.name,
       }));
       setCourses(courses);
     },
-    onError: () => {
-      setError(true);
-    },
   });
-  useEffect(() => {
-    setComplete(
-      !isStringEmpty(year_level) &&
-        !isStringEmpty(course) &&
-        !isStringEmpty(semester)
-    );
-  }, [year_level, course, semester, complete]);
-  if (error) {
+  if (yearlevel_query.error || semester_query.error || course_query.error) {
     return (
       <View style={styles.background}>
         <View style={styles.container}>
@@ -213,8 +192,15 @@ export default function Onboarding() {
           style={styles.button_template}
         >
           <Button
-            disabled={!complete}
-            onPress={() => console.log(complete)}
+            disabled={!year_level || !course || !semester}
+            onPress={async () => {
+              console.log(semester, course, year_level);
+              await OnboardingUpdateStudentInfo({
+                semester: semester,
+                course: course,
+                year_level: year_level,
+              });
+            }}
             color={colors.blue_3}
           >
             <Text style={styles.text_white_small}>Proceed</Text>
