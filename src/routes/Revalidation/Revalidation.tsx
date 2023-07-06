@@ -7,9 +7,13 @@ import { colors } from "../../styles";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
-import { login } from "../../features/redux/slices/StatusSlice/StatusSlice";
+import {
+  login,
+  unsetOnboarding,
+} from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
+import { setOnboarding } from "../../features/redux/slices/StatusSlice/StatusSlice";
 
 export default function Revalidation() {
   const dispatch = useDispatch();
@@ -29,10 +33,12 @@ export default function Revalidation() {
             user_info[1].semester
           )
         ) {
+          dispatch(setOnboarding());
           await setTimeout(() => {
             navigation.navigate("Onboarding");
           }, 700);
         } else {
+          dispatch(unsetOnboarding());
           await setTimeout(() => {
             navigation.navigate("Home");
           }, 700);

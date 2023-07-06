@@ -18,7 +18,11 @@ import { UserInfo, UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
-import { login } from "../../features/redux/slices/StatusSlice/StatusSlice";
+import {
+  login,
+  setOnboarding,
+  unsetOnboarding,
+} from "../../features/redux/slices/StatusSlice/StatusSlice";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -91,8 +95,10 @@ export default function Login() {
                   user_info[1].course == null ||
                   user_info[1].semester == null
                 ) {
+                  dispatch(setOnboarding());
                   navigation.navigate("Onboarding");
                 } else {
+                  dispatch(unsetOnboarding());
                   navigation.navigate("Home");
                 }
                 console.log(JSON.stringify(user_info));

@@ -13,16 +13,17 @@ export const StatusSlice = createSlice({
     logout: (state) => {
       state.logged_in = false;
     },
-    onboard: (state) => {
+    setOnboarding: (state) => {
       state.onboarding = true;
     },
-    not_onboard: (state) => {
+    unsetOnboarding: (state) => {
       state.onboarding = false;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { login, logout, onboard, not_onboard } = StatusSlice.actions;
+export const { login, logout, setOnboarding, unsetOnboarding } =
+  StatusSlice.actions;
 
 export default StatusSlice.reducer;

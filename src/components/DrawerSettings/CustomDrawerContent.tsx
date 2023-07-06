@@ -19,9 +19,35 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
-  const logged_in = useSelector((state: RootState) => state.status.logged_in);
+  const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
-  if (logged_in) {
+  if (status.logged_in && status.onboarding) {
+    return (
+      <DrawerContentScrollView {...props}>
+        <View
+          style={{
+            ...styles.flex_row,
+            ...{ justifyContent: "center" },
+          }}
+        >
+          <AppIcon size={32} />
+          <Text style={styles.text_white_medium}>Stud-E</Text>
+        </View>
+
+        <DrawerButton
+          color={colors.blue_2}
+          onPress={async () => {
+            dispatch(logout());
+            await AsyncStorage.clear();
+            navigation.navigate("Login");
+          }}
+        >
+          <LogoutIcon size={32} />
+          <Text style={styles.text_white_medium}>Logout</Text>
+        </DrawerButton>
+      </DrawerContentScrollView>
+    );
+  } else if (status.logged_in) {
     return (
       <DrawerContentScrollView {...props}>
         <View
