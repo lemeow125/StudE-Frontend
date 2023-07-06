@@ -51,7 +51,10 @@ export function UserRegister(register: RegistrationParams) {
       return [true, response.status];
     })
     .catch((error) => {
-      return [false, error.response.status, error.response.data];
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      return [false, error_message];
     });
 }
 
@@ -70,8 +73,10 @@ export function UserLogin(user: LoginParams) {
       return [true];
     })
     .catch((error) => {
-      console.log("Login Failed:" + JSON.stringify(error.response.data));
-      return [false, error.response.data];
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      return [false, error_message];
     });
 }
 
@@ -91,7 +96,10 @@ export async function TokenRefresh() {
       return true;
     })
     .catch((error) => {
-      console.log("Refresh Failed: " + JSON.stringify(error.response));
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Token Refresh error:", error_message);
       return false;
     });
 }
@@ -108,8 +116,10 @@ export async function UserInfo() {
       return response.data;
     })
     .catch((error) => {
-      console.log("User Info Error", error.response.data);
-      return [false, error.response.data];
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      return [false, error_message];
     });
 }
 
