@@ -14,14 +14,12 @@ import DrawerButton from "../Button/DrawerButton";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
 import LogoutIcon from "../../icons/LogoutIcon/LogoutIcon";
-import { logout } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import { logout } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
-  const logged_in = useSelector(
-    (state: RootState) => state.auth.creds.logged_in
-  );
+  const logged_in = useSelector((state: RootState) => state.status.logged_in);
   const dispatch = useDispatch();
   if (logged_in) {
     return (

@@ -7,7 +7,7 @@ import { colors } from "../../styles";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
-import { login } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import { login } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
 
@@ -21,7 +21,7 @@ export default function Revalidation() {
       let user_info = await UserInfo();
       if (response && user_info[0]) {
         dispatch(login());
-        console.log(dispatch(setUser(user_info[1])));
+        dispatch(setUser(user_info[1]));
         if (
           !(
             user_info[1].year_level ||

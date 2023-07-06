@@ -18,7 +18,7 @@ import { UserInfo, UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
-import { login } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import { login } from "../../features/redux/slices/StatusSlice/StatusSlice";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -55,7 +55,7 @@ export default function Login() {
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
-            setUser({ ...creds, username: e.nativeEvent.text });
+            setCreds({ ...creds, username: e.nativeEvent.text });
           }}
         />
         <View style={{ paddingVertical: 4 }} />
@@ -68,7 +68,7 @@ export default function Login() {
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
-            setUser({ ...creds, password: e.nativeEvent.text });
+            setCreds({ ...creds, password: e.nativeEvent.text });
           }}
         />
         <View style={{ paddingVertical: 2 }} />
@@ -84,7 +84,7 @@ export default function Login() {
                 setUser({ ...creds, username: "", password: "", error: "" });
                 let user_info = await UserInfo();
                 dispatch(login());
-                console.log(dispatch(setUser(user_info[1])));
+                dispatch(setUser(user_info[1]));
                 // Redirect to onboarding if no year level, course, or semester specified
                 if (
                   user_info[1].year_level == null ||
