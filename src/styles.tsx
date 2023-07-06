@@ -1,16 +1,19 @@
 import { StyleSheet } from "react-native";
 
 export const colors = {
-  orange_1: "#FFBC72",
+  orange_1: "#FFDEAD",
   orange_2: "#FFE2C1",
   orange_3: "#C07624",
-  blue_1: "#4C87A1",
-  blue_2: "#77ACC3",
-  blue_3: "#1B5D79",
+  blue_1: "#E3963E",
+  blue_2: "#FFAC1C",
+  blue_3: "#FFAC1C",
   text_default: "white",
   text_error: "#e32d1e",
   text_success: "green",
   icon_color: "white",
+  login_color: "#0047AB",
+  reg_color: "#0096FF",
+  head: "white"
 };
 
 export const font_sizes = {

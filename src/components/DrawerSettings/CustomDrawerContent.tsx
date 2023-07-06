@@ -36,7 +36,7 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.blue_3}
           onPress={() => {
             navigation.navigate("Home");
           }}
