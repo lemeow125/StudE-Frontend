@@ -14,6 +14,7 @@ import {
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
 import { setOnboarding } from "../../features/redux/slices/StatusSlice/StatusSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Revalidation() {
   const dispatch = useDispatch();
@@ -46,6 +47,7 @@ export default function Revalidation() {
       } else {
         await setState("Session expired");
         await setTimeout(() => {
+          AsyncStorage.clear();
           navigation.navigate("Login");
         }, 700);
       }
