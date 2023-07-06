@@ -14,16 +14,40 @@ import DrawerButton from "../Button/DrawerButton";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
 import LogoutIcon from "../../icons/LogoutIcon/LogoutIcon";
-import { clear } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import { logout } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
-  const logged_in = useSelector(
-    (state: RootState) => state.auth.creds.logged_in
-  );
+  const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
-  if (logged_in) {
+  if (status.logged_in && status.onboarding) {
+    return (
+      <DrawerContentScrollView {...props}>
+        <View
+          style={{
+            ...styles.flex_row,
+            ...{ justifyContent: "center" },
+          }}
+        >
+          <AppIcon size={32} />
+          <Text style={styles.text_white_medium}>Stud-E</Text>
+        </View>
+
+        <DrawerButton
+          color={colors.blue_2}
+          onPress={async () => {
+            dispatch(logout());
+            await AsyncStorage.clear();
+            navigation.navigate("Login");
+          }}
+        >
+          <LogoutIcon size={32} />
+          <Text style={styles.text_white_medium}>Logout</Text>
+        </DrawerButton>
+      </DrawerContentScrollView>
+    );
+  } else if (status.logged_in) {
     return (
       <DrawerContentScrollView {...props}>
         <View
@@ -47,7 +71,7 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           color={colors.blue_2}
           onPress={async () => {
-            dispatch(await clear());
+            dispatch(logout());
             await AsyncStorage.clear();
             navigation.navigate("Login");
           }}
@@ -72,15 +96,6 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           color={colors.blue_2}
           onPress={() => {
-            navigation.navigate("Home");
-          }}
-        >
-          <HomeIcon size={32} />
-          <Text style={styles.text_white_medium}>Home</Text>
-        </DrawerButton>
-        <DrawerButton
-          color={colors.blue_2}
-          onPress={() => {
             navigation.navigate("Login");
           }}
         >
@@ -90,7 +105,6 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           color={colors.blue_2}
           onPress={() => {
-            dispatch(clear());
             navigation.navigate("Register");
           }}
         >

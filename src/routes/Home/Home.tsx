@@ -6,7 +6,7 @@ import { RootState } from "../../features/redux/Store/Store";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 
 export default function Home() {
-  const creds = useSelector((state: RootState) => state.auth.creds);
+  const creds = useSelector((state: RootState) => state.user.user);
   return (
     <View style={styles.background}>
       <AnimatedContainer>

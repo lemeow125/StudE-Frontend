@@ -11,6 +11,7 @@ export const colors = {
   text_error: "#e32d1e",
   text_success: "green",
   icon_color: "white",
+  blue_disabled: "#C07624",
 };
 
 export const font_sizes = {
@@ -97,6 +98,11 @@ const styles = StyleSheet.create({
     width: "50%",
     padding: 10,
     borderRadius: 8,
+  },
+  dropdown_template: {
+    borderRadius: 16,
+    width: "70%",
+    marginVertical: 6,
   },
 });
 
