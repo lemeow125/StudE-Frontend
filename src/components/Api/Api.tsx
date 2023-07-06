@@ -135,3 +135,66 @@ export function UserActivate(activation: ActivationParams) {
 }
 
 // App APIs
+
+export async function GetCourses() {
+  const accessToken = await getAccessToken();
+  return instance
+    .get("/api/v1/courses/", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      return response.data;
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Error getting courses", error_message);
+      return false;
+    });
+}
+
+export async function GetSemesters() {
+  const accessToken = await getAccessToken();
+  return instance
+    .get("/api/v1/semesters/", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      return response.data;
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Error getting semesters", error_message);
+      return false;
+    });
+}
+
+export async function GetYearLevels() {
+  const accessToken = await getAccessToken();
+  return instance
+    .get("/api/v1/year_levels/", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      return response.data;
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Error getting year levels", error_message);
+      return false;
+    });
+}

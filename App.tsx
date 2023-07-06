@@ -17,6 +17,7 @@ import Onboarding from "./src/routes/Onboarding/Onboarding";
 import Revalidation from "./src/routes/Revalidation/Revalidation";
 import Activation from "./src/routes/Activation/Activation";
 import { useState, useEffect } from "react";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 const Drawer = createDrawerNavigator();
 
@@ -35,6 +36,8 @@ const linking = {
   },
 };
 
+const queryClient = new QueryClient();
+
 export default function App() {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
   useEffect(() => {
@@ -50,20 +53,22 @@ export default function App() {
   }, [initialRoute]);
   return (
     <Provider store={store}>
-      <NavigationContainer linking={linking}>
-        <Drawer.Navigator
-          initialRouteName="Revalidation"
-          drawerContent={CustomDrawerContent}
-          screenOptions={DrawerScreenSettings}
-        >
-          <Drawer.Screen name="Home" component={Home} />
-          <Drawer.Screen name="Login" component={Login} />
-          <Drawer.Screen name="Register" component={Register} />
-          <Drawer.Screen name="Onboarding" component={Onboarding} />
-          <Drawer.Screen name="Revalidation" component={Revalidation} />
-          <Drawer.Screen name="Activation" component={Activation} />
-        </Drawer.Navigator>
-      </NavigationContainer>
+      <QueryClientProvider client={queryClient}>
+        <NavigationContainer linking={linking}>
+          <Drawer.Navigator
+            initialRouteName="Revalidation"
+            drawerContent={CustomDrawerContent}
+            screenOptions={DrawerScreenSettings}
+          >
+            <Drawer.Screen name="Home" component={Home} />
+            <Drawer.Screen name="Login" component={Login} />
+            <Drawer.Screen name="Register" component={Register} />
+            <Drawer.Screen name="Onboarding" component={Onboarding} />
+            <Drawer.Screen name="Revalidation" component={Revalidation} />
+            <Drawer.Screen name="Activation" component={Activation} />
+          </Drawer.Navigator>
+        </NavigationContainer>
+      </QueryClientProvider>
     </Provider>
   );
 }

@@ -20,7 +20,10 @@ export default function Revalidation() {
       if (response) {
         let user_info = await UserInfo();
         await dispatch(setUser(user_info));
-        if (!(user_info.year_level || user_info.course || user_info.semester)) {
+        if (
+          !(user_info.year_level || user_info.course || user_info.semester) &&
+          (await UserInfo())
+        ) {
           await setTimeout(() => {
             navigation.navigate("Onboarding");
           }, 700);

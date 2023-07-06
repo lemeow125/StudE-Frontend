@@ -46,3 +46,21 @@ export interface ActivationParams {
   uid: string;
   token: string;
 }
+
+export interface SemesterParams {
+  id: string;
+  name: string;
+  shortname: string;
+}
+
+export interface YearLevelParams {
+  id: string;
+  name: string;
+  shortname: string;
+}
+
+export interface CourseParams {
+  id: string;
+  name: string;
+  shortname: string;
+}

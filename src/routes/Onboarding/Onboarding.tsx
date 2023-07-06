@@ -2,42 +2,100 @@ import * as React from "react";
 import styles from "../../styles";
 import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { RootDrawerParamList } from "../../interfaces/Interfaces";
+import {
+  CourseParams,
+  RootDrawerParamList,
+  SemesterParams,
+  YearLevelParams,
+} from "../../interfaces/Interfaces";
 import { colors } from "../../styles";
 import { AnimatePresence, MotiView } from "moti";
 import { useEffect, useState } from "react";
 import Button from "../../components/Button/Button";
 import DropDownPicker from "react-native-dropdown-picker";
 import isStringEmpty from "../../components/IsStringEmpty/IsStringEmpty";
-
+import { useQuery } from "@tanstack/react-query";
+import {
+  GetCourses,
+  GetSemesters,
+  GetYearLevels,
+} from "../../components/Api/Api";
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
   // const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
-
+  const [error, setError] = useState(false);
   // Semesters
   const [semester, setSemester] = useState("");
   const [semesterOpen, setSemesterOpen] = useState(false);
   const [semesters, setSemesters] = useState([
-    { label: "1st Semester", value: "1st Sem" },
-    { label: "2nd Semester", value: "2nd Sem" },
+    { label: "1st Semester", value: "1st Sem", id: "" },
+    { label: "2nd Semester", value: "2nd Sem", id: "" },
   ]);
+  const semester_query = useQuery({
+    queryKey: ["semesters"],
+    queryFn: GetSemesters,
+    onSuccess: (data) => {
+      let semesters = data.map((item: SemesterParams) => ({
+        label: item.name,
+        value: item.shortname,
+        id: item.id,
+      }));
+      setSemesters(semesters);
+    },
+    onError: () => {
+      setError(true);
+    },
+  });
   // Year Level
   const [year_level, setYearLevel] = useState("");
   const [yearLevelOpen, setYearLevelOpen] = useState(false);
   const [year_levels, setYearLevels] = useState([
-    { label: "1st Year", value: "1st Year" },
-    { label: "2nd Year", value: "2nd Year" },
+    { label: "1st Year", value: "1st Year", id: "" },
+    { label: "2nd Year", value: "2nd Year", id: "" },
   ]);
+  const yearlevel_query = useQuery({
+    queryKey: ["year_levels"],
+    queryFn: GetYearLevels,
+    onSuccess: (data) => {
+      let year_levels = data.map((item: YearLevelParams) => ({
+        label: item.name,
+        value: item.shortname,
+        id: item.id,
+      }));
+      setYearLevels(year_levels);
+    },
+    onError: () => {
+      setError(true);
+    },
+  });
   // Course
   const [course, setCourse] = useState("");
   const [courseOpen, setCourseOpen] = useState(false);
   const [courses, setCourses] = useState([
-    { label: "Bachelor of Science in Information Technology", value: "BSIT" },
-    { label: "Bachelor of Science in Computer Science", value: "BSCS" },
+    {
+      label: "Bachelor of Science in Information Technology",
+      value: "BSIT",
+      id: "",
+    },
+    { label: "Bachelor of Science in Computer Science", value: "BSCS", id: "" },
   ]);
   const [complete, setComplete] = useState(false);
-
+  const course_query = useQuery({
+    queryKey: ["courses"],
+    queryFn: GetCourses,
+    onSuccess: (data) => {
+      let courses = data.map((item: CourseParams) => ({
+        label: item.name,
+        value: item.shortname,
+        id: item.id,
+      }));
+      setCourses(courses);
+    },
+    onError: () => {
+      setError(true);
+    },
+  });
   useEffect(() => {
     setComplete(
       !isStringEmpty(year_level) &&
@@ -45,7 +103,15 @@ export default function Onboarding() {
         !isStringEmpty(semester)
     );
   }, [year_level, course, semester, complete]);
-
+  if (error) {
+    return (
+      <View style={styles.background}>
+        <View style={styles.container}>
+          <Text style={styles.text_white_medium}>Error loading details</Text>
+        </View>
+      </View>
+    );
+  }
   return (
     <View style={styles.background}>
       <View style={styles.container}>
