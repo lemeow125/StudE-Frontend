@@ -14,7 +14,7 @@ import DrawerButton from "../Button/DrawerButton";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
 import LogoutIcon from "../../icons/LogoutIcon/LogoutIcon";
-import { clear } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import { logout } from "../../features/redux/slices/AuthSlice/AuthSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CustomDrawerContent(props: {}) {
@@ -47,7 +47,7 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           color={colors.blue_2}
           onPress={async () => {
-            dispatch(await clear());
+            dispatch(logout());
             await AsyncStorage.clear();
             navigation.navigate("Login");
           }}
@@ -72,15 +72,6 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           color={colors.blue_2}
           onPress={() => {
-            navigation.navigate("Home");
-          }}
-        >
-          <HomeIcon size={32} />
-          <Text style={styles.text_white_medium}>Home</Text>
-        </DrawerButton>
-        <DrawerButton
-          color={colors.blue_2}
-          onPress={() => {
             navigation.navigate("Login");
           }}
         >
@@ -90,7 +81,6 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           color={colors.blue_2}
           onPress={() => {
-            dispatch(clear());
             navigation.navigate("Register");
           }}
         >

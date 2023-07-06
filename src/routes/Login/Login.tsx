@@ -17,7 +17,8 @@ import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import { UserInfo, UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
-import { setUser as setStateUser } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import { setUser as setStateUser } from "../../features/redux/slices/UserSlice/UserSlice";
+import { login } from "../../features/redux/slices/AuthSlice/AuthSlice";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -82,6 +83,7 @@ export default function Login() {
               if (result[0]) {
                 setUser({ ...user, username: "", password: "", error: "" });
                 let user_info = await UserInfo();
+                dispatch(login());
                 dispatch(setStateUser(user_info));
                 // Redirect to onboarding if no year level, course, or semester specified
                 if (
