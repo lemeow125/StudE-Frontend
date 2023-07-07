@@ -65,6 +65,8 @@ export default function Home() {
               }}
               showsUserLocation={true}
               scrollEnabled={false}
+              zoomEnabled={false}
+              rotateEnabled={false}
               minZoomLevel={15}
               initialRegion={{
                 latitude: location.coords.latitude,
