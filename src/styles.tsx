@@ -3,6 +3,9 @@ import { StyleSheet, Dimensions } from "react-native";
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
+const containerWidth = width - width * 0.08;
+const containerHeight = height - height * 0.01;
+
 export const colors = {
   orange_1: "#FFBC72",
   orange_2: "#FFE2C1",
@@ -109,8 +112,9 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   map: {
-    height: 512,
-    width: "90%",
+    flex: 1,
+    height: containerHeight,
+    width: containerWidth,
     alignSelf: "center",
   },
 });

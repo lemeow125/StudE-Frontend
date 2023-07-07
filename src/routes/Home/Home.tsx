@@ -48,6 +48,7 @@ export default function Home() {
   function CustomMap() {
     if (dist !== null && location !== null) {
       if (dist <= 1) {
+        // Just switch this condition for map debugging
         return <MapView style={styles.map} initialRegion={ustpCoords} />;
       } else {
         return (
@@ -77,7 +78,6 @@ export default function Home() {
   return (
     <View style={styles.background}>
       <AnimatedContainer>
-        <Text style={styles.text_white_large}>Template Homepage</Text>
         <CustomMap />
       </AnimatedContainer>
     </View>
