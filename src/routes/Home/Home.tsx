@@ -52,8 +52,8 @@ export default function Home() {
         return <MapView style={styles.map} initialRegion={ustpCoords} />;
       } else {
         return (
-          <Text style={styles.text_white_medium}>
-            You must be within the campus to use StudE {"\n"}
+          <Text style={styles.text_white_small}>
+            You must be within 1km of USTP to use Stud-E{"\n"}
             {dist}km away from USTP {"\n"}
             User Location:
             {"\n"} Latitude {location.coords.latitude}
