@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   container: {
-    marginTop: "5%",
+    flex: 1,
+    marginVertical: "5%",
     width: "92%",
     borderRadius: 15,
     backgroundColor: colors.blue_2,
@@ -108,8 +109,9 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   map: {
-    height: "50%",
+    height: 512,
     width: "90%",
+    alignSelf: "center",
   },
 });
 
