@@ -9,22 +9,34 @@ export interface props {
 
 export default function AnimatedContainer(props: props) {
   return (
-    <View style={styles.container}>
-      <MotiScrollView
-        from={{
-          opacity: 0,
-          backgroundColor: colors.orange_1,
-          flex: 1,
-        }}
-        animate={{
-          opacity: 1,
-          backgroundColor: colors.blue_2,
-          flex: 1,
-        }}
-        transition={{ type: "timing", duration: 300 }}
-      >
-        {props.children}
-      </MotiScrollView>
-    </View>
+    <MotiScrollView
+      contentContainerStyle={{
+        alignItems: "center",
+        alignSelf: "center",
+        justifyContent: "flex-start",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+      }}
+      from={{
+        borderRadius: 0,
+        backgroundColor: colors.orange_2,
+        paddingTop: 4,
+        paddingBottom: 4,
+        marginHorizontal: "4%",
+        marginVertical: "5%",
+      }}
+      animate={{
+        borderRadius: 15,
+        backgroundColor: colors.blue_2,
+        paddingTop: 16,
+        paddingBottom: 16,
+        marginHorizontal: "4%",
+        marginVertical: "5%",
+      }}
+      transition={{ type: "timing", duration: 300 }}
+    >
+      {props.children}
+    </MotiScrollView>
   );
 }

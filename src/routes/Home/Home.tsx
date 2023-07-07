@@ -47,7 +47,7 @@ export default function Home() {
   };
   function CustomMap() {
     if (dist !== null && location !== null) {
-      if (dist <= 1) {
+      if (dist >= 1) {
         // Just switch this condition for map debugging
         return <MapView style={styles.map} initialRegion={ustpCoords} />;
       } else {
