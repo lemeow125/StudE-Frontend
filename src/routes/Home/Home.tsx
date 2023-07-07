@@ -52,13 +52,17 @@ export default function Home() {
         return <MapView style={styles.map} initialRegion={ustpCoords} />;
       } else {
         return (
-          <Text style={styles.text_white_small}>
-            You must be within 1km of USTP to use Stud-E{"\n"}
-            {dist}km away from USTP {"\n"}
-            User Location:
-            {"\n"} Latitude {location.coords.latitude}
-            {"\n"} Longitude {location.coords.longitude}
-          </Text>
+          <View>
+            <Text style={styles.text_white_medium}>
+              You must be within 1km of USTP to use Stud-E{"\n"}
+            </Text>
+            <Text style={styles.text_white_small}>
+              {dist}km away from USTP {"\n"}
+              User Location:
+              {"\n"} Latitude {location.coords.latitude}
+              {"\n"} Longitude {location.coords.longitude}
+            </Text>
+          </View>
         );
       }
     } else {

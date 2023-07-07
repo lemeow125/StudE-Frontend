@@ -10,14 +10,7 @@ export interface props {
 export default function AnimatedContainer(props: props) {
   return (
     <MotiScrollView
-      contentContainerStyle={{
-        alignItems: "center",
-        alignSelf: "center",
-        justifyContent: "flex-start",
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-      }}
+      contentContainerStyle={styles.container}
       from={{
         borderRadius: 0,
         backgroundColor: colors.orange_2,
