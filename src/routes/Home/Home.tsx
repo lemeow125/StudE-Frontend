@@ -9,19 +9,27 @@ import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
 import { colors } from "../../styles";
+import { startActivityAsync, ActivityAction } from "expo-intent-launcher";
 
 type LocationType = Location.LocationObject;
 export default function Home() {
   const [location, setLocation] = useState<LocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState(
+    "To continue, please allow Stud-E permission to location services"
+  );
 
   async function requestLocation() {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.error("Permission to access location was denied");
-      return;
-    } else {
+    if (status === "granted") {
       getLocation();
+      return;
+    } else if (status === "denied") {
+      setFeedback("Stud-E requires location services to function");
+      setTimeout(() => {
+        startActivityAsync(ActivityAction.LOCATION_SOURCE_SETTINGS);
+      }, 3000);
+      console.log("Location Permission denied");
     }
   }
 
@@ -39,6 +47,7 @@ export default function Home() {
   useEffect(() => {
     requestLocation();
   }, []);
+
   const ustpCoords = {
     latitude: 8.4857,
     longitude: 124.6565,
@@ -77,21 +86,19 @@ export default function Home() {
               }}
             />
             <Text style={styles.text_white_small}>
-              You are {dist}km away from USTP {"\n"}
+              {dist}km away from USTP {"\n"}
             </Text>
           </View>
         );
       }
     } else {
       return (
-        <View>
-          <Text style={styles.text_white_medium}>
-            Please allow location permission{"\n"}
-          </Text>
+        <AnimatedContainer>
+          <Text style={styles.text_white_medium}>{feedback}</Text>
           <Button onPress={() => requestLocation()} color={colors.blue_3}>
-            <Text style={styles.text_white_small}>Register</Text>
+            <Text style={styles.text_white_small}>Allow Access</Text>
           </Button>
-        </View>
+        </AnimatedContainer>
       );
     }
   }
