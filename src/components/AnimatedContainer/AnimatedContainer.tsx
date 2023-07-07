@@ -1,8 +1,8 @@
 import * as React from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import styles from "../../styles";
 import { colors } from "../../styles";
-import { MotiView } from "moti";
+import { MotiView, MotiScrollView } from "moti";
 export interface props {
   children: React.ReactNode;
 }

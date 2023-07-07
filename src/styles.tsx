@@ -1,4 +1,7 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const width = Dimensions.get("window").width;
+const height = Dimensions.get("window").height;
 
 export const colors = {
   orange_1: "#FFBC72",
@@ -103,6 +106,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     width: "70%",
     marginVertical: 6,
+  },
+  map: {
+    height: "50%",
+    width: "90%",
   },
 });
 
