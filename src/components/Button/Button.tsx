@@ -23,7 +23,6 @@ export default function Button({ disabled = false, ...props }: props) {
               ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.3)`
               : "rgba(0, 0, 0, 0)"
             : props.color,
-          width: "50%",
         },
       }}
     >
