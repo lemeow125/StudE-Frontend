@@ -18,6 +18,7 @@ import Revalidation from "./src/routes/Revalidation/Revalidation";
 import Activation from "./src/routes/Activation/Activation";
 import { useState, useEffect } from "react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import StudentInfo from "./src/routes/StudentInfo/StudentInfo";
 
 const Drawer = createDrawerNavigator();
 
@@ -31,6 +32,7 @@ const linking = {
       Onboarding: "onboarding",
       Revalidation: "revalidation",
       Activation: "activation/:uid?/:token?",
+      StudentInfo: "student_info",
       NotFound: "*",
     },
   },
@@ -66,6 +68,7 @@ export default function App() {
             <Drawer.Screen name="Onboarding" component={Onboarding} />
             <Drawer.Screen name="Revalidation" component={Revalidation} />
             <Drawer.Screen name="Activation" component={Activation} />
+            <Drawer.Screen name="Student Info" component={StudentInfo} />
           </Drawer.Navigator>
         </NavigationContainer>
       </QueryClientProvider>
