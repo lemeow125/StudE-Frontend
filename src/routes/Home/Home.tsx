@@ -3,46 +3,82 @@ import { View, Text } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import MapView, { Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
+import GetDistance from "../../components/GetDistance/GetDistance";
+import Button from "../../components/Button/Button";
+import { colors } from "../../styles";
 
 type LocationType = Location.LocationObject;
 export default function Home() {
   const [location, setLocation] = useState<LocationType | null>(null);
+  const [dist, setDist] = useState<number | null>(null);
 
+  async function requestLocation() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.error("Permission to access location was denied");
+      return;
+    } else {
+      getLocation();
+    }
+  }
+
+  async function getLocation() {
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+    let dist = GetDistance(
+      location.coords.latitude,
+      location.coords.longitude,
+      8.4857,
+      124.6565
+    );
+    setDist(Math.round(dist));
+  }
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.error("Permission to access location was denied");
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
+    requestLocation();
   }, []);
-
-  function getInitialState() {
-    return {
-      latitude: 8.4857,
-      longitude: 124.6565,
-      latitudeDelta: 0.000235,
-      longitudeDelta: 0.000067,
-    };
+  const ustpCoords = {
+    latitude: 8.4857,
+    longitude: 124.6565,
+    latitudeDelta: 0.000235,
+    longitudeDelta: 0.000067,
+  };
+  function CustomMap() {
+    if (dist !== null && location !== null) {
+      if (dist <= 1) {
+        return <MapView style={styles.map} initialRegion={ustpCoords} />;
+      } else {
+        return (
+          <Text style={styles.text_white_medium}>
+            You must be within the campus to use StudE {"\n"}
+            {dist}km away from USTP {"\n"}
+            User Location:
+            {"\n"} Latitude {location.coords.latitude}
+            {"\n"} Longitude {location.coords.longitude}
+          </Text>
+        );
+      }
+    } else {
+      return (
+        <View>
+          <Text style={styles.text_white_medium}>
+            Please allow location permission{"\n"}
+          </Text>
+          <Button onPress={() => requestLocation()} color={colors.blue_3}>
+            <Text style={styles.text_white_small}>Register</Text>
+          </Button>
+        </View>
+      );
+    }
   }
   const creds = useSelector((state: RootState) => state.user.user);
   return (
     <View style={styles.background}>
       <AnimatedContainer>
         <Text style={styles.text_white_large}>Template Homepage</Text>
-        <MapView style={styles.map} initialRegion={getInitialState()}></MapView>
-        <Text style={styles.text_white_medium}>
-          User Location:{" "}
-          {location
-            ? `${location.coords.latitude}, ${location.coords.longitude}`
-            : "Loading..."}
-        </Text>
+        <CustomMap />
       </AnimatedContainer>
     </View>
   );
