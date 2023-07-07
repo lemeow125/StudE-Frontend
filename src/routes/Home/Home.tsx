@@ -47,20 +47,34 @@ export default function Home() {
   };
   function CustomMap() {
     if (dist !== null && location !== null) {
-      if (dist <= 1) {
+      if (dist <= 1.5) {
         // Just switch this condition for map debugging
         return <MapView style={styles.map} initialRegion={ustpCoords} />;
       } else {
         return (
           <View>
             <Text style={styles.text_white_medium}>
-              You must be within 1km of USTP to use Stud-E{"\n"}
+              You are too far from USTP {"\n"}
+              Get closer to use Stud-E
             </Text>
+            <MapView
+              style={{
+                height: 256,
+                width: 256,
+                alignSelf: "center",
+              }}
+              showsUserLocation={true}
+              scrollEnabled={false}
+              minZoomLevel={15}
+              initialRegion={{
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            />
             <Text style={styles.text_white_small}>
-              {dist}km away from USTP {"\n"}
-              User Location:
-              {"\n"} Latitude {location.coords.latitude}
-              {"\n"} Longitude {location.coords.longitude}
+              You are {dist}km away from USTP {"\n"}
             </Text>
           </View>
         );
