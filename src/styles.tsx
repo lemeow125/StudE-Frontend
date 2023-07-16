@@ -1,3 +1,4 @@
+import { createErrorHandler } from "expo/build/errors/ExpoErrorManager";
 import { StyleSheet } from "react-native";
 
 export const colors = {
@@ -101,6 +102,35 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
   },
+  profile: {
+    height: 80,
+    width: 80, 
+    marginLeft: 10,
+  }, 
+  input: {
+    height: 40,
+    margin: 12,
+    marginRight: 30,
+    borderWidth: 1,
+    color: colors.text_default,
+    backgroundColor: colors.blue_1,
+    borderRadius: 8,
+    borderColor: '#FFAC1C',
+    padding: 8, 
+  },
+  formGroup: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  text: {
+    marginLeft: 5,
+    color: colors.text_default,
+    fontSize: font_sizes.small,
+    fontWeight: "bold", 
+  }, 
+ 
+
 });
 
 export default styles;

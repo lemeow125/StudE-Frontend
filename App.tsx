@@ -16,6 +16,7 @@ import Register from "./src/routes/Register/Register";
 import Onboarding from "./src/routes/Onboarding/Onboarding";
 import Revalidation from "./src/routes/Revalidation/Revalidation";
 import Activation from "./src/routes/Activation/Activation";
+import UserInfo from "./src/routes/UserInfo/UserInfo";
 import { useState, useEffect } from "react";
 
 const Drawer = createDrawerNavigator();
@@ -62,6 +63,7 @@ export default function App() {
           <Drawer.Screen name="Onboarding" component={Onboarding} />
           <Drawer.Screen name="Revalidation" component={Revalidation} />
           <Drawer.Screen name="Activation" component={Activation} />
+          <Drawer.Screen name="UserInfo" component={UserInfo} />
         </Drawer.Navigator>
       </NavigationContainer>
     </Provider>
