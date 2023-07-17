@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   ActivationParams,
   LoginParams,
+  OnboardingParams,
   RegistrationParams,
 } from "../../interfaces/Interfaces";
 
@@ -51,7 +52,10 @@ export function UserRegister(register: RegistrationParams) {
       return [true, response.status];
     })
     .catch((error) => {
-      return [false, error.response.status, error.response.data];
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      return [false, error_message];
     });
 }
 
@@ -70,8 +74,10 @@ export function UserLogin(user: LoginParams) {
       return [true];
     })
     .catch((error) => {
-      console.log("Login Failed:" + JSON.stringify(error.response.data));
-      return [false, error.response.data];
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      return [false, error_message];
     });
 }
 
@@ -88,11 +94,14 @@ export async function TokenRefresh() {
         "Token refresh success! New Access Token",
         response.data.access
       );*/
-      return [true];
+      return true;
     })
     .catch((error) => {
-      console.log("Refresh Failed: " + JSON.stringify(error.response.data));
-      return [false, error.response.data];
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Token Refresh error:", error_message);
+      return false;
     });
 }
 export async function UserInfo() {
@@ -105,11 +114,13 @@ export async function UserInfo() {
     })
     .then((response) => {
       // console.log(JSON.stringify(response.data));
-      return response.data;
+      return [true, response.data];
     })
     .catch((error) => {
-      console.log("User Info Error", error.response.data);
-      return [false, error.response.data];
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      return [false, error_message];
     });
 }
 
@@ -125,3 +136,86 @@ export function UserActivate(activation: ActivationParams) {
 }
 
 // App APIs
+
+export async function GetCourses() {
+  const accessToken = await getAccessToken();
+  return instance
+    .get("/api/v1/courses/", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      return response.data;
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Error getting courses", error_message);
+      return false;
+    });
+}
+
+export async function GetSemesters() {
+  const accessToken = await getAccessToken();
+  return instance
+    .get("/api/v1/semesters/", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      return response.data;
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Error getting semesters", error_message);
+      return false;
+    });
+}
+
+export async function GetYearLevels() {
+  const accessToken = await getAccessToken();
+  return instance
+    .get("/api/v1/year_levels/", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      return response.data;
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Error getting year levels", error_message);
+      return false;
+    });
+}
+
+export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
+  const accessToken = await getAccessToken();
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  };
+  return instance
+    .patch("/api/v1/accounts/users/me/", info, { headers })
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("Error updating onboarding info", error_message);
+      return [false, error_message];
+    });
+}

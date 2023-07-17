@@ -7,8 +7,14 @@ import { colors } from "../../styles";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
-import { setUser } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import {
+  login,
+  unsetOnboarding,
+} from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
+import { setOnboarding } from "../../features/redux/slices/StatusSlice/StatusSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Revalidation() {
   const dispatch = useDispatch();
@@ -17,14 +23,23 @@ export default function Revalidation() {
   useEffect(() => {
     setState("Previous session found");
     TokenRefresh().then(async (response) => {
-      if (response[0]) {
-        let user_info = await UserInfo();
-        await dispatch(setUser(user_info));
-        if (!(user_info.year_level || user_info.course || user_info.semester)) {
+      let user_info = await UserInfo();
+      if (response && user_info[0]) {
+        dispatch(login());
+        dispatch(setUser(user_info[1]));
+        if (
+          !(
+            user_info[1].year_level ||
+            user_info[1].course ||
+            user_info[1].semester
+          )
+        ) {
+          dispatch(setOnboarding());
           await setTimeout(() => {
             navigation.navigate("Onboarding");
           }, 700);
         } else {
+          dispatch(unsetOnboarding());
           await setTimeout(() => {
             navigation.navigate("Home");
           }, 700);
@@ -32,6 +47,7 @@ export default function Revalidation() {
       } else {
         await setState("Session expired");
         await setTimeout(() => {
+          AsyncStorage.clear();
           navigation.navigate("Login");
         }, 700);
       }

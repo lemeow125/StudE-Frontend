@@ -1,5 +1,10 @@
-import { createErrorHandler } from "expo/build/errors/ExpoErrorManager";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const width = Dimensions.get("window").width;
+const height = Dimensions.get("window").height;
+
+const containerWidth = width - width * 0.08;
+const containerHeight = height - height * 0.01;
 
 export const colors = {
   orange_1: "#FFDEAD",
@@ -15,6 +20,7 @@ export const colors = {
   login_color: "#0047AB",
   reg_color: "#0096FF",
   head: "white"
+  blue_disabled: "#C07624",
 };
 
 export const font_sizes = {
@@ -32,17 +38,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   container: {
-    marginTop: "5%",
-    width: "92%",
-    borderRadius: 15,
-    backgroundColor: colors.blue_2,
     alignItems: "center",
     alignSelf: "center",
-    paddingTop: 32,
-    paddingBottom: 32,
-    justifyContent: "flex-start",
+    justifyContent: "center",
     display: "flex",
     flexDirection: "column",
+    flex: 1,
+    paddingHorizontal: 4,
   },
   flex_row: {
     display: "flex",
@@ -53,6 +55,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    justifyContent: "center",
   },
   text_white_tiny: {
     color: colors.text_default,
@@ -88,19 +91,32 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
     alignItems: "center",
+    textAlign: "center",
     display: "flex",
     flexDirection: "row",
     marginVertical: 4,
     marginHorizontal: 8,
     padding: 8,
     borderRadius: 16,
+    width: width * 0.4,
   },
   text_input: {
     color: colors.text_default,
     backgroundColor: colors.blue_1,
-    width: "50%",
     padding: 10,
     borderRadius: 8,
+    width: width * 0.5,
+  },
+  dropdown_template: {
+    borderRadius: 16,
+    width: "70%",
+    marginVertical: 6,
+  },
+  map: {
+    flex: 1,
+    height: containerHeight,
+    width: containerWidth,
+    alignSelf: "center",
   },
   profile: {
     height: 80,
@@ -140,7 +156,5 @@ const styles = StyleSheet.create({
   inactiveText: {
     color: 'white',
   },
-
 });
-
 export default styles;

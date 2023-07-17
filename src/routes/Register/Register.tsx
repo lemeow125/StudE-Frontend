@@ -160,7 +160,7 @@ export default function Register() {
               } else {
                 setUser({
                   ...user,
-                  feedback: ParseError(JSON.stringify(result[2])),
+                  feedback: ParseError(JSON.stringify(result[1])),
                 });
               }
             });

@@ -17,12 +17,17 @@ import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import { UserInfo, UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
-import { setUser as setStateUser } from "../../features/redux/slices/AuthSlice/AuthSlice";
+import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
+import {
+  login,
+  setOnboarding,
+  unsetOnboarding,
+} from "../../features/redux/slices/StatusSlice/StatusSlice";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
   const dispatch = useDispatch();
-  const [user, setUser] = useState({
+  const [creds, setCreds] = useState({
     username: "",
     password: "",
     error: "",
@@ -49,11 +54,11 @@ export default function Login() {
           placeholder="Username"
           placeholderTextColor="white"
           autoCapitalize="none"
-          value={user.username}
+          value={creds.username}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
-            setUser({ ...user, username: e.nativeEvent.text });
+            setCreds({ ...creds, username: e.nativeEvent.text });
           }}
         />
         <View style={{ paddingVertical: 4 }} />
@@ -62,42 +67,43 @@ export default function Login() {
           placeholder="Password"
           placeholderTextColor="white"
           secureTextEntry={true}
-          value={user.password}
+          value={creds.password}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
-            setUser({ ...user, password: e.nativeEvent.text });
+            setCreds({ ...creds, password: e.nativeEvent.text });
           }}
         />
         <View style={{ paddingVertical: 2 }} />
-        <Text style={styles.text_white_small}>{user.error}</Text>
+        <Text style={styles.text_white_small}>{creds.error}</Text>
         <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
             await UserLogin({
-              username: user.username,
-              password: user.password,
+              username: creds.username,
+              password: creds.password,
             }).then(async (result) => {
               if (result[0]) {
-                setUser({ ...user, username: "", password: "", error: "" });
+                setUser({ ...creds, username: "", password: "", error: "" });
                 let user_info = await UserInfo();
-                dispatch(setStateUser(user_info));
+                dispatch(login());
+                dispatch(setUser(user_info[1]));
                 // Redirect to onboarding if no year level, course, or semester specified
                 if (
-                  !(
-                    user_info.year_level ||
-                    user_info.course ||
-                    user_info.semester
-                  )
+                  user_info[1].year_level == null ||
+                  user_info[1].course == null ||
+                  user_info[1].semester == null
                 ) {
+                  dispatch(setOnboarding());
                   navigation.navigate("Onboarding");
                 } else {
+                  dispatch(unsetOnboarding());
                   navigation.navigate("Home");
                 }
                 console.log(JSON.stringify(user_info));
               } else {
                 setUser({
-                  ...user,
+                  ...creds,
                   error: ParseLoginError(JSON.stringify(result[1])),
                 });
               }
