@@ -47,6 +47,7 @@ export interface ActivationParams {
   token: string;
 }
 
+// Semester
 export interface Semester {
   id: string;
   name: string;
@@ -57,21 +58,37 @@ export type Semesters = Array<Semester>;
 
 export type SemesterParams = [boolean, Semesters];
 
+// Year Level
 export interface YearLevel {
   id: string;
   name: string;
   shortname: string;
 }
 
-export type YearLevelParams = [boolean, YearLevel];
+export type YearLevels = Array<YearLevel>;
 
+export type YearLevelParams = [boolean, YearLevels];
+
+// Course
 export interface Course {
   id: string;
   name: string;
   shortname: string;
 }
+export type Courses = Array<Course>;
+export type CourseParams = [boolean, Courses];
 
-export type CourseParams = [boolean, Course];
+// Subject
+export interface Subject {
+  id: string;
+  name: string;
+  code: string;
+  // courses: any[]; // To-do
+  // year_levels: any[]; // To-do
+  // semesters: any[]; // To-do
+}
+export type Subjects = Array<Subject>;
+export type SubjectParams = [boolean, Subjects];
 
 export interface OnboardingParams {
   year_level: string;
@@ -89,17 +106,20 @@ export interface PatchStudentData {
 }
 
 export interface StudentData {
-  avatar: string;
-  course: string;
-  email: string;
   first_name: string;
-  is_banned: boolean;
   last_name: string;
-  semester: string;
+  email: string;
+  avatar: string;
   student_id_number: string;
+  is_banned: boolean;
+  semester: string;
+  semester_shortname: string;
+  course: string;
+  course_shortname: string;
+  year_level: string;
+  yearlevel_shortname: string;
   subjects: any[]; // To-do
   username: string;
-  year_level: string;
 }
 
 export type UserInfoParams = [boolean, StudentData];

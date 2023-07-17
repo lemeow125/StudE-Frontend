@@ -207,7 +207,7 @@ export async function GetYearLevels() {
   return instance
     .get("/api/v1/year_levels/", config)
     .then((response) => {
-      // console.log(JSON.stringify(response.data));
+      console.log(JSON.stringify(response.data));
       return [true, response.data];
     })
     .catch((error) => {

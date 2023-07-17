@@ -145,13 +145,15 @@ export default function Onboarding() {
               setSemesterOpen(false);
               setYearLevelOpen(false);
             }}
+            style={styles.input}
             setValue={setSelectedCourse}
             placeholder="Choose your course"
-            containerStyle={{
-              ...styles.input,
-              ...{ zIndex: 3000 },
+            containerStyle={{ zIndex: 3000 }}
+            textStyle={{
+              ...styles.text_white_small_bold,
+              ...{ textAlign: "center" },
             }}
-            dropDownContainerStyle={{ backgroundColor: "white" }}
+            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
           />
           <DropDownPicker
             zIndex={2000}
@@ -163,13 +165,15 @@ export default function Onboarding() {
               setSemesterOpen(false);
               setCourseOpen(false);
             }}
+            style={styles.input}
             setValue={setSelectedYearLevel}
             placeholder="Your Year Level"
-            containerStyle={{
-              ...styles.input,
-              ...{ zIndex: 2000 },
+            containerStyle={{ zIndex: 2000 }}
+            textStyle={{
+              ...styles.text_white_small_bold,
+              ...{ textAlign: "center" },
             }}
-            dropDownContainerStyle={{ backgroundColor: "white" }}
+            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
           />
           <DropDownPicker
             zIndex={1000}
@@ -181,13 +185,15 @@ export default function Onboarding() {
               setCourseOpen(false);
               setYearLevelOpen(false);
             }}
+            style={styles.input}
             setValue={setSelectedSemester}
             placeholder="Current semester"
-            containerStyle={{
-              ...styles.input,
-              ...{ zIndex: 1000 },
+            containerStyle={{ zIndex: 1000 }}
+            textStyle={{
+              ...styles.text_white_small_bold,
+              ...{ textAlign: "center" },
             }}
-            dropDownContainerStyle={{ backgroundColor: "white" }}
+            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
           />
         </MotiView>
         <Text style={styles.text_white_small}>{error}</Text>
