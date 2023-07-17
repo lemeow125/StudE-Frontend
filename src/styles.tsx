@@ -7,16 +7,19 @@ const containerWidth = width - width * 0.08;
 const containerHeight = height - height * 0.01;
 
 export const colors = {
-  orange_1: "#FFBC72",
+  orange_1: "#FFDEAD",
   orange_2: "#FFE2C1",
   orange_3: "#C07624",
-  blue_1: "#4C87A1",
-  blue_2: "#77ACC3",
-  blue_3: "#1B5D79",
+  blue_1: "#E3963E",
+  blue_2: "#FFAC1C",
+  blue_3: "#FFAC1C",
   text_default: "white",
   text_error: "#e32d1e",
   text_success: "green",
   icon_color: "white",
+  login_color: "#0047AB",
+  reg_color: "#0096FF",
+  head: "white",
   blue_disabled: "#C07624",
 };
 
@@ -115,6 +118,43 @@ const styles = StyleSheet.create({
     width: containerWidth,
     alignSelf: "center",
   },
+  profile: {
+    height: 80,
+    width: 80, 
+    alignSelf: 'center',
+  }, 
+  input: {
+    height: 40,
+    margin: 12,
+    marginRight: 30,
+    borderWidth: 1,
+    color: colors.text_default,
+    backgroundColor: colors.blue_1,
+    borderRadius: 8,
+    borderColor: '#FFAC1C',
+    padding: 8, 
+  },
+  formGroup: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  text: {
+    marginLeft: 5,
+    color: colors.text_default,
+    fontSize: font_sizes.small,
+    fontWeight: "bold", 
+  }, 
+  button: {
+    padding: 10,
+    backgroundColor: colors.blue_2,
+    borderRadius: 5,
+  },
+  activeText: {
+    color: 'green',
+  },
+  inactiveText: {
+    color: 'white',
+  },
 });
-
 export default styles;

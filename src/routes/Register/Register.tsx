@@ -34,20 +34,21 @@ export default function Register() {
   return (
     <View style={styles.background}>
       <AnimatedContainer>
+      <View style={styles.flex_row}>
+          <SignupIcon size={32} />
+          <Text style={styles.text_white_large}>Student Signup</Text>
+          <View style={{ paddingVertical: 8, }} />
+        </View>
         <View
           style={{
             paddingVertical: 4,
             marginBottom: 16,
+            marginTop: 8,
             borderRadius: 4,
             width: "90%",
-            backgroundColor: colors.blue_1,
+            backgroundColor: colors.head,
           }}
         />
-        <View style={styles.flex_row}>
-          <SignupIcon size={32} />
-          <Text style={styles.text_white_large}>Student Signup</Text>
-          <View style={{ paddingVertical: 8 }} />
-        </View>
         <TextInput
           style={styles.text_input}
           placeholder="First Name"
@@ -166,7 +167,7 @@ export default function Register() {
             {
             }
           }}
-          color={colors.blue_3}
+          color={colors.reg_color}
         >
           <Text style={styles.text_white_small}>Register</Text>
         </Button>

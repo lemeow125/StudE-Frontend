@@ -16,6 +16,7 @@ import { RootState } from "../../features/redux/Store/Store";
 import LogoutIcon from "../../icons/LogoutIcon/LogoutIcon";
 import { logout } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import UserIcon from "../../icons/UserIcon/UserIcon";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -60,13 +61,22 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.blue_3}
           onPress={() => {
             navigation.navigate("Home");
           }}
         >
           <HomeIcon size={32} />
           <Text style={styles.text_white_medium}>Home</Text>
+        </DrawerButton>
+        <DrawerButton
+          color={colors.blue_2}
+          onPress={() => {
+            navigation.navigate("UserInfo");
+          }}
+        >
+          <UserIcon size={32} />
+          <Text style={styles.text_white_medium}>UserInfo</Text>
         </DrawerButton>
         <DrawerButton
           color={colors.blue_2}
@@ -111,6 +121,7 @@ export default function CustomDrawerContent(props: {}) {
           <SignupIcon size={32} />
           <Text style={styles.text_white_medium}>Register</Text>
         </DrawerButton>
+
         {/*
         Debug buttons for accessing revalidation and activation page
         <DrawerButton
