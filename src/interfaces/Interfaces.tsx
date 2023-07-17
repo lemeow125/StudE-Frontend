@@ -77,6 +77,15 @@ export interface OnboardingParams {
   semester: string;
 }
 
+export interface PatchStudentData {
+  course?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  semester?: string | null;
+  subjects?: any[] | null; // To-do, replace 'any' with your actual type
+  year_level?: string | null;
+}
+
 export interface StudentData {
   avatar: string;
   course: string;
@@ -87,15 +96,6 @@ export interface StudentData {
   semester: string;
   student_id_number: string;
   subjects: any[]; // To-do
-  user_status: {
-    active: boolean;
-    landmark: string;
-    location: any; // To-do
-    study_group: any[]; // To-do
-    subject: string;
-    timestamp: string;
-    user: string;
-  };
   username: string;
   year_level: string;
 }

@@ -18,11 +18,15 @@ import { TouchableOpacity, Image } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import SelectDropdown from "react-native-select-dropdown";
 import DropdownIcon from "../../icons/DropdownIcon/DropdownIcon";
-import { useQuery } from "react-query";
-import { UserInfo as GetUserInfo } from "../../components/Api/Api";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  UserInfo as GetUserInfo,
+  PatchUserInfo,
+} from "../../components/Api/Api";
 import { colors } from "../../styles";
 
 export default function UserInfo() {
+  const queryClient = useQueryClient();
   const UserInfo = useQuery("user", GetUserInfo, {
     onSuccess: (data: UserInfoParams) => {
       setUser({
@@ -34,10 +38,18 @@ export default function UserInfo() {
         course: data[1].course,
         avatar: data[1].avatar,
       });
+      setDisplayName({
+        first_name: data[1].first_name,
+        last_name: data[1].last_name,
+      });
     },
   });
-
-  const navigation = useNavigation<RootDrawerParamList>();
+  const mutation = useMutation({
+    mutationFn: PatchUserInfo,
+    onSuccess: () => {
+      queryClient.invalidateQueries("user");
+    },
+  });
   const [isEditable, setIsEditable] = useState(false);
   const subjectOptions = ["", "", "", ""];
   const [user, setUser] = useState({
@@ -47,6 +59,10 @@ export default function UserInfo() {
     semester: "",
     course: "",
     avatar: "",
+  });
+  const [displayName, setDisplayName] = useState({
+    first_name: "",
+    last_name: "",
   });
   function Avatar() {
     if (user.avatar) {
@@ -64,7 +80,9 @@ export default function UserInfo() {
     <ScrollView style={styles.background}>
       <AnimatedContainer>
         <Text style={styles.text_white_medium_large}>
-          {(user.first_name || "Undefined") + " " + (user.last_name || "User")}
+          {(displayName.first_name || "Undefined") +
+            " " +
+            (displayName.last_name || "User")}
         </Text>
         <View>
           <Avatar />
@@ -185,7 +203,19 @@ export default function UserInfo() {
         </View>
         <TouchableOpacity
           style={styles.button_template}
-          onPress={() => setIsEditable(!isEditable)}
+          onPress={() => {
+            if (isEditable) {
+              mutation.mutate({
+                first_name: user.first_name,
+                last_name: user.last_name,
+                course: user.course,
+                semester: user.semester,
+                subjects: [],
+                year_level: user.year_level,
+              });
+            }
+            setIsEditable(!isEditable);
+          }}
         >
           <Text style={styles.text_white_small}>
             {isEditable && UserInfo.isSuccess ? "Save" : "Edit Profile"}

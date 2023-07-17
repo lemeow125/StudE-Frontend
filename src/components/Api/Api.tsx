@@ -4,7 +4,9 @@ import {
   ActivationParams,
   LoginParams,
   OnboardingParams,
+  PatchStudentData,
   RegistrationParams,
+  StudentData,
 } from "../../interfaces/Interfaces";
 
 let debug = true;
@@ -41,6 +43,16 @@ export async function setAccessToken(access: string) {
 export async function setRefreshToken(refresh: string) {
   await AsyncStorage.setItem("refresh_token", refresh);
   return true;
+}
+
+// Header Config Template for REST
+export async function GetConfig() {
+  const accessToken = await getAccessToken();
+  return {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
 }
 
 // User APIs
@@ -105,13 +117,9 @@ export async function TokenRefresh() {
     });
 }
 export async function UserInfo() {
-  const accessToken = await getAccessToken();
+  const config = await GetConfig();
   return instance
-    .get("/api/v1/accounts/users/me/", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
+    .get("/api/v1/accounts/users/me/", config)
     .then((response) => {
       // console.log(JSON.stringify(response.data));
       return [true, response.data];
@@ -120,6 +128,23 @@ export async function UserInfo() {
       let error_message = "";
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
+      return [false, error_message];
+    });
+}
+
+export async function PatchUserInfo(info: PatchStudentData) {
+  const config = await GetConfig();
+  return instance
+    .patch("/api/v1/accounts/users/me/", info, config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log(error_message);
       return [false, error_message];
     });
 }
@@ -178,13 +203,9 @@ export async function GetSemesters() {
 }
 
 export async function GetYearLevels() {
-  const accessToken = await getAccessToken();
+  const config = await GetConfig();
   return instance
-    .get("/api/v1/year_levels/", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
+    .get("/api/v1/year_levels/", config)
     .then((response) => {
       // console.log(JSON.stringify(response.data));
       return [true, response.data];
@@ -198,12 +219,9 @@ export async function GetYearLevels() {
 }
 
 export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
-  const accessToken = await getAccessToken();
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-  };
+  const config = await GetConfig();
   return instance
-    .patch("/api/v1/accounts/users/me/", info, { headers })
+    .patch("/api/v1/accounts/users/me/", info, config)
     .then((response) => {
       console.log(JSON.stringify(response.data));
       return [true, response.data];
