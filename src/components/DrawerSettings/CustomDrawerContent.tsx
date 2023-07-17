@@ -72,11 +72,11 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           color={colors.blue_2}
           onPress={() => {
-            navigation.navigate("UserInfo");
+            navigation.navigate("User Info");
           }}
         >
           <UserIcon size={32} />
-          <Text style={styles.text_white_medium}>UserInfo</Text>
+          <Text style={styles.text_white_medium}>User Info</Text>
         </DrawerButton>
         <DrawerButton
           color={colors.blue_2}

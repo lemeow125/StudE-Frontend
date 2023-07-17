@@ -37,6 +37,7 @@ export default function UserInfo() {
       });
     },
   });
+
   const navigation = useNavigation<RootDrawerParamList>();
   const [isEditable, setIsEditable] = useState(false);
   const subjectOptions = ["", "", "", ""];

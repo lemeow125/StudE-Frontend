@@ -67,7 +67,7 @@ export default function App() {
             <Drawer.Screen name="Onboarding" component={Onboarding} />
             <Drawer.Screen name="Revalidation" component={Revalidation} />
             <Drawer.Screen name="Activation" component={Activation} />
-            <Drawer.Screen name="UserInfo" component={UserInfo} />
+            <Drawer.Screen name="User Info" component={UserInfo} />
           </Drawer.Navigator>
         </NavigationContainer>
       </QueryClientProvider>
