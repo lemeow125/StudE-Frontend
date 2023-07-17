@@ -17,6 +17,9 @@ import { TouchableOpacity, Image } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import SelectDropdown from "react-native-select-dropdown";
 import DropdownIcon from "../../icons/DropdownIcon/DropdownIcon";
+import { useQuery } from "react-query";
+import { UserInfo as GetUserInfo } from "../../components/Api/Api";
+import { err } from "react-native-svg/lib/typescript/xml";
 
 export default function UserInfo() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -35,173 +38,179 @@ export default function UserInfo() {
     semester: "",
     course: "",
   });
-  return (
-    <ScrollView style={styles.background}>
-      <AnimatedContainer>
-        <Text style={{ ...styles.text_white_medium, ...{ fontSize: 32 } }}>
-          Kurt Toledo
-        </Text>
-        <View>
-          <Image
-            source={require("./image/3135715.png")}
-            style={styles.profile}
+  const { data, isLoading, error } = useQuery("user", UserInfo, {
+    retry: 0,
+    onSuccess: (data) => console.log(data),
+  });
+  if (!isLoading && !error) {
+    return (
+      <ScrollView style={styles.background}>
+        <AnimatedContainer>
+          <Text style={{ ...styles.text_white_medium, ...{ fontSize: 32 } }}>
+            Kurt Toledo
+          </Text>
+          <View>
+            <Image
+              source={require("./image/3135715.png")}
+              style={styles.profile}
+            />
+            <TouchableOpacity onPress={toggleUserActive} style={styles.button}>
+              <Text
+                style={[
+                  styles.text,
+                  isActive ? styles.activeText : styles.inactiveText,
+                ]}
+              >
+                Student {isActive ? "Active" : "Inactive"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              paddingVertical: 4,
+              marginBottom: 16,
+              marginTop: 8,
+              borderRadius: 4,
+              width: "90%",
+              backgroundColor: colors.head,
+            }}
           />
-          <TouchableOpacity onPress={toggleUserActive} style={styles.button}>
-            <Text
-              style={[
-                styles.text,
-                isActive ? styles.activeText : styles.inactiveText,
-              ]}
-            >
-              Student {isActive ? "Active" : "Inactive"}
+          <View style={styles.formGroup}>
+            <View style={{ width: 70 }}>
+              <Text style={styles.text}>First Name</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <TextInput
+                style={[styles.input, !isEditable && styles.input]}
+                editable={isEditable}
+                onChange={(
+                  e: NativeSyntheticEvent<TextInputChangeEventData>
+                ): void => {
+                  setUser({ ...user, first_name: e.nativeEvent.text });
+                }}
+              />
+            </View>
+          </View>
+          <View style={styles.formGroup}>
+            <View style={{ width: 70 }}>
+              <Text style={styles.text}>Last Name</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <TextInput
+                style={[styles.input, !isEditable && styles.input]}
+                editable={isEditable}
+                onChange={(
+                  e: NativeSyntheticEvent<TextInputChangeEventData>
+                ): void => {
+                  setUser({ ...user, first_name: e.nativeEvent.text });
+                }}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              paddingVertical: 4,
+              marginBottom: 16,
+              marginTop: 8,
+              borderRadius: 4,
+              width: "90%",
+              backgroundColor: colors.head,
+            }}
+          />
+          <View style={styles.formGroup}>
+            <View style={{ width: 70 }}>
+              <Text style={styles.text}>Year Level</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <TextInput
+                style={[styles.input, !isEditable && styles.input]}
+                editable={isEditable}
+                onChange={(
+                  e: NativeSyntheticEvent<TextInputChangeEventData>
+                ): void => {
+                  setUser({ ...user, first_name: e.nativeEvent.text });
+                }}
+              />
+            </View>
+          </View>
+          <View style={styles.formGroup}>
+            <View style={{ width: 70 }}>
+              <Text style={styles.text}>Semester</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <TextInput
+                style={[styles.input, !isEditable && styles.input]}
+                editable={isEditable}
+                onChange={(
+                  e: NativeSyntheticEvent<TextInputChangeEventData>
+                ): void => {
+                  setUser({ ...user, first_name: e.nativeEvent.text });
+                }}
+              />
+            </View>
+          </View>
+          <View style={styles.formGroup}>
+            <View style={{ width: 70 }}>
+              <Text style={styles.text}>Course</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <TextInput
+                style={[styles.input, !isEditable && styles.input]}
+                editable={isEditable}
+                onChange={(
+                  e: NativeSyntheticEvent<TextInputChangeEventData>
+                ): void => {
+                  setUser({ ...user, first_name: e.nativeEvent.text });
+                }}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              paddingVertical: 4,
+              marginBottom: 16,
+              marginTop: 8,
+              borderRadius: 4,
+              width: "90%",
+              backgroundColor: colors.head,
+            }}
+          />
+          <View style={styles.formGroup}>
+            <View style={{ width: 80 }}>
+              <Text style={styles.text}>Subject</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <SelectDropdown
+                onSelect={(selectedItem, index) => {
+                  console.log(selectedItem, index);
+                }}
+                renderDropdownIcon={() => <DropdownIcon size={32} />}
+                buttonTextStyle={{
+                  color: "white",
+                }}
+                dropdownStyle={{
+                  backgroundColor: "#E3963E",
+                }}
+                data={options}
+                buttonStyle={{
+                  width: "90%",
+                  marginLeft: 10,
+                  backgroundColor: "#E3963E",
+                  borderRadius: 8,
+                }}
+              />
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.button_template}
+            onPress={() => setIsEditable(!isEditable)}
+          >
+            <Text style={styles.text_white_small}>
+              {isEditable ? "Save" : "Edit Profile"}
             </Text>
           </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            paddingVertical: 4,
-            marginBottom: 16,
-            marginTop: 8,
-            borderRadius: 4,
-            width: "90%",
-            backgroundColor: colors.head,
-          }}
-        />
-        <View style={styles.formGroup}>
-          <View style={{ width: 70 }}>
-            <Text style={styles.text}>First Name</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <TextInput
-              style={[styles.input, !isEditable && styles.input]}
-              editable={isEditable}
-              onChange={(
-                e: NativeSyntheticEvent<TextInputChangeEventData>
-              ): void => {
-                setUser({ ...user, first_name: e.nativeEvent.text });
-              }}
-            />
-          </View>
-        </View>
-        <View style={styles.formGroup}>
-          <View style={{ width: 70 }}>
-            <Text style={styles.text}>Last Name</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <TextInput
-              style={[styles.input, !isEditable && styles.input]}
-              editable={isEditable}
-              onChange={(
-                e: NativeSyntheticEvent<TextInputChangeEventData>
-              ): void => {
-                setUser({ ...user, first_name: e.nativeEvent.text });
-              }}
-            />
-          </View>
-        </View>
-        <View
-          style={{
-            paddingVertical: 4,
-            marginBottom: 16,
-            marginTop: 8,
-            borderRadius: 4,
-            width: "90%",
-            backgroundColor: colors.head,
-          }}
-        />
-        <View style={styles.formGroup}>
-          <View style={{ width: 70 }}>
-            <Text style={styles.text}>Year Level</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <TextInput
-              style={[styles.input, !isEditable && styles.input]}
-              editable={isEditable}
-              onChange={(
-                e: NativeSyntheticEvent<TextInputChangeEventData>
-              ): void => {
-                setUser({ ...user, first_name: e.nativeEvent.text });
-              }}
-            />
-          </View>
-        </View>
-        <View style={styles.formGroup}>
-          <View style={{ width: 70 }}>
-            <Text style={styles.text}>Semester</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <TextInput
-              style={[styles.input, !isEditable && styles.input]}
-              editable={isEditable}
-              onChange={(
-                e: NativeSyntheticEvent<TextInputChangeEventData>
-              ): void => {
-                setUser({ ...user, first_name: e.nativeEvent.text });
-              }}
-            />
-          </View>
-        </View>
-        <View style={styles.formGroup}>
-          <View style={{ width: 70 }}>
-            <Text style={styles.text}>Course</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <TextInput
-              style={[styles.input, !isEditable && styles.input]}
-              editable={isEditable}
-              onChange={(
-                e: NativeSyntheticEvent<TextInputChangeEventData>
-              ): void => {
-                setUser({ ...user, first_name: e.nativeEvent.text });
-              }}
-            />
-          </View>
-        </View>
-        <View
-          style={{
-            paddingVertical: 4,
-            marginBottom: 16,
-            marginTop: 8,
-            borderRadius: 4,
-            width: "90%",
-            backgroundColor: colors.head,
-          }}
-        />
-        <View style={styles.formGroup}>
-          <View style={{ width: 80 }}>
-            <Text style={styles.text}>Subject</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <SelectDropdown
-              onSelect={(selectedItem, index) => {
-                console.log(selectedItem, index);
-              }}
-              renderDropdownIcon={() => <DropdownIcon size={32} />}
-              buttonTextStyle={{
-                color: "white",
-              }}
-              dropdownStyle={{
-                backgroundColor: "#E3963E",
-              }}
-              data={options}
-              buttonStyle={{
-                width: "90%",
-                marginLeft: 10,
-                backgroundColor: "#E3963E",
-                borderRadius: 8,
-              }}
-            />
-          </View>
-        </View>
-        <TouchableOpacity
-          style={styles.button_template}
-          onPress={() => setIsEditable(!isEditable)}
-        >
-          <Text style={styles.text_white_small}>
-            {isEditable ? "Save" : "Edit Profile"}
-          </Text>
-        </TouchableOpacity>
-      </AnimatedContainer>
-    </ScrollView>
-  );
+        </AnimatedContainer>
+      </ScrollView>
+    );
+  }
 }
