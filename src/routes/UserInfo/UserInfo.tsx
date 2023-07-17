@@ -33,6 +33,7 @@ export default function UserInfo() {
         year_level: data[1].year_level,
         semester: data[1].semester,
         course: data[1].course,
+        avatar: data[1].avatar,
       });
     },
   });
@@ -45,7 +46,20 @@ export default function UserInfo() {
     year_level: "",
     semester: "",
     course: "",
+    avatar: "",
   });
+  function Avatar() {
+    if (user.avatar) {
+      return <Image source={{ uri: user.avatar }} style={styles.profile} />;
+    } else {
+      return (
+        <Image
+          source={require("../../img/user_profile_placeholder.png")}
+          style={styles.profile}
+        />
+      );
+    }
+  }
   return (
     <ScrollView style={styles.background}>
       <AnimatedContainer>
@@ -53,10 +67,7 @@ export default function UserInfo() {
           {user.first_name + " " + user.last_name}
         </Text>
         <View>
-          <Image
-            source={require("./image/3135715.png")}
-            style={styles.profile}
-          />
+          <Avatar />
         </View>
         <View style={styles.padding} />
         <View style={styles.flex_row}>
@@ -177,7 +188,7 @@ export default function UserInfo() {
           onPress={() => setIsEditable(!isEditable)}
         >
           <Text style={styles.text_white_small}>
-            {isEditable ? "Save" : "Edit Profile"}
+            {isEditable && UserInfo.isSuccess ? "Save" : "Edit Profile"}
           </Text>
         </TouchableOpacity>
       </AnimatedContainer>

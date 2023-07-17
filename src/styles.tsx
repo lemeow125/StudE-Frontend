@@ -119,9 +119,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   profile: {
-    height: 80,
-    width: 80,
+    height: 96,
+    width: 96,
     alignSelf: "center",
+    borderRadius: 150 / 2,
+    overflow: "hidden",
   },
   input: {
     height: 40,
