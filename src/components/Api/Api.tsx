@@ -218,6 +218,29 @@ export async function GetYearLevels() {
     });
 }
 
+export async function GetSubjects(
+  course: string,
+  year_level: string,
+  semester: string
+) {
+  const config = await GetConfig();
+  return instance
+    .get(
+      "/api/v1/subjects/" + course + "/" + year_level + "/" + semester,
+      config
+    )
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      return [false, error_message];
+    });
+}
+
 export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
   const config = await GetConfig();
   return instance

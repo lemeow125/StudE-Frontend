@@ -53,7 +53,9 @@ export interface Semester {
   shortname: string;
 }
 
-export type SemesterParams = [boolean, Semester];
+export type Semesters = Array<Semester>;
+
+export type SemesterParams = [boolean, Semesters];
 
 export interface YearLevel {
   id: string;

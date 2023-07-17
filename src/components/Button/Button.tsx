@@ -5,26 +5,20 @@ import styles from "../../styles";
 export interface props {
   children: React.ReactNode;
   onPress: (event: GestureResponderEvent) => void;
-  color: string;
+  color?: string;
   disabled?: boolean;
 }
 
-export default function Button({ disabled = false, ...props }: props) {
-  const rgb = props.color.match(/\d+/g);
+export default function Button({
+  disabled = false,
+  color = "rgba(52, 52, 52, 0.8)",
+  ...props
+}: props) {
   return (
     <Pressable
       disabled={disabled}
       onPress={props.onPress}
-      style={{
-        ...styles.button_template,
-        ...{
-          backgroundColor: disabled
-            ? rgb
-              ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.3)`
-              : "rgba(0, 0, 0, 0)"
-            : props.color,
-        },
-      }}
+      style={styles.button_template}
     >
       {props.children}
     </Pressable>

@@ -11,23 +11,40 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   RootDrawerParamList,
+  SemesterParams,
   UserInfoParams,
+  Semester,
 } from "../../interfaces/Interfaces";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { TouchableOpacity, Image } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import SelectDropdown from "react-native-select-dropdown";
-import DropdownIcon from "../../icons/DropdownIcon/DropdownIcon";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  UserInfo as GetUserInfo,
+  GetSemesters,
+  GetSubjects,
   PatchUserInfo,
+  UserInfo,
 } from "../../components/Api/Api";
 import { colors } from "../../styles";
+import DropDownPicker from "react-native-dropdown-picker";
+import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 
-export default function UserInfo() {
+export default function UserInfoPage() {
   const queryClient = useQueryClient();
-  const UserInfo = useQuery("user", GetUserInfo, {
+  const [user, setUser] = useState({
+    first_name: "",
+    last_name: "",
+    year_level: "",
+    semester: "",
+    course: "",
+    avatar: "",
+  });
+  const [displayName, setDisplayName] = useState({
+    first_name: "",
+    last_name: "",
+  });
+  const StudentInfo = useQuery({
+    queryKey: ["user"],
+    queryFn: UserInfo,
     onSuccess: (data: UserInfoParams) => {
       setUser({
         ...user,
@@ -47,23 +64,29 @@ export default function UserInfo() {
   const mutation = useMutation({
     mutationFn: PatchUserInfo,
     onSuccess: () => {
-      queryClient.invalidateQueries("user");
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+  const [semesters, setSemesters] = useState([
+    { label: "", value: "", shortname: "" },
+  ]);
+  const Semesters = useQuery({
+    queryKey: ["semesters"],
+    queryFn: GetSemesters,
+    onSuccess: (data: SemesterParams) => {
+      let semestersData = data[1].map((semester: Semester) => ({
+        label: semester.name,
+        value: semester.id,
+        shortname: semester.shortname,
+      }));
+
+      // Update the 'semesters' state
+      setSemesters(semestersData);
     },
   });
   const [isEditable, setIsEditable] = useState(false);
   const subjectOptions = ["", "", "", ""];
-  const [user, setUser] = useState({
-    first_name: "",
-    last_name: "",
-    year_level: "",
-    semester: "",
-    course: "",
-    avatar: "",
-  });
-  const [displayName, setDisplayName] = useState({
-    first_name: "",
-    last_name: "",
-  });
+
   function Avatar() {
     if (user.avatar) {
       return <Image source={{ uri: user.avatar }} style={styles.profile} />;
@@ -76,9 +99,12 @@ export default function UserInfo() {
       );
     }
   }
+  const [selected_subjects, setSelectedSubjects] = useState([]);
+  const [subjectsOpen, setSubjectsOpen] = useState(false);
+  const [subjects, setSubjects] = useState([{ label: "", value: "" }]);
   return (
-    <ScrollView style={styles.background}>
-      <AnimatedContainer>
+    <View style={styles.background}>
+      <AnimatedContainerNoScroll>
         <Text style={styles.text_white_medium_large}>
           {(displayName.first_name || "Undefined") +
             " " +
@@ -90,7 +116,7 @@ export default function UserInfo() {
         <View style={styles.padding} />
         <View style={styles.flex_row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.text}>First Name</Text>
+            <Text style={styles.text_white_small_bold}>First Name</Text>
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
@@ -107,7 +133,7 @@ export default function UserInfo() {
         </View>
         <View style={styles.flex_row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.text}>Last Name</Text>
+            <Text style={styles.text_white_small_bold}>Last Name</Text>
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
@@ -125,7 +151,7 @@ export default function UserInfo() {
         <View style={styles.padding} />
         <View style={styles.flex_row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.text}>Year Level</Text>
+            <Text style={styles.text_white_small_bold}>Year Level</Text>
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
@@ -142,7 +168,7 @@ export default function UserInfo() {
         </View>
         <View style={styles.flex_row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.text}>Semester</Text>
+            <Text style={styles.text_white_small_bold}>Semester</Text>
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
@@ -159,7 +185,7 @@ export default function UserInfo() {
         </View>
         <View style={styles.flex_row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.text}>Course</Text>
+            <Text style={styles.text_white_small_bold}>Course</Text>
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
@@ -177,27 +203,21 @@ export default function UserInfo() {
         <View style={styles.padding} />
         <View style={styles.flex_row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.text}>Subject</Text>
+            <Text style={styles.text_white_small_bold}>Subjects</Text>
           </View>
           <View style={{ flex: 3 }}>
-            <SelectDropdown
-              onSelect={(selectedItem, index) => {
-                console.log(selectedItem, index);
-              }}
-              renderDropdownIcon={() => <DropdownIcon size={32} />}
-              buttonTextStyle={{
-                color: "white",
-              }}
-              dropdownStyle={{
-                backgroundColor: colors.primary_2,
-              }}
-              data={subjectOptions}
-              buttonStyle={{
-                width: "90%",
-                marginLeft: 10,
-                backgroundColor: colors.primary_2,
-                borderRadius: 8,
-              }}
+            <DropDownPicker
+              multiple={true}
+              max={16}
+              open={subjectsOpen}
+              value={selected_subjects}
+              items={subjects}
+              setOpen={(open) => setSubjectsOpen(open)}
+              setValue={setSelectedSubjects}
+              placeholder="Subjects"
+              style={styles.input}
+              textStyle={styles.text_white_small_bold}
+              dropDownContainerStyle={{ backgroundColor: "white" }}
             />
           </View>
         </View>
@@ -218,10 +238,10 @@ export default function UserInfo() {
           }}
         >
           <Text style={styles.text_white_small}>
-            {isEditable && UserInfo.isSuccess ? "Save" : "Edit Profile"}
+            {isEditable && StudentInfo.isSuccess ? "Save" : "Edit Profile"}
           </Text>
         </TouchableOpacity>
-      </AnimatedContainer>
-    </ScrollView>
+      </AnimatedContainerNoScroll>
+    </View>
   );
 }

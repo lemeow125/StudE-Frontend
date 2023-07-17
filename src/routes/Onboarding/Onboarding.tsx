@@ -23,6 +23,8 @@ import {
 import { useDispatch } from "react-redux";
 import { unsetOnboarding } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
+import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
   const dispatch = useDispatch();
@@ -96,7 +98,7 @@ export default function Onboarding() {
   }
   return (
     <View style={styles.background}>
-      <View style={styles.container}>
+      <AnimatedContainerNoScroll>
         <MotiView
           from={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -146,31 +148,13 @@ export default function Onboarding() {
             setValue={setSelectedCourse}
             placeholder="Choose your course"
             containerStyle={{
-              ...styles.dropdown_template,
+              ...styles.input,
               ...{ zIndex: 3000 },
             }}
             dropDownContainerStyle={{ backgroundColor: "white" }}
           />
           <DropDownPicker
             zIndex={2000}
-            open={semesterOpen}
-            value={selected_semester}
-            items={semesters}
-            setOpen={(open) => {
-              setSemesterOpen(open);
-              setCourseOpen(false);
-              setYearLevelOpen(false);
-            }}
-            setValue={setSelectedSemester}
-            placeholder="Current semester"
-            containerStyle={{
-              ...styles.dropdown_template,
-              ...{ zIndex: 2000 },
-            }}
-            dropDownContainerStyle={{ backgroundColor: "white" }}
-          />
-          <DropDownPicker
-            zIndex={1000}
             open={yearLevelOpen}
             value={selected_yearlevel}
             items={year_levels}
@@ -182,19 +166,46 @@ export default function Onboarding() {
             setValue={setSelectedYearLevel}
             placeholder="Your Year Level"
             containerStyle={{
-              ...styles.dropdown_template,
+              ...styles.input,
+              ...{ zIndex: 2000 },
+            }}
+            dropDownContainerStyle={{ backgroundColor: "white" }}
+          />
+          <DropDownPicker
+            zIndex={1000}
+            open={semesterOpen}
+            value={selected_semester}
+            items={semesters}
+            setOpen={(open) => {
+              setSemesterOpen(open);
+              setCourseOpen(false);
+              setYearLevelOpen(false);
+            }}
+            setValue={setSelectedSemester}
+            placeholder="Current semester"
+            containerStyle={{
+              ...styles.input,
               ...{ zIndex: 1000 },
             }}
             dropDownContainerStyle={{ backgroundColor: "white" }}
           />
         </MotiView>
+        <Text style={styles.text_white_small}>{error}</Text>
         <MotiView
-          from={{ opacity: 0 }}
-          animate={{ opacity: 1, zIndex: -1 }}
+          from={{
+            opacity: 0,
+            zIndex: -1,
+          }}
+          animate={{
+            opacity: 1,
+            zIndex: -1,
+          }}
           transition={{ type: "timing", duration: 400, delay: 1700 }}
-          style={styles.button_template}
+          style={{
+            ...styles.button_template,
+            ...{ padding: 0, backgroundColor: colors.secondary_3 },
+          }}
         >
-          <Text style={styles.text_white_small}>{error}</Text>
           <Button
             disabled={
               !selected_yearlevel || !selected_course || !selected_semester
@@ -217,12 +228,11 @@ export default function Onboarding() {
                 setError(result[1]);
               }
             }}
-            color={colors.secondary_3}
           >
             <Text style={styles.text_white_small}>Proceed</Text>
           </Button>
         </MotiView>
-      </View>
+      </AnimatedContainerNoScroll>
     </View>
   );
 }

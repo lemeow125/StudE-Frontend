@@ -94,6 +94,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  text_white_small_bold: {
+    color: colors.text_default,
+    fontSize: font_sizes.small,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_white_tiny_bold: {
+    color: colors.text_default,
+    fontSize: font_sizes.tiny,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
   button_template: {
     justifyContent: "center",
     alignSelf: "center",
@@ -117,9 +129,10 @@ const styles = StyleSheet.create({
     width: width * 0.5,
   },
   dropdown_template: {
-    borderRadius: 16,
+    backgroundColor: colors.primary_2,
+    containerStyle: colors.primary_2,
+    borderRadius: 8,
     width: "70%",
-    marginVertical: 6,
   },
   map: {
     flex: 1,
@@ -135,21 +148,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   input: {
-    height: 40,
-    margin: 12,
-    marginRight: 30,
+    marginVertical: 12,
     borderWidth: 1,
     color: colors.text_default,
     backgroundColor: colors.primary_2,
     borderRadius: 8,
     borderColor: colors.primary_3,
-    padding: 8,
-  },
-  text: {
-    marginLeft: 5,
-    color: colors.text_default,
-    fontSize: font_sizes.small,
-    fontWeight: "bold",
   },
   padding: {
     paddingVertical: 8,
