@@ -22,13 +22,16 @@ import { ScrollView } from "react-native-gesture-handler";
 import Select, { SelectConfig, SelectItem } from '@redmin_delishaj/react-native-select';
 import DropDownPicker from 'react-native-dropdown-picker'
 import SelectDropdown from 'react-native-select-dropdown'
-import ImagePicker from 'react-native-image-picker';
+import DropdownIcon from "../../icons/DropdownIcon/DropdownIcon";
 
 export default function UserInfo() {
   const navigation = useNavigation<RootDrawerParamList>();
   const [isEditable, setIsEditable] = useState(false);
-  const options = ["Prog1", "Prog2", "Networking", "Database"];
-
+  const options = ["", "", "", ""];
+  const [isActive, setIsActive] = useState(false);
+  const toggleUserActive = () => {
+    setIsActive(!isActive);
+  };
   //const dispatch = useDispatch();
  // const creds = useSelector((state: RootState) => state.auth.creds);
   const [user, setUser] = useState({
@@ -41,11 +44,14 @@ export default function UserInfo() {
   return (
     <ScrollView style={styles.background}>
       <AnimatedContainer>
-       <Text style={{...styles. text_white_medium, ...{fontSize: 32}}}></Text>
+       <Text style={{...styles.text_white_medium, ...{fontSize: 32}}}>Kurt Toledo</Text>
       <View>  
-        <Text style ={styles. text_white_medium} >Kurt Toledo</Text>
-        <Text style ={styles. text_white_small} >Student</Text>
-        <Image source={require("./image/3135715.png")} style={styles.profile} />
+      <Image source={require("./image/3135715.png")} style={styles.profile} />
+      <TouchableOpacity onPress={toggleUserActive} style={styles.button}>
+        <Text style={[styles.text, isActive ? styles.activeText : styles.inactiveText]}>
+          Student {isActive ? 'Active' : 'Inactive'}
+        </Text>
+      </TouchableOpacity>
         </View>
         <View
           style={{
@@ -161,7 +167,7 @@ export default function UserInfo() {
         onSelect={(selectedItem, index) =>{
           console.log(selectedItem, index)
         }}
-        renderDropdownIcon={() =><SignupIcon size={32} />
+        renderDropdownIcon={() =><DropdownIcon size={32} />
 
         }
         buttonTextStyle={{

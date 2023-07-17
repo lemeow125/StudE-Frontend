@@ -16,6 +16,7 @@ import { RootState } from "../../features/redux/Store/Store";
 import LogoutIcon from "../../icons/LogoutIcon/LogoutIcon";
 import { clear } from "../../features/redux/slices/AuthSlice/AuthSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import UserIcon from "../../icons/UserIcon/UserIcon";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -103,7 +104,7 @@ export default function CustomDrawerContent(props: {}) {
             navigation.navigate("UserInfo");
           }}
         >
-          <HomeIcon size={32} />
+          <UserIcon size={32} />
           <Text style={styles.text_white_medium}>UserInfo</Text>
         </DrawerButton>
         {/*

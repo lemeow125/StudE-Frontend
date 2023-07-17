@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   profile: {
     height: 80,
     width: 80, 
-    marginLeft: 10,
+    alignSelf: 'center',
   }, 
   input: {
     height: 40,
@@ -129,7 +129,17 @@ const styles = StyleSheet.create({
     fontSize: font_sizes.small,
     fontWeight: "bold", 
   }, 
- 
+  button: {
+    padding: 10,
+    backgroundColor: colors.blue_2,
+    borderRadius: 5,
+  },
+  activeText: {
+    color: 'green',
+  },
+  inactiveText: {
+    color: 'white',
+  },
 
 });
 
