@@ -18,7 +18,7 @@ import Revalidation from "./src/routes/Revalidation/Revalidation";
 import Activation from "./src/routes/Activation/Activation";
 import UserInfo from "./src/routes/UserInfo/UserInfo";
 import { useState, useEffect } from "react";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider, QueryClient } from "react-query";
 
 const Drawer = createDrawerNavigator();
 
@@ -67,7 +67,7 @@ export default function App() {
             <Drawer.Screen name="Onboarding" component={Onboarding} />
             <Drawer.Screen name="Revalidation" component={Revalidation} />
             <Drawer.Screen name="Activation" component={Activation} />
-          <Drawer.Screen name="UserInfo" component={UserInfo} />
+            <Drawer.Screen name="UserInfo" component={UserInfo} />
           </Drawer.Navigator>
         </NavigationContainer>
       </QueryClientProvider>

@@ -120,9 +120,9 @@ const styles = StyleSheet.create({
   },
   profile: {
     height: 80,
-    width: 80, 
-    alignSelf: 'center',
-  }, 
+    width: 80,
+    alignSelf: "center",
+  },
   input: {
     height: 40,
     margin: 12,
@@ -131,30 +131,17 @@ const styles = StyleSheet.create({
     color: colors.text_default,
     backgroundColor: colors.blue_1,
     borderRadius: 8,
-    borderColor: '#FFAC1C',
-    padding: 8, 
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
+    borderColor: "#FFAC1C",
+    padding: 8,
   },
   text: {
     marginLeft: 5,
     color: colors.text_default,
     fontSize: font_sizes.small,
-    fontWeight: "bold", 
-  }, 
-  button: {
-    padding: 10,
-    backgroundColor: colors.blue_2,
-    borderRadius: 5,
+    fontWeight: "bold",
   },
-  activeText: {
-    color: 'green',
-  },
-  inactiveText: {
-    color: 'white',
+  padding: {
+    paddingVertical: 8,
   },
 });
 export default styles;

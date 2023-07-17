@@ -70,3 +70,28 @@ export interface OnboardingParams {
   course: string;
   semester: string;
 }
+
+export interface StudentData {
+  avatar: string;
+  course: string;
+  email: string;
+  first_name: string;
+  is_banned: boolean;
+  last_name: string;
+  semester: string;
+  student_id_number: string;
+  subjects: any[]; // To-do
+  user_status: {
+    active: boolean;
+    landmark: string;
+    location: any; // To-do
+    study_group: any[]; // To-do
+    subject: string;
+    timestamp: string;
+    user: string;
+  };
+  username: string;
+  year_level: string;
+}
+
+export type UserInfoParams = [boolean, StudentData];

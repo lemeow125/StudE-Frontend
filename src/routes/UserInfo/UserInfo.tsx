@@ -11,7 +11,10 @@ import { colors } from "../../styles";
 import { useState, useEffect } from "react";
 import Button from "../../components/Button/Button";
 import { useNavigation } from "@react-navigation/native";
-import { RootDrawerParamList } from "../../interfaces/Interfaces";
+import {
+  RootDrawerParamList,
+  UserInfoParams,
+} from "../../interfaces/Interfaces";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { TouchableOpacity, Image } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -19,18 +22,23 @@ import SelectDropdown from "react-native-select-dropdown";
 import DropdownIcon from "../../icons/DropdownIcon/DropdownIcon";
 import { useQuery } from "react-query";
 import { UserInfo as GetUserInfo } from "../../components/Api/Api";
-import { err } from "react-native-svg/lib/typescript/xml";
 
 export default function UserInfo() {
+  const UserInfo = useQuery("user", GetUserInfo, {
+    onSuccess: (data: UserInfoParams) => {
+      setUser({
+        ...user,
+        first_name: data[1].first_name,
+        last_name: data[1].last_name,
+        year_level: data[1].year_level,
+        semester: data[1].semester,
+        course: data[1].course,
+      });
+    },
+  });
   const navigation = useNavigation<RootDrawerParamList>();
   const [isEditable, setIsEditable] = useState(false);
-  const options = ["", "", "", ""];
-  const [isActive, setIsActive] = useState(false);
-  const toggleUserActive = () => {
-    setIsActive(!isActive);
-  };
-  //const dispatch = useDispatch();
-  // const creds = useSelector((state: RootState) => state.auth.creds);
+  const subjectOptions = ["", "", "", ""];
   const [user, setUser] = useState({
     first_name: "",
     last_name: "",
@@ -38,179 +46,141 @@ export default function UserInfo() {
     semester: "",
     course: "",
   });
-  const { data, isLoading, error } = useQuery("user", UserInfo, {
-    retry: 0,
-    onSuccess: (data) => console.log(data),
-  });
-  if (!isLoading && !error) {
-    return (
-      <ScrollView style={styles.background}>
-        <AnimatedContainer>
-          <Text style={{ ...styles.text_white_medium, ...{ fontSize: 32 } }}>
-            Kurt Toledo
-          </Text>
-          <View>
-            <Image
-              source={require("./image/3135715.png")}
-              style={styles.profile}
+  return (
+    <ScrollView style={styles.background}>
+      <AnimatedContainer>
+        <Text style={styles.text_white_large}>
+          {user.first_name + " " + user.last_name}
+        </Text>
+        <View>
+          <Image
+            source={require("./image/3135715.png")}
+            style={styles.profile}
+          />
+        </View>
+        <View style={styles.padding} />
+        <View style={styles.flex_row}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.text}>First Name</Text>
+          </View>
+          <View style={{ flex: 3 }}>
+            <TextInput
+              style={styles.input}
+              editable={isEditable}
+              onChange={(
+                e: NativeSyntheticEvent<TextInputChangeEventData>
+              ): void => {
+                setUser({ ...user, first_name: e.nativeEvent.text });
+              }}
+              value={user.first_name}
             />
-            <TouchableOpacity onPress={toggleUserActive} style={styles.button}>
-              <Text
-                style={[
-                  styles.text,
-                  isActive ? styles.activeText : styles.inactiveText,
-                ]}
-              >
-                Student {isActive ? "Active" : "Inactive"}
-              </Text>
-            </TouchableOpacity>
           </View>
-          <View
-            style={{
-              paddingVertical: 4,
-              marginBottom: 16,
-              marginTop: 8,
-              borderRadius: 4,
-              width: "90%",
-              backgroundColor: colors.head,
-            }}
-          />
-          <View style={styles.formGroup}>
-            <View style={{ width: 70 }}>
-              <Text style={styles.text}>First Name</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <TextInput
-                style={[styles.input, !isEditable && styles.input]}
-                editable={isEditable}
-                onChange={(
-                  e: NativeSyntheticEvent<TextInputChangeEventData>
-                ): void => {
-                  setUser({ ...user, first_name: e.nativeEvent.text });
-                }}
-              />
-            </View>
+        </View>
+        <View style={styles.flex_row}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.text}>Last Name</Text>
           </View>
-          <View style={styles.formGroup}>
-            <View style={{ width: 70 }}>
-              <Text style={styles.text}>Last Name</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <TextInput
-                style={[styles.input, !isEditable && styles.input]}
-                editable={isEditable}
-                onChange={(
-                  e: NativeSyntheticEvent<TextInputChangeEventData>
-                ): void => {
-                  setUser({ ...user, first_name: e.nativeEvent.text });
-                }}
-              />
-            </View>
+          <View style={{ flex: 3 }}>
+            <TextInput
+              style={[styles.input, !isEditable && styles.input]}
+              editable={isEditable}
+              onChange={(
+                e: NativeSyntheticEvent<TextInputChangeEventData>
+              ): void => {
+                setUser({ ...user, last_name: e.nativeEvent.text });
+              }}
+              value={user.last_name}
+            />
           </View>
-          <View
-            style={{
-              paddingVertical: 4,
-              marginBottom: 16,
-              marginTop: 8,
-              borderRadius: 4,
-              width: "90%",
-              backgroundColor: colors.head,
-            }}
-          />
-          <View style={styles.formGroup}>
-            <View style={{ width: 70 }}>
-              <Text style={styles.text}>Year Level</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <TextInput
-                style={[styles.input, !isEditable && styles.input]}
-                editable={isEditable}
-                onChange={(
-                  e: NativeSyntheticEvent<TextInputChangeEventData>
-                ): void => {
-                  setUser({ ...user, first_name: e.nativeEvent.text });
-                }}
-              />
-            </View>
+        </View>
+        <View style={styles.padding} />
+        <View style={styles.flex_row}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.text}>Year Level</Text>
           </View>
-          <View style={styles.formGroup}>
-            <View style={{ width: 70 }}>
-              <Text style={styles.text}>Semester</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <TextInput
-                style={[styles.input, !isEditable && styles.input]}
-                editable={isEditable}
-                onChange={(
-                  e: NativeSyntheticEvent<TextInputChangeEventData>
-                ): void => {
-                  setUser({ ...user, first_name: e.nativeEvent.text });
-                }}
-              />
-            </View>
+          <View style={{ flex: 3 }}>
+            <TextInput
+              style={[styles.input, !isEditable && styles.input]}
+              editable={isEditable}
+              onChange={(
+                e: NativeSyntheticEvent<TextInputChangeEventData>
+              ): void => {
+                setUser({ ...user, year_level: e.nativeEvent.text });
+              }}
+              value={user.year_level}
+            />
           </View>
-          <View style={styles.formGroup}>
-            <View style={{ width: 70 }}>
-              <Text style={styles.text}>Course</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <TextInput
-                style={[styles.input, !isEditable && styles.input]}
-                editable={isEditable}
-                onChange={(
-                  e: NativeSyntheticEvent<TextInputChangeEventData>
-                ): void => {
-                  setUser({ ...user, first_name: e.nativeEvent.text });
-                }}
-              />
-            </View>
+        </View>
+        <View style={styles.flex_row}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.text}>Semester</Text>
           </View>
-          <View
-            style={{
-              paddingVertical: 4,
-              marginBottom: 16,
-              marginTop: 8,
-              borderRadius: 4,
-              width: "90%",
-              backgroundColor: colors.head,
-            }}
-          />
-          <View style={styles.formGroup}>
-            <View style={{ width: 80 }}>
-              <Text style={styles.text}>Subject</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <SelectDropdown
-                onSelect={(selectedItem, index) => {
-                  console.log(selectedItem, index);
-                }}
-                renderDropdownIcon={() => <DropdownIcon size={32} />}
-                buttonTextStyle={{
-                  color: "white",
-                }}
-                dropdownStyle={{
-                  backgroundColor: "#E3963E",
-                }}
-                data={options}
-                buttonStyle={{
-                  width: "90%",
-                  marginLeft: 10,
-                  backgroundColor: "#E3963E",
-                  borderRadius: 8,
-                }}
-              />
-            </View>
+          <View style={{ flex: 3 }}>
+            <TextInput
+              style={[styles.input, !isEditable && styles.input]}
+              editable={isEditable}
+              onChange={(
+                e: NativeSyntheticEvent<TextInputChangeEventData>
+              ): void => {
+                setUser({ ...user, semester: e.nativeEvent.text });
+              }}
+              value={user.semester}
+            />
           </View>
-          <TouchableOpacity
-            style={styles.button_template}
-            onPress={() => setIsEditable(!isEditable)}
-          >
-            <Text style={styles.text_white_small}>
-              {isEditable ? "Save" : "Edit Profile"}
-            </Text>
-          </TouchableOpacity>
-        </AnimatedContainer>
-      </ScrollView>
-    );
-  }
+        </View>
+        <View style={styles.flex_row}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.text}>Course</Text>
+          </View>
+          <View style={{ flex: 3 }}>
+            <TextInput
+              style={[styles.input, !isEditable && styles.input]}
+              editable={isEditable}
+              onChange={(
+                e: NativeSyntheticEvent<TextInputChangeEventData>
+              ): void => {
+                setUser({ ...user, course: e.nativeEvent.text });
+              }}
+              value={user.course}
+            />
+          </View>
+        </View>
+        <View style={styles.padding} />
+        <View style={styles.flex_row}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.text}>Subject</Text>
+          </View>
+          <View style={{ flex: 3 }}>
+            <SelectDropdown
+              onSelect={(selectedItem, index) => {
+                console.log(selectedItem, index);
+              }}
+              renderDropdownIcon={() => <DropdownIcon size={32} />}
+              buttonTextStyle={{
+                color: "white",
+              }}
+              dropdownStyle={{
+                backgroundColor: "#E3963E",
+              }}
+              data={subjectOptions}
+              buttonStyle={{
+                width: "90%",
+                marginLeft: 10,
+                backgroundColor: "#E3963E",
+                borderRadius: 8,
+              }}
+            />
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.button_template}
+          onPress={() => setIsEditable(!isEditable)}
+        >
+          <Text style={styles.text_white_small}>
+            {isEditable ? "Save" : "Edit Profile"}
+          </Text>
+        </TouchableOpacity>
+      </AnimatedContainer>
+    </ScrollView>
+  );
 }
