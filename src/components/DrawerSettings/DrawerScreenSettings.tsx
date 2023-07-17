@@ -10,14 +10,14 @@ const DrawerScreenSettings: DrawerNavigationOptions = {
     fontSize: font_sizes.medium,
   },
   unmountOnBlur: true,
-  headerStyle: { backgroundColor: colors.login_color},
+  headerStyle: { backgroundColor: colors.secondary_4 },
   headerTintColor: colors.text_default,
   drawerType: "slide",
   drawerLabelStyle: {
     color: colors.text_default,
   },
   drawerStyle: {
-    backgroundColor: colors.login_color,
+    backgroundColor: colors.secondary_4,
     width: 260,
   },
   headerRight: () => (

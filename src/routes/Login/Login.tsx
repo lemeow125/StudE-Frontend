@@ -35,20 +35,12 @@ export default function Login() {
   return (
     <View style={styles.background}>
       <AnimatedContainer>
-      <View style={styles.flex_row}>
+        <View style={styles.flex_row}>
           <LoginIcon size={32} />
           <Text style={styles.text_white_large}>Student Login</Text>
         </View>
         <View style={{ paddingVertical: 8 }} />
-        <View
-          style={{
-            paddingVertical: 4,
-            marginBottom: 16,
-            borderRadius: 4,
-            width: "90%",
-            backgroundColor: colors.head,
-          }}
-        />
+        <View style={styles.padding} />
         <TextInput
           style={styles.text_input}
           placeholder="Username"
@@ -109,13 +101,13 @@ export default function Login() {
               }
             });
           }}
-          color={colors.login_color}
+          color={colors.button_1}
         >
           <Text style={styles.text_white_small}>Login</Text>
         </Button>
         <Button
           onPress={() => navigation.navigate("Register")}
-          color={colors.reg_color}
+          color={colors.button_2}
         >
           <Text style={styles.text_white_small}>Register</Text>
         </Button>

@@ -4,19 +4,15 @@ import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   Course,
-  CourseParams,
   RootDrawerParamList,
   Semester,
-  SemesterParams,
   YearLevel,
-  YearLevelParams,
 } from "../../interfaces/Interfaces";
 import { colors } from "../../styles";
-import { AnimatePresence, MotiView } from "moti";
-import { useEffect, useState } from "react";
+import { MotiView } from "moti";
+import { useState } from "react";
 import Button from "../../components/Button/Button";
 import DropDownPicker from "react-native-dropdown-picker";
-import isStringEmpty from "../../components/IsStringEmpty/IsStringEmpty";
 import { useQuery } from "@tanstack/react-query";
 import {
   GetCourses,
@@ -115,7 +111,7 @@ export default function Onboarding() {
             marginBottom: 16,
             borderRadius: 4,
             width: "90%",
-            backgroundColor: colors.blue_1,
+            backgroundColor: colors.secondary_1,
           }}
         />
         <View style={{ paddingVertical: 4 }} />
@@ -221,7 +217,7 @@ export default function Onboarding() {
                 setError(result[1]);
               }
             }}
-            color={colors.blue_3}
+            color={colors.secondary_3}
           >
             <Text style={styles.text_white_small}>Proceed</Text>
           </Button>

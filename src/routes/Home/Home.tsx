@@ -95,7 +95,7 @@ export default function Home() {
       return (
         <AnimatedContainer>
           <Text style={styles.text_white_medium}>{feedback}</Text>
-          <Button onPress={() => requestLocation()} color={colors.blue_3}>
+          <Button onPress={() => requestLocation()} color={colors.secondary_3}>
             <Text style={styles.text_white_small}>Allow Access</Text>
           </Button>
         </AnimatedContainer>

@@ -53,7 +53,7 @@ export default function Activation() {
             marginBottom: 16,
             borderRadius: 4,
             width: "90%",
-            backgroundColor: colors.blue_1,
+            backgroundColor: colors.secondary_1,
           }}
         />
         <Text style={styles.text_white_large}>Activation</Text>
@@ -61,7 +61,7 @@ export default function Activation() {
         <ActivityIndicator
           animating={loading}
           size={96}
-          color={colors.blue_1}
+          color={colors.secondary_1}
         />
         <Text style={styles.text_white_medium}>{state}</Text>
         <Text style={styles.text_white_tiny}>{uid + "\n" + token}</Text>

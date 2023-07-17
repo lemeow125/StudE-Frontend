@@ -7,9 +7,7 @@ import {
   NativeSyntheticEvent,
   TextInputChangeEventData,
 } from "react-native";
-import { colors } from "../../styles";
-import { useState, useEffect } from "react";
-import Button from "../../components/Button/Button";
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   RootDrawerParamList,
@@ -22,6 +20,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import DropdownIcon from "../../icons/DropdownIcon/DropdownIcon";
 import { useQuery } from "react-query";
 import { UserInfo as GetUserInfo } from "../../components/Api/Api";
+import { colors } from "../../styles";
 
 export default function UserInfo() {
   const UserInfo = useQuery("user", GetUserInfo, {
@@ -172,13 +171,13 @@ export default function UserInfo() {
                 color: "white",
               }}
               dropdownStyle={{
-                backgroundColor: "#E3963E",
+                backgroundColor: colors.primary_4,
               }}
               data={subjectOptions}
               buttonStyle={{
                 width: "90%",
                 marginLeft: 10,
-                backgroundColor: "#E3963E",
+                backgroundColor: colors.primary_4,
                 borderRadius: 8,
               }}
             />

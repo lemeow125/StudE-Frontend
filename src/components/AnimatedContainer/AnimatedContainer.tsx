@@ -13,15 +13,15 @@ export default function AnimatedContainer(props: props) {
       contentContainerStyle={styles.container}
       from={{
         borderRadius: 0,
-        backgroundColor: colors.orange_2,
+        backgroundColor: colors.primary_3,
         paddingTop: 4,
         paddingBottom: 4,
         marginHorizontal: "4%",
-        marginVertical: "5%",
+        marginVertical: "10%",
       }}
       animate={{
         borderRadius: 15,
-        backgroundColor: colors.blue_2,
+        backgroundColor: colors.primary_3,
         paddingTop: 16,
         paddingBottom: 16,
         marginHorizontal: "4%",
