@@ -7,20 +7,19 @@ const containerWidth = width - width * 0.08;
 const containerHeight = height - height * 0.01;
 
 export const colors = {
-  primary_1: "#FFDEAD",
-  primary_2: "#FFE2C1",
-  primary_3: "#fdac1d",
-  primary_4: "#e3973f",
-  secondary_1: "#4C87A1",
-  secondary_2: "#77ACC3",
-  secondary_3: "#1B5D79",
-  secondary_4: "#0047AB",
+  primary_1: "#1C2C3F",
+  primary_2: "#445467",
+  primary_3: "#606F81",
+  primary_4: "#b4d0f3",
+  secondary_1: "#1E1F3D",
+  secondary_2: "#626297",
+  secondary_3: "#7a7abd",
+  secondary_4: "#FFE9CE",
+  secondary_5: "#FFF5E9",
   text_default: "#FFFF",
   text_error: "#e32d1e",
   text_success: "#2ecc71",
   icon_color: "#FFFF",
-  button_1: "#0047AB",
-  button_2: "#0096FF",
   head: "#FFFF",
 };
 
@@ -35,7 +34,7 @@ export const font_sizes = {
 
 const styles = StyleSheet.create({
   background: {
-    backgroundColor: colors.primary_1,
+    backgroundColor: colors.secondary_1,
     height: "100%",
     width: "100%",
   },
@@ -110,8 +109,9 @@ const styles = StyleSheet.create({
   },
   text_input: {
     color: colors.text_default,
-    backgroundColor: colors.primary_4,
-    borderColor: colors.primary_3,
+    backgroundColor: colors.primary_2,
+    borderColor: colors.primary_4,
+    borderWidth: 1,
     padding: 10,
     borderRadius: 8,
     width: width * 0.5,
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     marginRight: 30,
     borderWidth: 1,
     color: colors.text_default,
-    backgroundColor: colors.primary_4,
+    backgroundColor: colors.primary_2,
     borderRadius: 8,
     borderColor: colors.primary_3,
     padding: 8,

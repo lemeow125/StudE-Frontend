@@ -13,7 +13,8 @@ export default function AnimatedContainer(props: props) {
       contentContainerStyle={styles.container}
       from={{
         borderRadius: 0,
-        backgroundColor: colors.primary_3,
+        opacity: 0,
+        backgroundColor: colors.secondary_2,
         paddingTop: 4,
         paddingBottom: 4,
         marginHorizontal: "4%",
@@ -21,13 +22,14 @@ export default function AnimatedContainer(props: props) {
       }}
       animate={{
         borderRadius: 15,
-        backgroundColor: colors.primary_3,
+        opacity: 1,
+        backgroundColor: colors.secondary_2,
         paddingTop: 16,
         paddingBottom: 16,
         marginHorizontal: "4%",
         marginVertical: "5%",
       }}
-      transition={{ type: "timing", duration: 300 }}
+      transition={{ type: "timing", duration: 700 }}
     >
       {props.children}
     </MotiScrollView>

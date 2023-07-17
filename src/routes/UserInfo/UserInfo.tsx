@@ -171,13 +171,13 @@ export default function UserInfo() {
                 color: "white",
               }}
               dropdownStyle={{
-                backgroundColor: colors.primary_4,
+                backgroundColor: colors.primary_2,
               }}
               data={subjectOptions}
               buttonStyle={{
                 width: "90%",
                 marginLeft: 10,
-                backgroundColor: colors.primary_4,
+                backgroundColor: colors.primary_2,
                 borderRadius: 8,
               }}
             />
