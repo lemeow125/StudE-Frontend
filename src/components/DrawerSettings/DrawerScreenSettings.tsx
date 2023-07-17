@@ -21,10 +21,8 @@ const DrawerScreenSettings: DrawerNavigationOptions = {
     width: 260,
   },
   headerRight: () => (
-    <View
-      style={{ flexDirection: "row", marginRight: 16, alignItems: "center" }}
-    >
-      <AppIcon size={32} />
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <AppIcon size={96} />
     </View>
   ),
 };

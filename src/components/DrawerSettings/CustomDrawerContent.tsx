@@ -31,7 +31,7 @@ export default function CustomDrawerContent(props: {}) {
             ...{ justifyContent: "center" },
           }}
         >
-          <AppIcon size={32} />
+          <AppIcon size={96} />
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
 
@@ -57,7 +57,7 @@ export default function CustomDrawerContent(props: {}) {
             ...{ justifyContent: "center" },
           }}
         >
-          <AppIcon size={32} />
+          <AppIcon size={96} />
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
         <DrawerButton
@@ -100,7 +100,7 @@ export default function CustomDrawerContent(props: {}) {
             ...{ justifyContent: "center" },
           }}
         >
-          <AppIcon size={32} />
+          <AppIcon size={96} />
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
         <DrawerButton
