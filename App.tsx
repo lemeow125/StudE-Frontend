@@ -19,6 +19,7 @@ import Activation from "./src/routes/Activation/Activation";
 import UserInfo from "./src/routes/UserInfo/UserInfo";
 import { useState, useEffect } from "react";
 import { QueryClientProvider, QueryClient } from "react-query";
+import { StatusBar } from "expo-status-bar";
 
 const Drawer = createDrawerNavigator();
 
@@ -54,6 +55,7 @@ export default function App() {
   }, [initialRoute]);
   return (
     <Provider store={store}>
+      <StatusBar style="light" />
       <QueryClientProvider client={queryClient}>
         <NavigationContainer linking={linking}>
           <Drawer.Navigator
