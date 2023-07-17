@@ -64,7 +64,7 @@ export default function UserInfo() {
     <ScrollView style={styles.background}>
       <AnimatedContainer>
         <Text style={styles.text_white_large}>
-          {user.first_name + " " + user.last_name}
+          {(user.first_name || "Undefined") + " " + (user.last_name || "User")}
         </Text>
         <View>
           <Avatar />
@@ -93,7 +93,7 @@ export default function UserInfo() {
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
-              style={[styles.input, !isEditable && styles.input]}
+              style={styles.input}
               editable={isEditable}
               onChange={(
                 e: NativeSyntheticEvent<TextInputChangeEventData>
@@ -111,7 +111,7 @@ export default function UserInfo() {
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
-              style={[styles.input, !isEditable && styles.input]}
+              style={styles.input}
               editable={isEditable}
               onChange={(
                 e: NativeSyntheticEvent<TextInputChangeEventData>
@@ -128,7 +128,7 @@ export default function UserInfo() {
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
-              style={[styles.input, !isEditable && styles.input]}
+              style={styles.input}
               editable={isEditable}
               onChange={(
                 e: NativeSyntheticEvent<TextInputChangeEventData>
@@ -145,7 +145,7 @@ export default function UserInfo() {
           </View>
           <View style={{ flex: 3 }}>
             <TextInput
-              style={[styles.input, !isEditable && styles.input]}
+              style={styles.input}
               editable={isEditable}
               onChange={(
                 e: NativeSyntheticEvent<TextInputChangeEventData>
