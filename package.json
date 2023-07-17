@@ -13,7 +13,6 @@
     "@react-navigation/drawer": "^6.6.3",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
-    "@redmin_delishaj/react-native-select": "^1.0.6",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
     "expo": "~48.0.18",
@@ -31,6 +30,7 @@
     "react-native-screens": "~3.20.0",
     "react-native-select-dropdown": "^3.3.4",
     "react-native-svg": "13.4.0",
+    "react-query": "^3.39.3",
     "react-redux": "^8.1.1",
     "redux": "^4.2.1"
   },
