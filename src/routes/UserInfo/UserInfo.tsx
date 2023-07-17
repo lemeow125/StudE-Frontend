@@ -64,7 +64,7 @@ export default function UserInfo() {
   return (
     <ScrollView style={styles.background}>
       <AnimatedContainer>
-        <Text style={styles.text_white_large}>
+        <Text style={styles.text_white_medium_large}>
           {(user.first_name || "Undefined") + " " + (user.last_name || "User")}
         </Text>
         <View>

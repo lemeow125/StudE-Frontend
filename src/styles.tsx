@@ -27,6 +27,7 @@ export const font_sizes = {
   tiny: 12,
   small: 16,
   medium: 24,
+  medium_large: 30,
   large: 36,
   xl: 48,
 };
@@ -72,6 +73,12 @@ const styles = StyleSheet.create({
   text_white_medium: {
     color: colors.text_default,
     fontSize: font_sizes.medium,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_white_medium_large: {
+    color: colors.text_default,
+    fontSize: font_sizes.medium_large,
     fontWeight: "bold",
     textAlign: "center",
   },
