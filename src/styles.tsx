@@ -19,7 +19,7 @@ export const colors = {
   icon_color: "white",
   login_color: "#0047AB",
   reg_color: "#0096FF",
-  head: "white"
+  head: "white",
   blue_disabled: "#C07624",
 };
 
