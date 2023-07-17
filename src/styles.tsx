@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   input: {
+    paddingHorizontal: 8,
     marginVertical: 12,
     borderWidth: 1,
     color: colors.text_default,

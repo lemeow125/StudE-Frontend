@@ -15,7 +15,7 @@ import {
   UserInfoParams,
   Semester,
 } from "../../interfaces/Interfaces";
-import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import Button from "../../components/Button/Button";
 import { TouchableOpacity, Image } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -215,14 +215,15 @@ export default function UserInfoPage() {
               setOpen={(open) => setSubjectsOpen(open)}
               setValue={setSelectedSubjects}
               placeholder="Subjects"
+              placeholderStyle={styles.text_white_tiny}
               style={styles.input}
               textStyle={styles.text_white_small_bold}
               dropDownContainerStyle={{ backgroundColor: "white" }}
             />
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.button_template}
+        <Button
+          color={colors.secondary_3}
           onPress={() => {
             if (isEditable) {
               mutation.mutate({
@@ -240,7 +241,7 @@ export default function UserInfoPage() {
           <Text style={styles.text_white_small}>
             {isEditable && StudentInfo.isSuccess ? "Save" : "Edit Profile"}
           </Text>
-        </TouchableOpacity>
+        </Button>
       </AnimatedContainerNoScroll>
     </View>
   );

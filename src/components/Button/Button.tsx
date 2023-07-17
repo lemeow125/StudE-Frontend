@@ -9,16 +9,12 @@ export interface props {
   disabled?: boolean;
 }
 
-export default function Button({
-  disabled = false,
-  color = "rgba(52, 52, 52, 0.8)",
-  ...props
-}: props) {
+export default function Button({ disabled = false, ...props }: props) {
   return (
     <Pressable
       disabled={disabled}
       onPress={props.onPress}
-      style={styles.button_template}
+      style={{ ...styles.button_template, ...{ backgroundColor: props.color } }}
     >
       {props.children}
     </Pressable>
