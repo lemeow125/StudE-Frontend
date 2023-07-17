@@ -3,9 +3,12 @@ import styles from "../../styles";
 import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
+  Course,
   CourseParams,
   RootDrawerParamList,
+  Semester,
   SemesterParams,
+  YearLevel,
   YearLevelParams,
 } from "../../interfaces/Interfaces";
 import { colors } from "../../styles";
@@ -40,7 +43,7 @@ export default function Onboarding() {
     queryKey: ["semesters"],
     queryFn: GetSemesters,
     onSuccess: (data) => {
-      let semesters = data.map((item: SemesterParams) => ({
+      let semesters = data[1].map((item: Semester) => ({
         label: item.name,
         value: item.name,
       }));
@@ -58,7 +61,7 @@ export default function Onboarding() {
     queryKey: ["year_levels"],
     queryFn: GetYearLevels,
     onSuccess: (data) => {
-      let year_levels = data.map((item: YearLevelParams) => ({
+      let year_levels = data[1].map((item: YearLevel) => ({
         label: item.name,
         value: item.name,
       }));
@@ -79,7 +82,7 @@ export default function Onboarding() {
     queryKey: ["courses"],
     queryFn: GetCourses,
     onSuccess: (data) => {
-      let courses = data.map((item: CourseParams) => ({
+      let courses = data[1].map((item: Course) => ({
         label: item.name,
         value: item.name,
       }));

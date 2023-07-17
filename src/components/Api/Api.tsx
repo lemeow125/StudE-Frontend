@@ -147,14 +147,13 @@ export async function GetCourses() {
     })
     .then((response) => {
       // console.log(JSON.stringify(response.data));
-      return response.data;
+      return [true, response.data];
     })
     .catch((error) => {
       let error_message = "";
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
-      console.log("Error getting courses", error_message);
-      return false;
+      return [false, error_message];
     });
 }
 
@@ -168,14 +167,13 @@ export async function GetSemesters() {
     })
     .then((response) => {
       // console.log(JSON.stringify(response.data));
-      return response.data;
+      return [true, response.data];
     })
     .catch((error) => {
       let error_message = "";
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
-      console.log("Error getting semesters", error_message);
-      return false;
+      return [false, error_message];
     });
 }
 
@@ -189,14 +187,13 @@ export async function GetYearLevels() {
     })
     .then((response) => {
       // console.log(JSON.stringify(response.data));
-      return response.data;
+      return [true, response.data];
     })
     .catch((error) => {
       let error_message = "";
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
-      console.log("Error getting year levels", error_message);
-      return false;
+      return [false, error_message];
     });
 }
 

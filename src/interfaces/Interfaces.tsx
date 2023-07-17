@@ -47,23 +47,29 @@ export interface ActivationParams {
   token: string;
 }
 
-export interface SemesterParams {
+export interface Semester {
   id: string;
   name: string;
   shortname: string;
 }
 
-export interface YearLevelParams {
+export type SemesterParams = [boolean, Semester];
+
+export interface YearLevel {
   id: string;
   name: string;
   shortname: string;
 }
 
-export interface CourseParams {
+export type YearLevelParams = [boolean, YearLevel];
+
+export interface Course {
   id: string;
   name: string;
   shortname: string;
 }
+
+export type CourseParams = [boolean, Course];
 
 export interface OnboardingParams {
   year_level: string;
