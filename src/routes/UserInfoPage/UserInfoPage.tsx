@@ -16,6 +16,7 @@ import {
   Subject,
   YearLevel,
   Course,
+  OptionType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { Image } from "react-native";
@@ -30,6 +31,7 @@ import {
 } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
+import { ValueType } from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 
 export default function UserInfoPage() {
@@ -67,6 +69,10 @@ export default function UserInfoPage() {
       setSelectedCourse(data[1].course);
       setSelectedSemester(data[1].semester);
       setSelectedYearLevel(data[1].year_level);
+      console.log(data[1].subjects);
+      if (data[1].subjects) {
+        setSelectedSubjects(data[1].subjects);
+      }
     },
   });
   const mutation = useMutation({
@@ -79,9 +85,7 @@ export default function UserInfoPage() {
   // Semester
   const [selected_semester, setSelectedSemester] = useState("");
   const [semesterOpen, setSemesterOpen] = useState(false);
-  const [semesters, setSemesters] = useState([
-    { label: "", value: "", shortname: "" },
-  ]);
+  const [semesters, setSemesters] = useState<OptionType[]>([]);
   const Semesters = useQuery({
     queryKey: ["semesters"],
     queryFn: GetSemesters,
@@ -97,11 +101,10 @@ export default function UserInfoPage() {
   });
 
   // Subjects
-  const [selected_subjects, setSelectedSubjects] = useState([]);
+
+  const [selected_subjects, setSelectedSubjects] = useState<any>([]);
   const [subjectsOpen, setSubjectsOpen] = useState(false);
-  const [subjects, setSubjects] = useState([
-    { id: 0, label: "", value: "", shortname: "" },
-  ]);
+  const [subjects, setSubjects] = useState<OptionType[]>([]);
 
   const Subjects = useQuery({
     enabled: StudentInfo.isFetched,
@@ -128,17 +131,15 @@ export default function UserInfoPage() {
         if (!data[1]) {
           throw new Error("User has no course, year level, or semester!");
         }
-        console.log("Subjects available:", data[1]);
+        // console.log("Subjects available:", data[1]);
       }
 
       return data;
     },
     onSuccess: (data: SubjectParams) => {
       let subjectsData = data[1].map((subject: Subject) => ({
-        id: Number(subject.id),
         label: subject.name,
         value: subject.name,
-        shortname: subject.code,
       }));
 
       // Update the 'subjects' state
@@ -149,7 +150,7 @@ export default function UserInfoPage() {
   // Year Level
   const [selected_yearlevel, setSelectedYearLevel] = useState("");
   const [yearLevelOpen, setYearLevelOpen] = useState(false);
-  const [year_levels, setYearLevels] = useState([{ label: "", value: "" }]);
+  const [year_levels, setYearLevels] = useState<OptionType[]>([]);
   const yearlevel_query = useQuery({
     queryKey: ["year_levels"],
     queryFn: GetYearLevels,
@@ -165,12 +166,7 @@ export default function UserInfoPage() {
   // Course
   const [selected_course, setSelectedCourse] = useState("");
   const [courseOpen, setCourseOpen] = useState(false);
-  const [courses, setCourses] = useState([
-    {
-      label: "",
-      value: "",
-    },
-  ]);
+  const [courses, setCourses] = useState<OptionType[]>([]);
   const course_query = useQuery({
     queryKey: ["courses"],
     queryFn: GetCourses,
@@ -192,7 +188,7 @@ export default function UserInfoPage() {
       return (
         <Image
           source={require("../../img/user_profile_placeholder.png")}
-          style={styles.profile}
+          style={{ ...styles.profile, ...{ marginRight: 48 } }}
         />
       );
     }
@@ -383,7 +379,7 @@ export default function UserInfoPage() {
                 setSubjectsOpen(open);
               }}
               setValue={setSelectedSubjects}
-              placeholder="Subjects"
+              placeholder="View subjects"
               placeholderStyle={{
                 ...styles.text_white_tiny_bold,
                 ...{ textAlign: "left" },
@@ -405,8 +401,12 @@ export default function UserInfoPage() {
           <Button
             color={colors.secondary_3}
             onPress={() => {
+              console.log(selected_subjects);
               if (isEditable) {
-                console.log(selected_subjects);
+                setYearLevelOpen(false);
+                setSemesterOpen(false);
+                setCourseOpen(false);
+                setSubjectsOpen(false);
                 mutation.mutate({
                   first_name: user.first_name,
                   last_name: user.last_name,

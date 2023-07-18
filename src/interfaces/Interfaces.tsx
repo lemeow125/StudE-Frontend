@@ -47,6 +47,11 @@ export interface ActivationParams {
   token: string;
 }
 
+export interface OptionType {
+  label: string;
+  value: string;
+}
+
 // Semester
 export interface Semester {
   id: string;
@@ -80,15 +85,17 @@ export type CourseParams = [boolean, Courses];
 
 // Subject
 export interface Subject {
-  id: string;
   name: string;
   code: string;
   // courses: any[]; // To-do
   // year_levels: any[]; // To-do
   // semesters: any[]; // To-do
 }
+
 export type Subjects = Array<Subject>;
 export type SubjectParams = [boolean, Subjects];
+
+// For dropdown menu
 
 export interface OnboardingParams {
   year_level: string;
