@@ -193,6 +193,7 @@ export default function SubjectsPage() {
                 backgroundColor: colors.primary_2,
                 borderWidth: 0,
                 zIndex: 1000,
+                maxHeight: 512,
               }}
               dropDownDirection="TOP"
             />
