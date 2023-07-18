@@ -230,6 +230,7 @@ export default function UserInfoPage() {
               dropDownContainerStyle={{
                 backgroundColor: colors.primary_2,
                 zIndex: 4000,
+                borderWidth: 0,
               }}
               dropDownDirection="TOP"
             />
@@ -265,6 +266,7 @@ export default function UserInfoPage() {
               dropDownContainerStyle={{
                 backgroundColor: colors.primary_2,
                 zIndex: 3000,
+                borderWidth: 0,
               }}
               dropDownDirection="TOP"
             />
@@ -300,6 +302,7 @@ export default function UserInfoPage() {
               dropDownContainerStyle={{
                 backgroundColor: colors.primary_2,
                 zIndex: 2000,
+                borderWidth: 0,
               }}
               dropDownDirection="TOP"
             />

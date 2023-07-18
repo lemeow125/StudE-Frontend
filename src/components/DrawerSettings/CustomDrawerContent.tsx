@@ -79,6 +79,15 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>User Info</Text>
         </DrawerButton>
         <DrawerButton
+          color={colors.secondary_2}
+          onPress={() => {
+            navigation.navigate("Subjects");
+          }}
+        >
+          <UserIcon size={32} />
+          <Text style={styles.text_white_medium}>Subjects</Text>
+        </DrawerButton>
+        <DrawerButton
           color={colors.secondary_3}
           onPress={async () => {
             dispatch(logout());

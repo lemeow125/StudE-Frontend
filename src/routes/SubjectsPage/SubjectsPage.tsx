@@ -75,7 +75,6 @@ export default function SubjectsPage() {
         first_name: data[1].first_name,
         last_name: data[1].last_name,
       });
-      console.log(user.subjects);
       setSelectedSubjects(user.subjects);
     },
   });
@@ -91,11 +90,11 @@ export default function SubjectsPage() {
   // Subjects
 
   const [selected_subjects, setSelectedSubjects] = useState<any>([]);
-  const [subjectsOpen, setSubjectsOpen] = useState(true);
+  const [subjectsOpen, setSubjectsOpen] = useState(false);
   const [subjects, setSubjects] = useState<OptionType[]>([]);
 
   const Subjects = useQuery({
-    enabled: StudentInfo.isFetched && !StudentInfo.isStale,
+    enabled: StudentInfo.isFetched,
     queryKey: ["subjects"],
     queryFn: async () => {
       let data;
@@ -128,14 +127,12 @@ export default function SubjectsPage() {
         label: subject.name,
         value: subject.name,
       }));
-
       // Update the 'subjects' state
+      setSelectedSubjects(user.subjects);
       setSubjects(subjectsData);
     },
   });
 
-  // Toggle editing of profile
-  const [isEditable, setIsEditable] = useState(false);
   // Profile photo
   function Avatar() {
     if (user.avatar) {
@@ -172,7 +169,6 @@ export default function SubjectsPage() {
           <View style={{ flex: 3 }}>
             <DropDownPicker
               zIndex={1000}
-              disabled={!isEditable}
               multiple={true}
               max={16}
               open={subjectsOpen}
@@ -186,6 +182,8 @@ export default function SubjectsPage() {
                 ...styles.text_white_tiny_bold,
                 ...{ textAlign: "left" },
               }}
+              placeholder="Select subjects"
+              multipleText="Select subjects"
               style={styles.input}
               textStyle={{
                 ...styles.text_white_tiny_bold,
@@ -193,6 +191,7 @@ export default function SubjectsPage() {
               }}
               dropDownContainerStyle={{
                 backgroundColor: colors.primary_2,
+                borderWidth: 0,
                 zIndex: 1000,
               }}
               dropDownDirection="TOP"
@@ -203,18 +202,17 @@ export default function SubjectsPage() {
           <Button
             color={colors.secondary_3}
             onPress={() => {
-              if (isEditable) {
+              if (subjectsOpen) {
                 setSelectedSubjects([]);
                 setSubjectsOpen(false);
                 mutation.mutate({
                   subjects: selected_subjects,
                 });
               }
-              setIsEditable(!isEditable);
             }}
           >
             <Text style={styles.text_white_small}>
-              {isEditable && StudentInfo.isSuccess ? "Save" : "Edit Subjects"}
+              {subjectsOpen && StudentInfo.isSuccess ? "Save" : "Edit Subjects"}
             </Text>
           </Button>
         </View>
