@@ -66,6 +66,9 @@ export default function UserInfoPage() {
         first_name: data[1].first_name,
         last_name: data[1].last_name,
       });
+      setSelectedCourse(data[1].course);
+      setSelectedSemester(data[1].semester);
+      setSelectedYearLevel(data[1].year_level);
     },
   });
   const mutation = useMutation({
@@ -88,7 +91,7 @@ export default function UserInfoPage() {
       console.log("Semesters", data[1]);
       let semestersData = data[1].map((semester: Semester) => ({
         label: semester.name,
-        value: semester.id,
+        value: semester.name,
         shortname: semester.shortname,
       }));
       // Update the 'semesters' state
@@ -245,7 +248,6 @@ export default function UserInfoPage() {
             />
           </View>
         </View>
-        <View style={styles.padding} />
         <View style={styles.flex_row}>
           <View style={{ flex: 1 }}>
             <Text style={styles.text_white_small_bold}>Year Level</Text>
@@ -263,6 +265,9 @@ export default function UserInfoPage() {
                 setCourseOpen(false);
                 setSubjectsOpen(false);
               }}
+              onChangeValue={() => {
+                setUser({ ...user, year_level: selected_yearlevel });
+              }}
               setValue={setSelectedYearLevel}
               placeholder={user.year_level}
               placeholderStyle={{
@@ -274,8 +279,11 @@ export default function UserInfoPage() {
                 ...styles.text_white_tiny_bold,
                 ...{ textAlign: "left" },
               }}
-              containerStyle={{ zIndex: 4000 }}
-              dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
+              dropDownContainerStyle={{
+                backgroundColor: colors.primary_2,
+                zIndex: 4000,
+              }}
+              dropDownDirection="TOP"
             />
           </View>
         </View>
@@ -296,6 +304,10 @@ export default function UserInfoPage() {
                 setCourseOpen(false);
                 setSubjectsOpen(false);
               }}
+              onChangeValue={() => {
+                console.log(selected_semester);
+                setUser({ ...user, semester: selected_semester });
+              }}
               setValue={setSelectedSemester}
               placeholder={user.semester}
               placeholderStyle={{
@@ -307,8 +319,11 @@ export default function UserInfoPage() {
                 ...styles.text_white_tiny_bold,
                 ...{ textAlign: "left" },
               }}
-              containerStyle={{ zIndex: 3000 }}
-              dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
+              dropDownContainerStyle={{
+                backgroundColor: colors.primary_2,
+                zIndex: 3000,
+              }}
+              dropDownDirection="TOP"
             />
           </View>
         </View>
@@ -329,6 +344,9 @@ export default function UserInfoPage() {
                 setCourseOpen(open);
                 setSubjectsOpen(false);
               }}
+              onChangeValue={() => {
+                setUser({ ...user, course: selected_course });
+              }}
               setValue={setSelectedCourse}
               placeholder={user.course}
               placeholderStyle={{
@@ -340,8 +358,11 @@ export default function UserInfoPage() {
                 ...styles.text_white_tiny_bold,
                 ...{ textAlign: "left" },
               }}
-              containerStyle={{ zIndex: 2000 }}
-              dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
+              dropDownContainerStyle={{
+                backgroundColor: colors.primary_2,
+                zIndex: 2000,
+              }}
+              dropDownDirection="TOP"
             />
           </View>
         </View>
@@ -376,8 +397,11 @@ export default function UserInfoPage() {
                 ...styles.text_white_tiny_bold,
                 ...{ textAlign: "left" },
               }}
-              containerStyle={{ zIndex: 12000 }}
-              dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
+              dropDownContainerStyle={{
+                backgroundColor: colors.primary_2,
+                zIndex: 1000,
+              }}
+              dropDownDirection="TOP"
             />
           </View>
         </View>
@@ -389,10 +413,10 @@ export default function UserInfoPage() {
                 mutation.mutate({
                   first_name: user.first_name,
                   last_name: user.last_name,
-                  course: user.course,
-                  semester: user.semester,
+                  course: selected_course,
+                  semester: selected_semester,
                   subjects: [],
-                  year_level: user.year_level,
+                  year_level: selected_yearlevel,
                 });
               }
               setIsEditable(!isEditable);
