@@ -145,7 +145,7 @@ export async function PatchUserInfo(info: PatchStudentData) {
       let error_message = "";
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
-      console.log(error_message);
+      // console.log(error_message);
       return [false, error_message];
     });
 }
@@ -208,7 +208,7 @@ export async function GetYearLevels() {
   return instance
     .get("/api/v1/year_levels/", config)
     .then((response) => {
-      console.log(JSON.stringify(response.data));
+      // console.log(JSON.stringify(response.data));
       return [true, response.data];
     })
     .catch((error) => {
