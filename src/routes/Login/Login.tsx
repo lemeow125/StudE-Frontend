@@ -30,8 +30,8 @@ export default function Login() {
   const [creds, setCreds] = useState({
     username: "",
     password: "",
-    error: "",
   });
+  const [error, setError] = useState("");
   return (
     <View style={styles.background}>
       <AnimatedContainer>
@@ -67,7 +67,7 @@ export default function Login() {
           }}
         />
         <View style={{ paddingVertical: 2 }} />
-        <Text style={styles.text_white_small}>{creds.error}</Text>
+        <Text style={styles.text_white_small}>{error}</Text>
         <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
@@ -94,10 +94,8 @@ export default function Login() {
                 }
                 console.log(JSON.stringify(user_info));
               } else {
-                setUser({
-                  ...creds,
-                  error: ParseLoginError(JSON.stringify(result[1])),
-                });
+                console.log("heh", ParseLoginError(JSON.stringify(result[1])));
+                setError(ParseLoginError(JSON.stringify(result[1])));
               }
             });
           }}

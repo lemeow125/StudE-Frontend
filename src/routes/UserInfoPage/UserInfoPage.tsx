@@ -7,10 +7,8 @@ import {
   NativeSyntheticEvent,
   TextInputChangeEventData,
 } from "react-native";
-import { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 import {
-  RootDrawerParamList,
   SemesterParams,
   UserInfoParams,
   Semester,
@@ -20,7 +18,7 @@ import {
   Course,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
-import { TouchableOpacity, Image } from "react-native";
+import { Image } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   GetCourses,
@@ -88,7 +86,6 @@ export default function UserInfoPage() {
     queryKey: ["semesters"],
     queryFn: GetSemesters,
     onSuccess: (data: SemesterParams) => {
-      console.log("Semesters", data[1]);
       let semestersData = data[1].map((semester: Semester) => ({
         label: semester.name,
         value: semester.name,
@@ -96,7 +93,6 @@ export default function UserInfoPage() {
       }));
       // Update the 'semesters' state
       setSemesters(semestersData);
-      console.log(semesters);
     },
   });
 
@@ -132,6 +128,7 @@ export default function UserInfoPage() {
         if (!data[1]) {
           throw new Error("User has no course, year level, or semester!");
         }
+        console.log("Subjects available:", data[1]);
       }
 
       return data;
@@ -140,7 +137,7 @@ export default function UserInfoPage() {
       let subjectsData = data[1].map((subject: Subject) => ({
         id: Number(subject.id),
         label: subject.name,
-        value: subject.id,
+        value: subject.name,
         shortname: subject.code,
       }));
 
@@ -305,7 +302,6 @@ export default function UserInfoPage() {
                 setSubjectsOpen(false);
               }}
               onChangeValue={() => {
-                console.log(selected_semester);
                 setUser({ ...user, semester: selected_semester });
               }}
               setValue={setSelectedSemester}
@@ -410,12 +406,13 @@ export default function UserInfoPage() {
             color={colors.secondary_3}
             onPress={() => {
               if (isEditable) {
+                console.log(selected_subjects);
                 mutation.mutate({
                   first_name: user.first_name,
                   last_name: user.last_name,
                   course: selected_course,
                   semester: selected_semester,
-                  subjects: [],
+                  subjects: selected_subjects,
                   year_level: selected_yearlevel,
                 });
               }

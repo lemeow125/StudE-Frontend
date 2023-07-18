@@ -89,6 +89,7 @@ export function UserLogin(user: LoginParams) {
       let error_message = "";
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
+      // console.log(error_message);
       return [false, error_message];
     });
 }
