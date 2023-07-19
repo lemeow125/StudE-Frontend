@@ -99,14 +99,10 @@ export default function Login() {
               }
             });
           }}
-          color={colors.secondary_3}
         >
           <Text style={styles.text_white_small}>Login</Text>
         </Button>
-        <Button
-          onPress={() => navigation.navigate("Register")}
-          color={colors.secondary_3}
-        >
+        <Button onPress={() => navigation.navigate("Register")}>
           <Text style={styles.text_white_small}>Register</Text>
         </Button>
       </AnimatedContainer>

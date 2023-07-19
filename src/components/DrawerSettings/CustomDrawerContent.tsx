@@ -36,7 +36,6 @@ export default function CustomDrawerContent(props: {}) {
         </View>
 
         <DrawerButton
-          color={colors.secondary_3}
           onPress={async () => {
             dispatch(logout());
             await AsyncStorage.clear();
@@ -61,7 +60,6 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
         <DrawerButton
-          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Home");
           }}
@@ -70,7 +68,6 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Home</Text>
         </DrawerButton>
         <DrawerButton
-          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("User Info");
           }}
@@ -79,7 +76,6 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>User Info</Text>
         </DrawerButton>
         <DrawerButton
-          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Subjects");
           }}
@@ -88,7 +84,6 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Subjects</Text>
         </DrawerButton>
         <DrawerButton
-          color={colors.secondary_3}
           onPress={async () => {
             dispatch(logout());
             await AsyncStorage.clear();
@@ -113,7 +108,6 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
         <DrawerButton
-          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Login");
           }}
@@ -122,7 +116,6 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Login</Text>
         </DrawerButton>
         <DrawerButton
-          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Register");
           }}

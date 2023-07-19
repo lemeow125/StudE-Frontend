@@ -43,6 +43,9 @@ export default function Home() {
   useEffect(() => {
     requestLocation();
   }, [location]);
+  useEffect(() => {
+    requestLocation();
+  }, []);
 
   async function getDistance(location: LocationType) {
     let dist = GetDistance(

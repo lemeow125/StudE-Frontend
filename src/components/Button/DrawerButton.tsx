@@ -1,21 +1,16 @@
 import * as React from "react";
-import { Pressable, GestureResponderEvent } from "react-native";
+import { Pressable } from "react-native";
 import styles from "../../styles";
+import { colors } from "../../styles";
 
-export interface props {
-  children: React.ReactNode;
-  onPress: (event: GestureResponderEvent) => void;
-  color: string;
-}
-
-export default function DrawerButton(props: props) {
+export default function DrawerButton({ color = colors.secondary_3, ...props }) {
   return (
     <Pressable
       onPress={props.onPress}
       style={{
         ...styles.button_template,
         ...{
-          backgroundColor: props.color,
+          backgroundColor: color,
           width: "95%",
           justifyContent: "flex-start",
         },

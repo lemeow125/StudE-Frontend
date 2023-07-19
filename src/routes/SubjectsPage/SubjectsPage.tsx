@@ -201,7 +201,6 @@ export default function SubjectsPage() {
         </View>
         <View style={{ zIndex: -1 }}>
           <Button
-            color={colors.secondary_3}
             onPress={() => {
               if (subjectsOpen) {
                 setSelectedSubjects([]);
