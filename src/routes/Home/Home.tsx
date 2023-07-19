@@ -23,22 +23,23 @@ export default function Home() {
     latitudeDelta: 0.000235,
     longitudeDelta: 0.000067,
   };
-
   async function requestLocation() {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setFeedback(
-        "Permission to access location was denied. Please allow permission"
-      );
-      return;
-    }
-    if (status == "granted") {
-      let location = await Location.getCurrentPositionAsync({});
-      if (location) {
-        setLocation(location);
-        getDistance(location);
+    setTimeout(async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setFeedback(
+          "Permission to access location was denied. Please allow permission"
+        );
+        return;
       }
-    }
+      if (status == "granted") {
+        let location = await Location.getCurrentPositionAsync({});
+        if (location) {
+          setLocation(location);
+          getDistance(location);
+        }
+      }
+    }, 2000);
   }
   useEffect(() => {
     requestLocation();
