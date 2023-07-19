@@ -1,10 +1,9 @@
 import { StyleSheet, Dimensions } from "react-native";
 
-const width = Dimensions.get("window").width;
-const height = Dimensions.get("window").height;
-
-const containerWidth = width - width * 0.08;
-const containerHeight = height - height * 0.01;
+export const Viewport = {
+  width: Dimensions.get("window").width,
+  height: Dimensions.get("window").height,
+};
 
 export const colors = {
   primary_1: "#1C2C3F",
@@ -117,7 +116,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     padding: 8,
     borderRadius: 16,
-    width: width * 0.4,
+    width: Viewport.width * 0.4,
   },
   text_input: {
     color: colors.text_default,
@@ -126,7 +125,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius: 8,
-    width: width * 0.5,
+    width: Viewport.width * 0.5,
   },
   dropdown_template: {
     backgroundColor: colors.primary_2,
@@ -135,9 +134,8 @@ const styles = StyleSheet.create({
     width: "70%",
   },
   map: {
-    flex: 1,
-    height: containerHeight,
-    width: containerWidth,
+    height: Viewport.height * 0.8,
+    width: Viewport.width * 0.8,
     alignSelf: "center",
   },
   profile: {
