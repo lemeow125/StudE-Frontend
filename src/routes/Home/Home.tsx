@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, { Marker, UrlTile } from "react-native-maps";
+import MapView, { Animated as AnimatedMap } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
@@ -33,17 +33,25 @@ export default function Home() {
         return;
       }
       if (status == "granted") {
-        let location = await Location.getCurrentPositionAsync({});
-        if (location) {
-          setLocation(location);
-          getDistance(location);
+        try {
+          let location = await Location.getCurrentPositionAsync({});
+          if (location) {
+            setLocation(location);
+            getDistance(location);
+          }
+        } catch (error) {
+          setFeedback("Error: " + error);
         }
       }
     }, 2000);
   }
   useEffect(() => {
-    requestLocation();
-  }, [location]);
+    const interval = setInterval(() => {
+      requestLocation();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  });
   useEffect(() => {
     requestLocation();
   }, []);
@@ -81,7 +89,7 @@ export default function Home() {
               You are too far from USTP {"\n"}
               Get closer to use Stud-E
             </Text>
-            <MapView
+            <AnimatedMap
               style={{
                 height: Viewport.height * 0.5,
                 width: Viewport.width * 0.8,
