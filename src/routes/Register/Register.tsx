@@ -34,25 +34,16 @@ export default function Register() {
   return (
     <View style={styles.background}>
       <AnimatedContainer>
-      <View style={styles.flex_row}>
+        <View style={styles.flex_row}>
           <SignupIcon size={32} />
           <Text style={styles.text_white_large}>Student Signup</Text>
-          <View style={{ paddingVertical: 8, }} />
+          <View style={{ paddingVertical: 8 }} />
         </View>
-        <View
-          style={{
-            paddingVertical: 4,
-            marginBottom: 16,
-            marginTop: 8,
-            borderRadius: 4,
-            width: "90%",
-            backgroundColor: colors.head,
-          }}
-        />
+        <View style={styles.padding} />
         <TextInput
           style={styles.text_input}
           placeholder="First Name"
-          placeholderTextColor="white"
+          placeholderTextColor={colors.text_default}
           value={user.first_name}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
@@ -64,7 +55,7 @@ export default function Register() {
         <TextInput
           style={styles.text_input}
           placeholder="Last Name"
-          placeholderTextColor="white"
+          placeholderTextColor={colors.text_default}
           value={user.last_name}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
@@ -76,7 +67,7 @@ export default function Register() {
         <TextInput
           style={styles.text_input}
           placeholder="USTP ID Number"
-          placeholderTextColor="white"
+          placeholderTextColor={colors.text_default}
           value={user.student_id_number}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
@@ -93,7 +84,7 @@ export default function Register() {
         <TextInput
           style={styles.text_input}
           placeholder="Username"
-          placeholderTextColor="white"
+          placeholderTextColor={colors.text_default}
           autoCapitalize={"none"}
           value={user.username}
           onChange={(
@@ -106,7 +97,7 @@ export default function Register() {
         <TextInput
           style={styles.text_input}
           placeholder="Email"
-          placeholderTextColor="white"
+          placeholderTextColor={colors.text_default}
           autoCapitalize={"none"}
           value={user.email}
           onChange={(
@@ -119,7 +110,7 @@ export default function Register() {
         <TextInput
           style={styles.text_input}
           placeholder="Password"
-          placeholderTextColor="white"
+          placeholderTextColor={colors.text_default}
           secureTextEntry={true}
           value={user.password}
           onChange={(
@@ -167,7 +158,7 @@ export default function Register() {
             {
             }
           }}
-          color={colors.reg_color}
+          color={colors.secondary_3}
         >
           <Text style={styles.text_white_small}>Register</Text>
         </Button>

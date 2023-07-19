@@ -3,17 +3,16 @@ import styles from "../../styles";
 import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
-  CourseParams,
+  Course,
   RootDrawerParamList,
-  SemesterParams,
-  YearLevelParams,
+  Semester,
+  YearLevel,
 } from "../../interfaces/Interfaces";
 import { colors } from "../../styles";
-import { AnimatePresence, MotiView } from "moti";
-import { useEffect, useState } from "react";
+import { MotiView } from "moti";
+import { useState } from "react";
 import Button from "../../components/Button/Button";
 import DropDownPicker from "react-native-dropdown-picker";
-import isStringEmpty from "../../components/IsStringEmpty/IsStringEmpty";
 import { useQuery } from "@tanstack/react-query";
 import {
   GetCourses,
@@ -24,6 +23,8 @@ import {
 import { useDispatch } from "react-redux";
 import { unsetOnboarding } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
+import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ export default function Onboarding() {
     queryKey: ["semesters"],
     queryFn: GetSemesters,
     onSuccess: (data) => {
-      let semesters = data.map((item: SemesterParams) => ({
+      let semesters = data[1].map((item: Semester) => ({
         label: item.name,
         value: item.name,
       }));
@@ -58,7 +59,7 @@ export default function Onboarding() {
     queryKey: ["year_levels"],
     queryFn: GetYearLevels,
     onSuccess: (data) => {
-      let year_levels = data.map((item: YearLevelParams) => ({
+      let year_levels = data[1].map((item: YearLevel) => ({
         label: item.name,
         value: item.name,
       }));
@@ -79,7 +80,7 @@ export default function Onboarding() {
     queryKey: ["courses"],
     queryFn: GetCourses,
     onSuccess: (data) => {
-      let courses = data.map((item: CourseParams) => ({
+      let courses = data[1].map((item: Course) => ({
         label: item.name,
         value: item.name,
       }));
@@ -97,7 +98,7 @@ export default function Onboarding() {
   }
   return (
     <View style={styles.background}>
-      <View style={styles.container}>
+      <AnimatedContainerNoScroll>
         <MotiView
           from={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -112,7 +113,7 @@ export default function Onboarding() {
             marginBottom: 16,
             borderRadius: 4,
             width: "90%",
-            backgroundColor: colors.blue_1,
+            backgroundColor: colors.secondary_1,
           }}
         />
         <View style={{ paddingVertical: 4 }} />
@@ -144,34 +145,18 @@ export default function Onboarding() {
               setSemesterOpen(false);
               setYearLevelOpen(false);
             }}
+            style={styles.input}
             setValue={setSelectedCourse}
             placeholder="Choose your course"
-            containerStyle={{
-              ...styles.dropdown_template,
-              ...{ zIndex: 3000 },
+            containerStyle={{ zIndex: 3000 }}
+            textStyle={{
+              ...styles.text_white_small_bold,
+              ...{ textAlign: "center" },
             }}
-            dropDownContainerStyle={{ backgroundColor: "white" }}
+            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
           />
           <DropDownPicker
             zIndex={2000}
-            open={semesterOpen}
-            value={selected_semester}
-            items={semesters}
-            setOpen={(open) => {
-              setSemesterOpen(open);
-              setCourseOpen(false);
-              setYearLevelOpen(false);
-            }}
-            setValue={setSelectedSemester}
-            placeholder="Current semester"
-            containerStyle={{
-              ...styles.dropdown_template,
-              ...{ zIndex: 2000 },
-            }}
-            dropDownContainerStyle={{ backgroundColor: "white" }}
-          />
-          <DropDownPicker
-            zIndex={1000}
             open={yearLevelOpen}
             value={selected_yearlevel}
             items={year_levels}
@@ -180,22 +165,53 @@ export default function Onboarding() {
               setSemesterOpen(false);
               setCourseOpen(false);
             }}
+            style={styles.input}
             setValue={setSelectedYearLevel}
             placeholder="Your Year Level"
-            containerStyle={{
-              ...styles.dropdown_template,
-              ...{ zIndex: 1000 },
+            containerStyle={{ zIndex: 2000 }}
+            textStyle={{
+              ...styles.text_white_small_bold,
+              ...{ textAlign: "center" },
             }}
-            dropDownContainerStyle={{ backgroundColor: "white" }}
+            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
+          />
+          <DropDownPicker
+            zIndex={1000}
+            open={semesterOpen}
+            value={selected_semester}
+            items={semesters}
+            setOpen={(open) => {
+              setSemesterOpen(open);
+              setCourseOpen(false);
+              setYearLevelOpen(false);
+            }}
+            style={styles.input}
+            setValue={setSelectedSemester}
+            placeholder="Current semester"
+            containerStyle={{ zIndex: 1000 }}
+            textStyle={{
+              ...styles.text_white_small_bold,
+              ...{ textAlign: "center" },
+            }}
+            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
           />
         </MotiView>
+        <Text style={styles.text_white_small}>{error}</Text>
         <MotiView
-          from={{ opacity: 0 }}
-          animate={{ opacity: 1, zIndex: -1 }}
+          from={{
+            opacity: 0,
+            zIndex: -1,
+          }}
+          animate={{
+            opacity: 1,
+            zIndex: -1,
+          }}
           transition={{ type: "timing", duration: 400, delay: 1700 }}
-          style={styles.button_template}
+          style={{
+            ...styles.button_template,
+            ...{ padding: 0, backgroundColor: colors.secondary_3 },
+          }}
         >
-          <Text style={styles.text_white_small}>{error}</Text>
           <Button
             disabled={
               !selected_yearlevel || !selected_course || !selected_semester
@@ -218,12 +234,11 @@ export default function Onboarding() {
                 setError(result[1]);
               }
             }}
-            color={colors.blue_3}
           >
             <Text style={styles.text_white_small}>Proceed</Text>
           </Button>
         </MotiView>
-      </View>
+      </AnimatedContainerNoScroll>
     </View>
   );
 }

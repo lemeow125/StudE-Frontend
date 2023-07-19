@@ -1,39 +1,39 @@
 import { StyleSheet, Dimensions } from "react-native";
 
-const width = Dimensions.get("window").width;
-const height = Dimensions.get("window").height;
-
-const containerWidth = width - width * 0.08;
-const containerHeight = height - height * 0.01;
+export const Viewport = {
+  width: Dimensions.get("window").width,
+  height: Dimensions.get("window").height,
+};
 
 export const colors = {
-  orange_1: "#FFDEAD",
-  orange_2: "#FFE2C1",
-  orange_3: "#C07624",
-  blue_1: "#E3963E",
-  blue_2: "#FFAC1C",
-  blue_3: "#FFAC1C",
-  text_default: "white",
+  primary_1: "#1C2C3F",
+  primary_2: "#445467",
+  primary_3: "#606F81",
+  primary_4: "#b4d0f3",
+  secondary_1: "#1E1F3D",
+  secondary_2: "#626297",
+  secondary_3: "#7a7abd",
+  secondary_4: "#FFE9CE",
+  secondary_5: "#FFF5E9",
+  text_default: "#FFFF",
   text_error: "#e32d1e",
-  text_success: "green",
-  icon_color: "white",
-  login_color: "#0047AB",
-  reg_color: "#0096FF",
-  head: "white",
-  blue_disabled: "#C07624",
+  text_success: "#2ecc71",
+  icon_color: "#FFFF",
+  head: "#FFFF",
 };
 
 export const font_sizes = {
   tiny: 12,
   small: 16,
   medium: 24,
+  medium_large: 30,
   large: 36,
   xl: 48,
 };
 
 const styles = StyleSheet.create({
   background: {
-    backgroundColor: colors.orange_1,
+    backgroundColor: colors.secondary_1,
     height: "100%",
     width: "100%",
   },
@@ -75,6 +75,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  text_white_medium_large: {
+    color: colors.text_default,
+    fontSize: font_sizes.medium_large,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
   text_white_large: {
     color: colors.text_default,
     fontSize: font_sizes.large,
@@ -84,6 +90,18 @@ const styles = StyleSheet.create({
   text_white_xl: {
     color: colors.text_default,
     fontSize: font_sizes.xl,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_white_small_bold: {
+    color: colors.text_default,
+    fontSize: font_sizes.small,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_white_tiny_bold: {
+    color: colors.text_default,
+    fontSize: font_sizes.tiny,
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -98,63 +116,47 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     padding: 8,
     borderRadius: 16,
-    width: width * 0.4,
+    width: Viewport.width * 0.4,
   },
   text_input: {
     color: colors.text_default,
-    backgroundColor: colors.blue_1,
+    backgroundColor: colors.primary_2,
+    borderColor: colors.primary_4,
+    borderWidth: 1,
     padding: 10,
     borderRadius: 8,
-    width: width * 0.5,
+    width: Viewport.width * 0.5,
   },
   dropdown_template: {
-    borderRadius: 16,
+    backgroundColor: colors.primary_2,
+    containerStyle: colors.primary_2,
+    borderRadius: 8,
     width: "70%",
-    marginVertical: 6,
   },
   map: {
-    flex: 1,
-    height: containerHeight,
-    width: containerWidth,
+    height: Viewport.height * 0.8,
+    width: Viewport.width * 0.8,
     alignSelf: "center",
   },
   profile: {
-    height: 80,
-    width: 80, 
-    alignSelf: 'center',
-  }, 
+    height: 64,
+    width: 64,
+    alignSelf: "center",
+    borderRadius: 150 / 2,
+    overflow: "hidden",
+    padding: 0,
+  },
   input: {
-    height: 40,
-    margin: 12,
-    marginRight: 30,
+    paddingHorizontal: 8,
+    marginVertical: 2,
     borderWidth: 1,
     color: colors.text_default,
-    backgroundColor: colors.blue_1,
+    backgroundColor: colors.primary_2,
     borderRadius: 8,
-    borderColor: '#FFAC1C',
-    padding: 8, 
+    borderColor: colors.primary_3,
   },
-  formGroup: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  text: {
-    marginLeft: 5,
-    color: colors.text_default,
-    fontSize: font_sizes.small,
-    fontWeight: "bold", 
-  }, 
-  button: {
-    padding: 10,
-    backgroundColor: colors.blue_2,
-    borderRadius: 5,
-  },
-  activeText: {
-    color: 'green',
-  },
-  inactiveText: {
-    color: 'white',
+  padding: {
+    paddingVertical: 8,
   },
 });
 export default styles;

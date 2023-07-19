@@ -10,21 +10,19 @@ const DrawerScreenSettings: DrawerNavigationOptions = {
     fontSize: font_sizes.medium,
   },
   unmountOnBlur: true,
-  headerStyle: { backgroundColor: colors.login_color},
+  headerStyle: { backgroundColor: colors.primary_1 },
   headerTintColor: colors.text_default,
   drawerType: "slide",
   drawerLabelStyle: {
     color: colors.text_default,
   },
   drawerStyle: {
-    backgroundColor: colors.login_color,
+    backgroundColor: colors.primary_1,
     width: 260,
   },
   headerRight: () => (
-    <View
-      style={{ flexDirection: "row", marginRight: 16, alignItems: "center" }}
-    >
-      <AppIcon size={32} />
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <AppIcon size={96} />
     </View>
   ),
 };

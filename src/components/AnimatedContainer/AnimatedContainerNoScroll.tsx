@@ -7,10 +7,10 @@ export interface props {
   children: React.ReactNode;
 }
 
-export default function AnimatedContainer(props: props) {
+export default function AnimatedContainerNoScroll(props: props) {
   return (
-    <MotiScrollView
-      contentContainerStyle={styles.container}
+    <MotiView
+      style={styles.container}
       from={{
         borderRadius: 0,
         opacity: 0,
@@ -32,6 +32,6 @@ export default function AnimatedContainer(props: props) {
       transition={{ type: "timing", duration: 700 }}
     >
       {props.children}
-    </MotiScrollView>
+    </MotiView>
   );
 }

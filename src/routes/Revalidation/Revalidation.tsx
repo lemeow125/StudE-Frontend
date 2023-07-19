@@ -58,7 +58,7 @@ export default function Revalidation() {
     <View style={styles.background}>
       <AnimatedContainer>
         <View style={{ paddingVertical: 8 }} />
-        <ActivityIndicator size={96} color={colors.blue_1} />
+        <ActivityIndicator size={96} color={colors.secondary_1} />
         <Text style={styles.text_white_medium}>{state}</Text>
       </AnimatedContainer>
     </View>

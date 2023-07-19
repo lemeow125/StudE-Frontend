@@ -1,4 +1,4 @@
-import styles from "../../styles";
+import styles, { Viewport } from "../../styles";
 import { View, Text } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
@@ -9,7 +9,6 @@ import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
 import { colors } from "../../styles";
-import { startActivityAsync, ActivityAction } from "expo-intent-launcher";
 
 type LocationType = Location.LocationObject;
 export default function Home() {
@@ -18,47 +17,59 @@ export default function Home() {
   const [feedback, setFeedback] = useState(
     "To continue, please allow Stud-E permission to location services"
   );
-
-  async function requestLocation() {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status === "granted") {
-      getLocation();
-      return;
-    } else if (status === "denied") {
-      setFeedback("Stud-E requires location services to function");
-      setTimeout(() => {
-        startActivityAsync(ActivityAction.LOCATION_SOURCE_SETTINGS);
-      }, 3000);
-      console.log("Location Permission denied");
-    }
-  }
-
-  async function getLocation() {
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-    let dist = GetDistance(
-      location.coords.latitude,
-      location.coords.longitude,
-      8.4857,
-      124.6565
-    );
-    setDist(Math.round(dist));
-  }
-  useEffect(() => {
-    requestLocation();
-  }, []);
-
   const ustpCoords = {
     latitude: 8.4857,
     longitude: 124.6565,
     latitudeDelta: 0.000235,
     longitudeDelta: 0.000067,
   };
+
+  async function requestLocation() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setFeedback(
+        "Permission to access location was denied. Please allow permission"
+      );
+      return;
+    }
+    if (status == "granted") {
+      let location = await Location.getCurrentPositionAsync({});
+      if (location) {
+        setLocation(location);
+        getDistance(location);
+      }
+    }
+  }
+  useEffect(() => {
+    requestLocation();
+  }, [location]);
+
+  async function getDistance(location: LocationType) {
+    let dist = GetDistance(
+      location.coords.latitude,
+      location.coords.longitude,
+      8.4857, // LatitudeDelta
+      124.6565 // LongitudeDelta
+    );
+    setDist(Math.round(dist));
+  }
+
   function CustomMap() {
-    if (dist !== null && location !== null) {
+    if (dist && location) {
       if (dist <= 1.5) {
         // Just switch this condition for map debugging
-        return <MapView style={styles.map} initialRegion={ustpCoords} />;
+        return (
+          <MapView
+            style={styles.map}
+            initialRegion={ustpCoords}
+            showsUserLocation={true}
+            scrollEnabled={false}
+            zoomEnabled={false}
+            rotateEnabled={false}
+            followsUserLocation={true}
+            minZoomLevel={15}
+          />
+        );
       } else {
         return (
           <View>
@@ -68,8 +79,8 @@ export default function Home() {
             </Text>
             <MapView
               style={{
-                height: 256,
-                width: 256,
+                height: Viewport.height * 0.5,
+                width: Viewport.width * 0.8,
                 alignSelf: "center",
               }}
               showsUserLocation={true}
@@ -95,14 +106,13 @@ export default function Home() {
       return (
         <AnimatedContainer>
           <Text style={styles.text_white_medium}>{feedback}</Text>
-          <Button onPress={() => requestLocation()} color={colors.blue_3}>
-            <Text style={styles.text_white_small}>Allow Access</Text>
+          <Button onPress={() => requestLocation()}>
+            <Text style={styles.text_white_medium}>Allow Access</Text>
           </Button>
         </AnimatedContainer>
       );
     }
   }
-  const creds = useSelector((state: RootState) => state.user.user);
   return (
     <View style={styles.background}>
       <AnimatedContainer>

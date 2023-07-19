@@ -1,9 +1,7 @@
 import * as React from "react";
 import { IconProps } from "../../interfaces/Interfaces";
-
 import { Svg, Path } from "react-native-svg";
 import { colors } from "../../styles";
-import finalPropsSelectorFactory from "react-redux/es/connect/selectorFactory";
 
 export default function DropdownIcon(props: IconProps) {
   return (

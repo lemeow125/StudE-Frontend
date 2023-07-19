@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "StudE_Frontend",
+    "name": "StudE",
     "scheme": "stude",
     "slug": "StudE_Frontend",
     "version": "1.0.0",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1C2C3F"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,8 +21,14 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "backgroundColor": "#FFFF"
+      },
+      "package": "com.teamblackpink.stude",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,6 +40,11 @@
           "locationAlwaysAndWhenInUsePermission": "Allow Stud-E to use your location."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "614fd93f-345c-4d72-a9e7-592f1ba0c6e8"
+      }
+    }
   }
 }

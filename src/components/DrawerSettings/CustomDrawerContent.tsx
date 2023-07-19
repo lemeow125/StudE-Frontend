@@ -31,12 +31,12 @@ export default function CustomDrawerContent(props: {}) {
             ...{ justifyContent: "center" },
           }}
         >
-          <AppIcon size={32} />
+          <AppIcon size={96} />
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
 
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.secondary_3}
           onPress={async () => {
             dispatch(logout());
             await AsyncStorage.clear();
@@ -57,11 +57,11 @@ export default function CustomDrawerContent(props: {}) {
             ...{ justifyContent: "center" },
           }}
         >
-          <AppIcon size={32} />
+          <AppIcon size={96} />
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
         <DrawerButton
-          color={colors.blue_3}
+          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Home");
           }}
@@ -70,16 +70,25 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Home</Text>
         </DrawerButton>
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.secondary_2}
           onPress={() => {
-            navigation.navigate("UserInfo");
+            navigation.navigate("User Info");
           }}
         >
           <UserIcon size={32} />
-          <Text style={styles.text_white_medium}>UserInfo</Text>
+          <Text style={styles.text_white_medium}>User Info</Text>
         </DrawerButton>
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.secondary_2}
+          onPress={() => {
+            navigation.navigate("Subjects");
+          }}
+        >
+          <UserIcon size={32} />
+          <Text style={styles.text_white_medium}>Subjects</Text>
+        </DrawerButton>
+        <DrawerButton
+          color={colors.secondary_3}
           onPress={async () => {
             dispatch(logout());
             await AsyncStorage.clear();
@@ -100,11 +109,11 @@ export default function CustomDrawerContent(props: {}) {
             ...{ justifyContent: "center" },
           }}
         >
-          <AppIcon size={32} />
+          <AppIcon size={96} />
           <Text style={styles.text_white_medium}>Stud-E</Text>
         </View>
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Login");
           }}
@@ -113,7 +122,7 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Login</Text>
         </DrawerButton>
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Register");
           }}
@@ -125,7 +134,7 @@ export default function CustomDrawerContent(props: {}) {
         {/*
         Debug buttons for accessing revalidation and activation page
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Revalidation");
           }}
@@ -133,7 +142,7 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Revalidation</Text>
         </DrawerButton>
         <DrawerButton
-          color={colors.blue_2}
+          color={colors.secondary_2}
           onPress={() => {
             navigation.navigate("Activation");
           }}

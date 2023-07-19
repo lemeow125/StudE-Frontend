@@ -30,25 +30,17 @@ export default function Login() {
   const [creds, setCreds] = useState({
     username: "",
     password: "",
-    error: "",
   });
+  const [error, setError] = useState("");
   return (
     <View style={styles.background}>
       <AnimatedContainer>
-      <View style={styles.flex_row}>
+        <View style={styles.flex_row}>
           <LoginIcon size={32} />
           <Text style={styles.text_white_large}>Student Login</Text>
         </View>
         <View style={{ paddingVertical: 8 }} />
-        <View
-          style={{
-            paddingVertical: 4,
-            marginBottom: 16,
-            borderRadius: 4,
-            width: "90%",
-            backgroundColor: colors.head,
-          }}
-        />
+        <View style={styles.padding} />
         <TextInput
           style={styles.text_input}
           placeholder="Username"
@@ -75,7 +67,7 @@ export default function Login() {
           }}
         />
         <View style={{ paddingVertical: 2 }} />
-        <Text style={styles.text_white_small}>{creds.error}</Text>
+        <Text style={styles.text_white_small}>{error}</Text>
         <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
@@ -102,20 +94,18 @@ export default function Login() {
                 }
                 console.log(JSON.stringify(user_info));
               } else {
-                setUser({
-                  ...creds,
-                  error: ParseLoginError(JSON.stringify(result[1])),
-                });
+                console.log("heh", ParseLoginError(JSON.stringify(result[1])));
+                setError(ParseLoginError(JSON.stringify(result[1])));
               }
             });
           }}
-          color={colors.login_color}
+          color={colors.secondary_3}
         >
           <Text style={styles.text_white_small}>Login</Text>
         </Button>
         <Button
           onPress={() => navigation.navigate("Register")}
-          color={colors.reg_color}
+          color={colors.secondary_3}
         >
           <Text style={styles.text_white_small}>Register</Text>
         </Button>
