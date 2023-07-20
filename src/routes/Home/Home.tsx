@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, { Animated as AnimatedMap } from "react-native-maps";
+import MapView, { Animated as AnimatedMap, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
@@ -24,26 +24,20 @@ export default function Home() {
     longitudeDelta: 0.000067,
   };
   async function requestLocation() {
-    setTimeout(async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setFeedback(
-          "Permission to access location was denied. Please allow permission"
-        );
-        return;
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setFeedback(
+        "Permission to access location was denied. Please allow permission"
+      );
+      return;
+    }
+    if (status == "granted") {
+      let location = await Location.getCurrentPositionAsync({});
+      if (location) {
+        setLocation(location);
+        getDistance(location);
       }
-      if (status == "granted") {
-        try {
-          let location = await Location.getCurrentPositionAsync({});
-          if (location) {
-            setLocation(location);
-            getDistance(location);
-          }
-        } catch (error) {
-          setFeedback("Error: " + error);
-        }
-      }
-    }, 2000);
+    }
   }
   useEffect(() => {
     const interval = setInterval(() => {
@@ -80,7 +74,14 @@ export default function Home() {
             rotateEnabled={false}
             followsUserLocation={true}
             minZoomLevel={15}
-          />
+          >
+            <UrlTile
+              urlTemplate="https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+              shouldReplaceMapContent={true}
+              maximumZ={19}
+              flipY={false}
+            />
+          </MapView>
         );
       } else {
         return (
@@ -89,7 +90,7 @@ export default function Home() {
               You are too far from USTP {"\n"}
               Get closer to use Stud-E
             </Text>
-            <AnimatedMap
+            <MapView
               style={{
                 height: Viewport.height * 0.5,
                 width: Viewport.width * 0.8,
@@ -107,7 +108,14 @@ export default function Home() {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               }}
-            />
+            >
+              <UrlTile
+                urlTemplate="https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+                shouldReplaceMapContent={true}
+                maximumZ={19}
+                flipY={false}
+              />
+            </MapView>
             <Text style={styles.text_white_small}>
               {dist}km away from USTP {"\n"}
             </Text>
