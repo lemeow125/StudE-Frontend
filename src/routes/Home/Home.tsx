@@ -1,15 +1,11 @@
 import styles, { Viewport } from "../../styles";
 import { View, Text } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "../../features/redux/Store/Store";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, { Animated as AnimatedMap, UrlTile } from "react-native-maps";
+import MapView, { UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
-import { colors } from "../../styles";
-
 type LocationType = Location.LocationObject;
 export default function Home() {
   const [location, setLocation] = useState<LocationType | null>(null);
@@ -17,6 +13,8 @@ export default function Home() {
   const [feedback, setFeedback] = useState(
     "To continue, please allow Stud-E permission to location services"
   );
+  const urlProvider =
+    "https://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=0f5cb5930d7642a8a921daea650754d9";
   const ustpCoords = {
     latitude: 8.4857,
     longitude: 124.6565,
@@ -42,7 +40,7 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
-    }, 1000);
+    }, 10000);
 
     return () => clearInterval(interval);
   });
@@ -67,6 +65,7 @@ export default function Home() {
         return (
           <MapView
             style={styles.map}
+            mapType="none"
             initialRegion={ustpCoords}
             showsUserLocation={true}
             scrollEnabled={false}
@@ -74,12 +73,24 @@ export default function Home() {
             rotateEnabled={false}
             followsUserLocation={true}
             minZoomLevel={15}
+            customMapStyle={[
+              {
+                featureType: "poi",
+                stylers: [
+                  {
+                    visibility: "off",
+                  },
+                ],
+              },
+            ]}
           >
             <UrlTile
-              urlTemplate="https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+              urlTemplate={urlProvider}
               shouldReplaceMapContent={true}
+              tileCachePath=""
               maximumZ={19}
               flipY={false}
+              zIndex={1}
             />
           </MapView>
         );
@@ -96,6 +107,17 @@ export default function Home() {
                 width: Viewport.width * 0.8,
                 alignSelf: "center",
               }}
+              customMapStyle={[
+                {
+                  featureType: "poi",
+                  stylers: [
+                    {
+                      visibility: "off",
+                    },
+                  ],
+                },
+              ]}
+              mapType="none"
               showsUserLocation={true}
               scrollEnabled={false}
               zoomEnabled={false}
@@ -110,10 +132,11 @@ export default function Home() {
               }}
             >
               <UrlTile
-                urlTemplate="https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+                urlTemplate={urlProvider}
                 shouldReplaceMapContent={true}
                 maximumZ={19}
                 flipY={false}
+                zIndex={1}
               />
             </MapView>
             <Text style={styles.text_white_small}>
