@@ -1,11 +1,12 @@
-import styles, { Viewport } from "../../styles";
+import styles, { Viewport, colors } from "../../styles";
 import { View, Text } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, { UrlTile } from "react-native-maps";
+import MapView, { Callout, Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
+import { AnimatedMapView } from "react-native-maps/lib/MapView";
 type LocationType = Location.LocationObject;
 export default function Home() {
   const [location, setLocation] = useState<LocationType | null>(null);
@@ -47,6 +48,11 @@ export default function Home() {
     return () => clearInterval(interval);
   });
 
+  // Refresh when user moves location
+  useEffect(() => {
+    requestLocation();
+  }, [location]);
+
   // Run when screen loads
   useEffect(() => {
     requestLocation();
@@ -67,16 +73,16 @@ export default function Home() {
       if (dist <= 1.5) {
         // Just switch this condition for map debugging
         return (
-          <MapView
+          <AnimatedMapView
             style={styles.map}
             mapType="none"
             initialRegion={ustpCoords}
-            showsUserLocation={true}
             scrollEnabled={false}
             zoomEnabled={false}
             rotateEnabled={false}
             followsUserLocation={true}
             minZoomLevel={18}
+            toolbarEnabled={false}
             customMapStyle={[
               {
                 featureType: "poi",
@@ -95,7 +101,13 @@ export default function Home() {
               flipY={false}
               zIndex={1}
             />
-          </MapView>
+            <Marker
+              coordinate={{
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              }}
+            />
+          </AnimatedMapView>
         );
       } else {
         return (
@@ -104,7 +116,7 @@ export default function Home() {
               You are too far from USTP {"\n"}
               Get closer to use Stud-E
             </Text>
-            <MapView
+            <AnimatedMapView
               style={{
                 height: Viewport.height * 0.5,
                 width: Viewport.width * 0.8,
@@ -121,9 +133,9 @@ export default function Home() {
                 },
               ]}
               mapType="none"
-              showsUserLocation={true}
               scrollEnabled={false}
               zoomEnabled={false}
+              toolbarEnabled={false}
               rotateEnabled={false}
               followsUserLocation={true}
               minZoomLevel={18}
@@ -141,7 +153,22 @@ export default function Home() {
                 flipY={false}
                 zIndex={1}
               />
-            </MapView>
+              <Marker
+                coordinate={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                }}
+                onPress={() => console.log(location)}
+                pinColor={colors.primary_1}
+              >
+                <Callout>
+                  <Text style={styles.text_black_tiny}>
+                    X: {Math.round(location.coords.longitude) + "\n"}
+                    Z: {Math.round(location.coords.latitude)}
+                  </Text>
+                </Callout>
+              </Marker>
+            </AnimatedMapView>
             <Text style={styles.text_white_small}>
               {dist}km away from USTP {"\n"}
             </Text>

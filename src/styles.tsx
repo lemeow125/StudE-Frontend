@@ -16,6 +16,7 @@ export const colors = {
   secondary_4: "#FFE9CE",
   secondary_5: "#FFF5E9",
   text_default: "#FFFF",
+  text_dark: "black",
   text_error: "#e32d1e",
   text_success: "#2ecc71",
   icon_color: "#FFFF",
@@ -105,6 +106,42 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  text_black_tiny: {
+    color: colors.text_dark,
+    fontSize: font_sizes.tiny,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_black_small: {
+    color: colors.text_dark,
+    fontSize: font_sizes.small,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_black_medium: {
+    color: colors.text_dark,
+    fontSize: font_sizes.medium,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_black_medium_large: {
+    color: colors.text_dark,
+    fontSize: font_sizes.medium_large,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_black_large: {
+    color: colors.text_dark,
+    fontSize: font_sizes.large,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text_black_xl: {
+    color: colors.text_dark,
+    fontSize: font_sizes.xl,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
   button_template: {
     justifyContent: "center",
     alignSelf: "center",
@@ -157,6 +194,11 @@ const styles = StyleSheet.create({
   },
   padding: {
     paddingVertical: 8,
+  },
+  calloutContainer: {
+    backgroundColor: colors.secondary_1,
+    padding: 0,
+    border: 0,
   },
 });
 export default styles;

@@ -225,20 +225,14 @@ export default function SubjectsPage() {
           <View style={styles.padding} />
           <Button
             onPress={() => {
-              if (subjectsOpen) {
-                setSelectedSubjects([]);
-                setSubjectsOpen(false);
-                mutation.mutate({
-                  subjects: selected_subjects,
-                });
-              } else {
-                setSubjectsOpen(true);
-              }
+              setSelectedSubjects([]);
+              setSubjectsOpen(!subjectsOpen);
+              mutation.mutate({
+                subjects: selected_subjects,
+              });
             }}
           >
-            <Text style={styles.text_white_small}>
-              {subjectsOpen && StudentInfo.isSuccess ? "Save" : "Edit Subjects"}
-            </Text>
+            <Text style={styles.text_white_small}>Save Change</Text>
           </Button>
         </View>
       </AnimatedContainerNoScroll>
