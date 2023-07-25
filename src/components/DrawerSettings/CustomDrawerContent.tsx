@@ -17,6 +17,7 @@ import LogoutIcon from "../../icons/LogoutIcon/LogoutIcon";
 import { logout } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserIcon from "../../icons/UserIcon/UserIcon";
+import SubjectIcon from "../../icons/SubjectIcon/SubjectIcon";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -80,7 +81,7 @@ export default function CustomDrawerContent(props: {}) {
             navigation.navigate("Subjects");
           }}
         >
-          <UserIcon size={32} />
+          <SubjectIcon size={32} />
           <Text style={styles.text_white_medium}>Subjects</Text>
         </DrawerButton>
         <DrawerButton

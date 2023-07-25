@@ -7,7 +7,7 @@ import {
   NativeSyntheticEvent,
   TextInputChangeEventData,
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   SemesterParams,
   UserInfoParams,
@@ -32,8 +32,8 @@ import {
 } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
-import { ValueType } from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 export default function SubjectsPage() {
   const queryClient = useQueryClient();
@@ -82,10 +82,19 @@ export default function SubjectsPage() {
     mutationFn: PatchUserInfo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["subjects"] });
+      queryClient.invalidateQueries({ queryKey: ["subjects", viewAll] });
       setSelectedSubjects([]);
     },
   });
+
+  // View all Subjects or only view those under current course, year level, and semester
+  // This is for irregular students
+  const [viewAll, setViewAll] = useState(false);
+
+  // If viewing all subjects, refresh the choices
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["subjects", viewAll] });
+  }, [viewAll]);
 
   // Subjects
 
@@ -95,21 +104,22 @@ export default function SubjectsPage() {
 
   const Subjects = useQuery({
     enabled: StudentInfo.isFetched,
-    queryKey: ["subjects"],
+    queryKey: ["subjects", viewAll],
     queryFn: async () => {
       let data;
-      if (StudentInfo.data) {
-        if (
-          StudentInfo.data[1].course_shortname &&
-          StudentInfo.data[1].yearlevel_shortname &&
+      if (
+        StudentInfo.data &&
+        StudentInfo.data[1].course_shortname &&
+        StudentInfo.data[1].yearlevel_shortname &&
+        StudentInfo.data[1].semester_shortname
+      ) {
+        data = await GetSubjects(
+          viewAll,
+          StudentInfo.data[1].course_shortname,
+          StudentInfo.data[1].yearlevel_shortname,
           StudentInfo.data[1].semester_shortname
-        ) {
-          data = await GetSubjects(
-            StudentInfo.data[1].course_shortname,
-            StudentInfo.data[1].yearlevel_shortname,
-            StudentInfo.data[1].semester_shortname
-          );
-        }
+        );
+        console.log(JSON.stringify(data));
       }
       if (data) {
         if (!data[0]) {
@@ -189,17 +199,30 @@ export default function SubjectsPage() {
                 ...styles.text_white_tiny_bold,
                 ...{ textAlign: "left" },
               }}
-              dropDownContainerStyle={{
+              modalContentContainerStyle={{
                 backgroundColor: colors.primary_2,
                 borderWidth: 0,
                 zIndex: 1000,
-                maxHeight: 512,
               }}
-              dropDownDirection="TOP"
+              autoScroll
+              dropDownDirection="BOTTOM"
+              listMode="MODAL"
             />
           </View>
         </View>
         <View style={{ zIndex: -1 }}>
+          <View style={styles.padding} />
+          <View style={styles.flex_row}>
+            <BouncyCheckbox
+              onPress={() => {
+                setViewAll(!viewAll);
+                setSubjectsOpen(false);
+              }}
+              fillColor={colors.secondary_3}
+            />
+            <Text style={styles.text_white_small}>Irregular </Text>
+          </View>
+          <View style={styles.padding} />
           <Button
             onPress={() => {
               if (subjectsOpen) {
@@ -208,6 +231,8 @@ export default function SubjectsPage() {
                 mutation.mutate({
                   subjects: selected_subjects,
                 });
+              } else {
+                setSubjectsOpen(true);
               }
             }}
           >

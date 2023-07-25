@@ -9,12 +9,15 @@ import {
   StudentData,
 } from "../../interfaces/Interfaces";
 
-let debug = true;
 export let backendURL = "";
-if (debug) {
+export let backendURLWebsocket = "";
+let use_production = true;
+if (__DEV__ || !use_production) {
   backendURL = "http://10.0.10.8:8000";
+  backendURLWebsocket = "ws://10.0.10.8:8000";
 } else {
-  backendURL = "https://keannu125.pythonanywhere.com";
+  backendURL = "https://stude.keannu1.duckdns.org";
+  backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
 }
 
 const instance = axios.create({
@@ -220,26 +223,46 @@ export async function GetYearLevels() {
 }
 
 export async function GetSubjects(
+  byCourseOnly: boolean,
   course: string,
-  year_level: string,
-  semester: string
+  year_level?: string,
+  semester?: string
 ) {
   const config = await GetConfig();
-  return instance
-    .get(
-      "/api/v1/subjects/" + course + "/" + year_level + "/" + semester,
-      config
-    )
-    .then((response) => {
-      // console.log(JSON.stringify(response.data));
-      return [true, response.data];
-    })
-    .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      return [false, error_message];
-    });
+  console.log("by course only?", byCourseOnly);
+  // If year level and semester specified,
+  if (!byCourseOnly && year_level && semester) {
+    return instance
+      .get(
+        "/api/v1/subjects/" + course + "/" + year_level + "/" + semester,
+        config
+      )
+      .then((response) => {
+        // console.log(JSON.stringify(response.data));
+        return [true, response.data];
+      })
+      .catch((error) => {
+        let error_message = "";
+        if (error.response) error_message = error.response.data;
+        else error_message = "Unable to reach servers";
+        return [false, error_message];
+      });
+  }
+  // If only course is specified
+  else {
+    return instance
+      .get("/api/v1/subjects/" + course, config)
+      .then((response) => {
+        // console.log(JSON.stringify(response.data));
+        return [true, response.data];
+      })
+      .catch((error) => {
+        let error_message = "";
+        if (error.response) error_message = error.response.data;
+        else error_message = "Unable to reach servers";
+        return [false, error_message];
+      });
+  }
 }
 
 export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
