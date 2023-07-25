@@ -37,6 +37,8 @@ export default function Home() {
       }
     }
   }
+
+  // Refresh every 10 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
@@ -44,6 +46,8 @@ export default function Home() {
 
     return () => clearInterval(interval);
   });
+
+  // Run when screen loads
   useEffect(() => {
     requestLocation();
   }, []);
