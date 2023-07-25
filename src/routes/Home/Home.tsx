@@ -76,7 +76,7 @@ export default function Home() {
             zoomEnabled={false}
             rotateEnabled={false}
             followsUserLocation={true}
-            minZoomLevel={15}
+            minZoomLevel={18}
             customMapStyle={[
               {
                 featureType: "poi",
@@ -91,7 +91,6 @@ export default function Home() {
             <UrlTile
               urlTemplate={urlProvider}
               shouldReplaceMapContent={true}
-              tileCachePath=""
               maximumZ={19}
               flipY={false}
               zIndex={1}
@@ -127,7 +126,7 @@ export default function Home() {
               zoomEnabled={false}
               rotateEnabled={false}
               followsUserLocation={true}
-              minZoomLevel={15}
+              minZoomLevel={18}
               initialRegion={{
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
