@@ -70,7 +70,7 @@ export default function Home() {
 
   function CustomMap() {
     if (dist && location) {
-      if (dist >= 2) {
+      if (dist <= 2) {
         // Just switch this condition for map debugging
         return (
           <AnimatedMapView
