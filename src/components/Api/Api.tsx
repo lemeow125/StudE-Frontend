@@ -9,15 +9,11 @@ import {
   StudentData,
 } from "../../interfaces/Interfaces";
 
-export let backendURL = "";
-export let backendURLWebsocket = "";
-let use_production = false;
-if (__DEV__ && !use_production) {
+export let backendURL = "https://stude.keannu1.duckdns.org";
+export let backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
+if (__DEV__) {
   backendURL = "http://10.0.10.8:8000";
   backendURLWebsocket = "ws://10.0.10.8:8000";
-} else {
-  backendURL = "https://stude.keannu1.duckdns.org";
-  backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
 }
 
 const instance = axios.create({
