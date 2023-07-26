@@ -12,7 +12,7 @@ import {
 export let backendURL = "";
 export let backendURLWebsocket = "";
 let use_production = true;
-if (__DEV__ || !use_production) {
+if (__DEV__ && !use_production) {
   backendURL = "http://10.0.10.8:8000";
   backendURLWebsocket = "ws://10.0.10.8:8000";
 } else {
@@ -24,6 +24,8 @@ const instance = axios.create({
   baseURL: backendURL,
   timeout: 1000,
 });
+
+console.log(backendURL);
 
 // App APIs
 

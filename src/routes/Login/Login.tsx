@@ -94,7 +94,7 @@ export default function Login() {
                 }
                 console.log(JSON.stringify(user_info));
               } else {
-                console.log("heh", ParseLoginError(JSON.stringify(result[1])));
+                console.log(ParseLoginError(JSON.stringify(result[1])));
                 setError(ParseLoginError(JSON.stringify(result[1])));
               }
             });

@@ -19,8 +19,8 @@ export default function Home() {
   const ustpCoords = {
     latitude: 8.4857,
     longitude: 124.6565,
-    latitudeDelta: 0.000235,
-    longitudeDelta: 0.000067,
+    latitudeDelta: 0.4,
+    longitudeDelta: 0.4,
   };
   async function requestLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -62,27 +62,19 @@ export default function Home() {
     let dist = GetDistance(
       location.coords.latitude,
       location.coords.longitude,
-      8.4857, // LatitudeDelta
-      124.6565 // LongitudeDelta
+      0.4,
+      0.4
     );
     setDist(Math.round(dist));
   }
 
   function CustomMap() {
     if (dist && location) {
-      if (dist <= 1.5) {
+      if (dist >= 2) {
         // Just switch this condition for map debugging
         return (
           <AnimatedMapView
             style={styles.map}
-            mapType="none"
-            initialRegion={ustpCoords}
-            scrollEnabled={false}
-            zoomEnabled={false}
-            rotateEnabled={false}
-            followsUserLocation={true}
-            minZoomLevel={18}
-            toolbarEnabled={false}
             customMapStyle={[
               {
                 featureType: "poi",
@@ -93,6 +85,22 @@ export default function Home() {
                 ],
               },
             ]}
+            mapType="none"
+            scrollEnabled={true}
+            zoomEnabled={true}
+            toolbarEnabled={false}
+            rotateEnabled={false}
+            zoomControlEnabled
+            minZoomLevel={18}
+            zoomTapEnabled
+            followsUserLocation={true}
+            initialRegion={{
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+              latitudeDelta: 0.4,
+              longitudeDelta: 0.4,
+            }}
+            loadingBackgroundColor={colors.secondary_2}
           >
             <UrlTile
               urlTemplate={urlProvider}
@@ -106,7 +114,17 @@ export default function Home() {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
               }}
-            />
+              onPress={() => console.log(location)}
+              pinColor={colors.primary_1}
+            >
+              <Callout>
+                <Text style={styles.text_black_tiny}>
+                  You are here {"\n"}
+                  X: {Math.round(location.coords.longitude) + "\n"}
+                  Z: {Math.round(location.coords.latitude)}
+                </Text>
+              </Callout>
+            </Marker>
           </AnimatedMapView>
         );
       } else {
@@ -145,6 +163,7 @@ export default function Home() {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               }}
+              loadingBackgroundColor={colors.secondary_2}
             >
               <UrlTile
                 urlTemplate={urlProvider}
@@ -163,6 +182,7 @@ export default function Home() {
               >
                 <Callout>
                   <Text style={styles.text_black_tiny}>
+                    You are here {"\n"}
                     X: {Math.round(location.coords.longitude) + "\n"}
                     Z: {Math.round(location.coords.latitude)}
                   </Text>
