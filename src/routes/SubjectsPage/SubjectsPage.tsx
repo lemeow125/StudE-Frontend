@@ -33,9 +33,11 @@ import {
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { useSelector } from "react-redux";
+import { RootState } from "../../features/redux/Store/Store";
 
 export default function SubjectsPage() {
+  const logged_in_user = useSelector((state: RootState) => state.user.user);
   const queryClient = useQueryClient();
   // User Info
   const [user, setUser] = useState({
@@ -51,15 +53,10 @@ export default function SubjectsPage() {
     student_id_number: "",
     subjects: [] as Subjects,
   });
-  const [displayName, setDisplayName] = useState({
-    first_name: "",
-    last_name: "",
-  });
   const StudentInfo = useQuery({
     queryKey: ["user"],
     queryFn: UserInfo,
     onSuccess: (data: UserInfoParams) => {
-      //  console.log(data[1]);
       setUser({
         ...user,
         first_name: data[1].first_name,
@@ -71,30 +68,17 @@ export default function SubjectsPage() {
         student_id_number: data[1].student_id_number,
         subjects: data[1].subjects,
       });
-      setDisplayName({
-        first_name: data[1].first_name,
-        last_name: data[1].last_name,
-      });
-      setSelectedSubjects(user.subjects);
+      setSelectedSubjects(data[1].subjects);
     },
   });
   const mutation = useMutation({
     mutationFn: PatchUserInfo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["subjects", viewAll] });
+      queryClient.invalidateQueries({ queryKey: ["subjects"] });
       setSelectedSubjects([]);
     },
   });
-
-  // View all Subjects or only view those under current course, year level, and semester
-  // This is for irregular students
-  const [viewAll, setViewAll] = useState(false);
-
-  // If viewing all subjects, refresh the choices
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["subjects", viewAll] });
-  }, [viewAll]);
 
   // Subjects
 
@@ -104,42 +88,17 @@ export default function SubjectsPage() {
 
   const Subjects = useQuery({
     enabled: StudentInfo.isFetched,
-    queryKey: ["subjects", viewAll],
-    queryFn: async () => {
-      let data;
-      if (
-        StudentInfo.data &&
-        StudentInfo.data[1].course_shortname &&
-        StudentInfo.data[1].yearlevel_shortname &&
-        StudentInfo.data[1].semester_shortname
-      ) {
-        data = await GetSubjects(
-          viewAll,
-          StudentInfo.data[1].course_shortname,
-          StudentInfo.data[1].yearlevel_shortname,
-          StudentInfo.data[1].semester_shortname
-        );
-        console.log(JSON.stringify(data));
-      }
-      if (data) {
-        if (!data[0]) {
-          throw new Error("Error with query" + data[1]);
-        }
-        if (!data[1]) {
-          throw new Error("User has no course, year level, or semester!");
-        }
-        // console.log("Subjects available:", data[1]);
-      }
-      return data;
-    },
+    queryKey: ["subjects"],
+    queryFn: GetSubjects,
     onSuccess: (data: SubjectParams) => {
-      let subjectsData = data[1].map((subject: Subject) => ({
-        label: subject.name,
-        value: subject.name,
-      }));
-      // Update the 'subjects' state
-      setSelectedSubjects(user.subjects);
-      setSubjects(subjectsData);
+      if (data[1]) {
+        let subjects = data[1].map((subject: Subject) => ({
+          label: subject.name,
+          value: subject.name,
+        }));
+
+        setSubjects(subjects);
+      }
     },
   });
 
@@ -163,9 +122,9 @@ export default function SubjectsPage() {
         <View style={styles.flex_row}>
           <Avatar />
           <Text style={{ ...styles.text_white_small, ...{ marginLeft: 16 } }}>
-            {(displayName.first_name || "Undefined") +
+            {(logged_in_user.first_name || "Undefined") +
               " " +
-              (displayName.last_name || "User") +
+              (logged_in_user.last_name || "User") +
               "\n" +
               user.student_id_number}
           </Text>
@@ -212,21 +171,8 @@ export default function SubjectsPage() {
         </View>
         <View style={{ zIndex: -1 }}>
           <View style={styles.padding} />
-          <View style={styles.flex_row}>
-            <BouncyCheckbox
-              onPress={() => {
-                setViewAll(!viewAll);
-                setSubjectsOpen(false);
-              }}
-              fillColor={colors.secondary_3}
-            />
-            <Text style={styles.text_white_small}>Irregular </Text>
-          </View>
-          <View style={styles.padding} />
           <Button
             onPress={() => {
-              setSelectedSubjects([]);
-              setSubjectsOpen(!subjectsOpen);
               mutation.mutate({
                 subjects: selected_subjects,
               });

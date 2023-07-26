@@ -34,8 +34,15 @@ import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import { ValueType } from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { useSelector } from "react-redux";
+import { RootState } from "../../features/redux/Store/Store";
+import { useDispatch } from "react-redux";
+import { setUser as setUserinState } from "../../features/redux/slices/UserSlice/UserSlice";
 
 export default function UserInfoPage() {
+  const logged_in_user = useSelector((state: RootState) => state.user.user);
+  const dispatch = useDispatch();
   const queryClient = useQueryClient();
   // User Info
   const [user, setUser] = useState({
@@ -49,10 +56,7 @@ export default function UserInfoPage() {
     course_shortname: "",
     avatar: "",
     student_id_number: "",
-  });
-  const [displayName, setDisplayName] = useState({
-    first_name: "",
-    last_name: "",
+    irregular: false,
   });
   const StudentInfo = useQuery({
     queryKey: ["user"],
@@ -68,14 +72,12 @@ export default function UserInfoPage() {
         course: data[1].course,
         avatar: data[1].avatar,
         student_id_number: data[1].student_id_number,
-      });
-      setDisplayName({
-        first_name: data[1].first_name,
-        last_name: data[1].last_name,
+        irregular: data[1].irregular,
       });
       setSelectedCourse(data[1].course);
       setSelectedSemester(data[1].semester);
       setSelectedYearLevel(data[1].year_level);
+      dispatch(setUserinState(data[1]));
     },
   });
   const mutation = useMutation({
@@ -83,6 +85,7 @@ export default function UserInfoPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
+      dispatch(setUserinState(user));
     },
   });
 
@@ -135,8 +138,7 @@ export default function UserInfoPage() {
       setCourses(courses);
     },
   });
-  // Toggle editing of profile
-  const [isEditable, setIsEditable] = useState(false);
+
   // Profile photo
   function Avatar() {
     if (user.avatar) {
@@ -157,9 +159,9 @@ export default function UserInfoPage() {
         <View style={styles.flex_row}>
           <Avatar />
           <Text style={{ ...styles.text_white_small, ...{ marginLeft: 16 } }}>
-            {(displayName.first_name || "Undefined") +
+            {(logged_in_user.first_name || "Undefined") +
               " " +
-              (displayName.last_name || "User") +
+              (logged_in_user.last_name || "User") +
               "\n" +
               user.student_id_number}
           </Text>
@@ -173,7 +175,6 @@ export default function UserInfoPage() {
           <View style={{ flex: 3 }}>
             <TextInput
               style={styles.input}
-              editable={isEditable}
               onChange={(
                 e: NativeSyntheticEvent<TextInputChangeEventData>
               ): void => {
@@ -190,7 +191,6 @@ export default function UserInfoPage() {
           <View style={{ flex: 3 }}>
             <TextInput
               style={styles.input}
-              editable={isEditable}
               onChange={(
                 e: NativeSyntheticEvent<TextInputChangeEventData>
               ): void => {
@@ -206,7 +206,6 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              disabled={!isEditable}
               zIndex={4000}
               open={yearLevelOpen}
               value={selected_yearlevel}
@@ -242,7 +241,6 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              disabled={!isEditable}
               zIndex={3000}
               open={semesterOpen}
               value={selected_semester}
@@ -278,7 +276,6 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              disabled={!isEditable}
               zIndex={2000}
               open={courseOpen}
               value={selected_course}
@@ -310,26 +307,35 @@ export default function UserInfoPage() {
         </View>
         <View style={styles.padding} />
         <View style={{ zIndex: -1 }}>
+          <View style={styles.flex_row}>
+            <BouncyCheckbox
+              onPress={() => {
+                mutation.mutate({
+                  irregular: !user.irregular,
+                });
+                setUser({ ...user, irregular: !user.irregular });
+              }}
+              isChecked={user.irregular}
+              disableBuiltInState
+              fillColor={colors.secondary_3}
+            />
+            <Text style={styles.text_white_small}>Irregular </Text>
+          </View>
           <Button
             onPress={() => {
-              if (isEditable) {
-                setYearLevelOpen(false);
-                setSemesterOpen(false);
-                setCourseOpen(false);
-                mutation.mutate({
-                  first_name: user.first_name,
-                  last_name: user.last_name,
-                  course: selected_course,
-                  semester: selected_semester,
-                  year_level: selected_yearlevel,
-                });
-              }
-              setIsEditable(!isEditable);
+              setYearLevelOpen(false);
+              setSemesterOpen(false);
+              setCourseOpen(false);
+              mutation.mutate({
+                first_name: user.first_name,
+                last_name: user.last_name,
+                course: selected_course,
+                semester: selected_semester,
+                year_level: selected_yearlevel,
+              });
             }}
           >
-            <Text style={styles.text_white_small}>
-              {isEditable && StudentInfo.isSuccess ? "Save" : "Edit Profile"}
-            </Text>
+            <Text style={styles.text_white_small}>Save Changes</Text>
           </Button>
         </View>
       </AnimatedContainerNoScroll>

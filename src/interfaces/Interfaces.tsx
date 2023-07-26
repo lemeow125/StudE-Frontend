@@ -85,11 +85,12 @@ export type CourseParams = [boolean, Courses];
 
 // Subject
 export interface Subject {
+  id: number;
   name: string;
   code: string;
-  // courses: any[]; // To-do
-  // year_levels: any[]; // To-do
-  // semesters: any[]; // To-do
+  course: string;
+  year_level: string;
+  semester: string;
 }
 
 export type Subjects = Array<Subject>;
@@ -110,6 +111,7 @@ export interface PatchStudentData {
   semester?: string | null;
   subjects?: any[] | null; // To-do, replace 'any' with your actual type
   year_level?: string | null;
+  irregular?: boolean | null;
 }
 
 export interface StudentData {
@@ -118,14 +120,14 @@ export interface StudentData {
   email: string;
   avatar: string;
   student_id_number: string;
-  is_banned: boolean;
+  irregular: boolean;
   semester: string;
   semester_shortname: string;
   course: string;
   course_shortname: string;
   year_level: string;
   yearlevel_shortname: string;
-  subjects: any[]; // To-do
+  subjects: Subject[]; // To-do
   username: string;
 }
 

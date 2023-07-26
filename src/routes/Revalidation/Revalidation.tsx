@@ -28,11 +28,9 @@ export default function Revalidation() {
         dispatch(login());
         dispatch(setUser(user_info[1]));
         if (
-          !(
-            user_info[1].year_level ||
-            user_info[1].course ||
-            user_info[1].semester
-          )
+          !user_info[1].year_level ||
+          !user_info[1].course ||
+          !user_info[1].semester
         ) {
           dispatch(setOnboarding());
           await setTimeout(() => {
