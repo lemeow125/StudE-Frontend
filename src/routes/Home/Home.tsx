@@ -19,8 +19,8 @@ export default function Home() {
   const ustpCoords = {
     latitude: 8.4857,
     longitude: 124.6565,
-    latitudeDelta: 0.4,
-    longitudeDelta: 0.4,
+    latitudeDelta: 0.000235,
+    longitudeDelta: 0.000067,
   };
   async function requestLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -62,8 +62,8 @@ export default function Home() {
     let dist = GetDistance(
       location.coords.latitude,
       location.coords.longitude,
-      0.4,
-      0.4
+      8.4857, // LatitudeDelta
+      124.6565 // LongitudeDelta
     );
     setDist(Math.round(dist));
   }
