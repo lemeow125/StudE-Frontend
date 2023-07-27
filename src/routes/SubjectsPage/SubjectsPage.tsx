@@ -39,6 +39,7 @@ import { RootState } from "../../features/redux/Store/Store";
 export default function SubjectsPage() {
   const logged_in_user = useSelector((state: RootState) => state.user.user);
   const queryClient = useQueryClient();
+  const [feedback, setFeedback] = useState("");
   // User Info
   const [user, setUser] = useState({
     first_name: "",
@@ -70,6 +71,9 @@ export default function SubjectsPage() {
       });
       setSelectedSubjects(data[1].subjects);
     },
+    onError: () => {
+      setFeedback("Unable to query user info");
+    },
   });
   const mutation = useMutation({
     mutationFn: PatchUserInfo,
@@ -77,6 +81,7 @@ export default function SubjectsPage() {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
       setSelectedSubjects([]);
+      setFeedback("Changes applied successfully");
     },
   });
 
@@ -99,6 +104,9 @@ export default function SubjectsPage() {
 
         setSubjects(subjects);
       }
+    },
+    onError: () => {
+      setFeedback("Unable to query subject info");
     },
   });
 
@@ -178,8 +186,10 @@ export default function SubjectsPage() {
               });
             }}
           >
-            <Text style={styles.text_white_small}>Save Change</Text>
+            <Text style={styles.text_white_small}>Save Changes</Text>
           </Button>
+          <View style={styles.padding} />
+          <Text style={styles.text_white_small}>{feedback}</Text>
         </View>
       </AnimatedContainerNoScroll>
     </View>

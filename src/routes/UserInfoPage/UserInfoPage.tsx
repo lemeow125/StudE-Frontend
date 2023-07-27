@@ -44,6 +44,7 @@ export default function UserInfoPage() {
   const logged_in_user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const [feedback, setFeedback] = useState("");
   // User Info
   const [user, setUser] = useState({
     first_name: "",
@@ -79,13 +80,20 @@ export default function UserInfoPage() {
       setSelectedYearLevel(data[1].year_level);
       dispatch(setUserinState(data[1]));
     },
+    onError: () => {
+      setFeedback("Unable to query user info");
+    },
   });
   const mutation = useMutation({
     mutationFn: PatchUserInfo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
+      setFeedback("Changes applied successfully");
       dispatch(setUserinState(user));
+    },
+    onError: () => {
+      setFeedback("An error has occured\nChanges have not been saved");
     },
   });
 
@@ -105,6 +113,9 @@ export default function UserInfoPage() {
       // Update the 'semesters' state
       setSemesters(semestersData);
     },
+    onError: () => {
+      setFeedback("Unable to query semester info");
+    },
   });
 
   // Year Level
@@ -121,6 +132,9 @@ export default function UserInfoPage() {
       }));
       setYearLevels(year_levels);
     },
+    onError: () => {
+      setFeedback("Unable to query year level info");
+    },
   });
 
   // Course
@@ -136,6 +150,9 @@ export default function UserInfoPage() {
         value: course.name,
       }));
       setCourses(courses);
+    },
+    onError: () => {
+      setFeedback("Unable to query course info");
     },
   });
 
@@ -179,6 +196,7 @@ export default function UserInfoPage() {
                 e: NativeSyntheticEvent<TextInputChangeEventData>
               ): void => {
                 setUser({ ...user, first_name: e.nativeEvent.text });
+                setFeedback("");
               }}
               value={user.first_name}
             />
@@ -195,6 +213,7 @@ export default function UserInfoPage() {
                 e: NativeSyntheticEvent<TextInputChangeEventData>
               ): void => {
                 setUser({ ...user, last_name: e.nativeEvent.text });
+                setFeedback("");
               }}
               value={user.last_name}
             />
@@ -216,6 +235,9 @@ export default function UserInfoPage() {
                 setCourseOpen(false);
               }}
               setValue={setSelectedYearLevel}
+              onChangeValue={() => {
+                setFeedback("");
+              }}
               placeholder={user.year_level}
               placeholderStyle={{
                 ...styles.text_white_tiny_bold,
@@ -251,6 +273,9 @@ export default function UserInfoPage() {
                 setCourseOpen(false);
               }}
               setValue={setSelectedSemester}
+              onChangeValue={() => {
+                setFeedback("");
+              }}
               placeholder={user.semester}
               placeholderStyle={{
                 ...styles.text_white_tiny_bold,
@@ -286,6 +311,9 @@ export default function UserInfoPage() {
                 setCourseOpen(open);
               }}
               setValue={setSelectedCourse}
+              onChangeValue={() => {
+                setFeedback("");
+              }}
               placeholder={user.course}
               placeholderStyle={{
                 ...styles.text_white_tiny_bold,
@@ -337,6 +365,8 @@ export default function UserInfoPage() {
           >
             <Text style={styles.text_white_small}>Save Changes</Text>
           </Button>
+          <View style={styles.padding} />
+          <Text style={styles.text_white_small}>{feedback}</Text>
         </View>
       </AnimatedContainerNoScroll>
     </View>

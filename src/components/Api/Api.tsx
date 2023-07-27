@@ -17,7 +17,7 @@ if (__DEV__) {
 }
 
 // Switch this on if you wanna run production URLs while in development
-let use_production = false;
+let use_production = true;
 if (use_production) {
   backendURL = "https://stude.keannu1.duckdns.org";
   backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
