@@ -6,6 +6,7 @@ import {
   TextInput,
   NativeSyntheticEvent,
   TextInputChangeEventData,
+  Pressable,
 } from "react-native";
 import { useState } from "react";
 import {
@@ -32,13 +33,14 @@ import {
 } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
-import { ValueType } from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
 import { useDispatch } from "react-redux";
 import { setUser as setUserinState } from "../../features/redux/slices/UserSlice/UserSlice";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 export default function UserInfoPage() {
   const logged_in_user = useSelector((state: RootState) => state.user.user);
@@ -71,9 +73,9 @@ export default function UserInfoPage() {
         year_level: data[1].year_level,
         semester: data[1].semester,
         course: data[1].course,
-        avatar: data[1].avatar,
         student_id_number: data[1].student_id_number,
         irregular: data[1].irregular,
+        avatar: data[1].avatar,
       });
       setSelectedCourse(data[1].course);
       setSelectedSemester(data[1].semester);
@@ -157,15 +159,39 @@ export default function UserInfoPage() {
   });
 
   // Profile photo
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      const encodedImage = await FileSystem.readAsStringAsync(
+        result.assets[0].uri,
+        { encoding: "base64" }
+      );
+      mutation.mutate({
+        avatar: encodedImage,
+      });
+    }
+  };
   function Avatar() {
     if (user.avatar) {
-      return <Image source={{ uri: user.avatar }} style={styles.profile} />;
+      return (
+        <Pressable onPress={pickImage}>
+          <Image source={{ uri: user.avatar }} style={styles.profile} />
+        </Pressable>
+      );
     } else {
       return (
-        <Image
-          source={require("../../img/user_profile_placeholder.png")}
-          style={{ ...styles.profile, ...{ marginRight: 48 } }}
-        />
+        <Pressable onPress={pickImage}>
+          <Image
+            source={require("../../img/user_profile_placeholder.png")}
+            style={{ ...styles.profile, ...{ marginRight: 48 } }}
+          />
+        </Pressable>
       );
     }
   }
@@ -350,7 +376,7 @@ export default function UserInfoPage() {
             <Text style={styles.text_white_small}>Irregular </Text>
           </View>
           <Button
-            onPress={() => {
+            onPress={async () => {
               setYearLevelOpen(false);
               setSemesterOpen(false);
               setCourseOpen(false);

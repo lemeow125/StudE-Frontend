@@ -17,7 +17,7 @@ if (__DEV__) {
 }
 
 // Switch this on if you wanna run production URLs while in development
-let use_production = true;
+let use_production = false;
 if (use_production) {
   backendURL = "https://stude.keannu1.duckdns.org";
   backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
@@ -142,6 +142,7 @@ export async function UserInfo() {
 }
 
 export async function PatchUserInfo(info: PatchStudentData) {
+  console.log("API", JSON.stringify(info));
   const config = await GetConfig();
   return instance
     .patch("/api/v1/accounts/users/me/", info, config)
@@ -153,7 +154,7 @@ export async function PatchUserInfo(info: PatchStudentData) {
       let error_message = "";
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
-      // console.log(error_message);
+      console.log(error_message);
       return [false, error_message];
     });
 }

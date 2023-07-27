@@ -96,6 +96,11 @@ export interface Subject {
 export type Subjects = Array<Subject>;
 export type SubjectParams = [boolean, Subjects];
 
+export type avatar = {
+  uri: string;
+  type: string;
+  name: string;
+};
 // For dropdown menu
 
 export interface OnboardingParams {
@@ -112,6 +117,7 @@ export interface PatchStudentData {
   subjects?: any[] | null; // To-do, replace 'any' with your actual type
   year_level?: string | null;
   irregular?: boolean | null;
+  avatar?: string | null;
 }
 
 export interface StudentData {

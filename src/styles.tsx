@@ -182,6 +182,8 @@ const styles = StyleSheet.create({
     borderRadius: 150 / 2,
     overflow: "hidden",
     padding: 0,
+    borderColor: colors.primary_2,
+    borderWidth: 3,
   },
   input: {
     paddingHorizontal: 8,
