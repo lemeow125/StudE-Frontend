@@ -6,7 +6,6 @@ import MapView, { Callout, Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
-import { AnimatedMapView } from "react-native-maps/lib/MapView";
 type LocationType = Location.LocationObject;
 export default function Home() {
   const [location, setLocation] = useState<LocationType | null>(null);
@@ -31,34 +30,36 @@ export default function Home() {
       return;
     }
     if (status == "granted") {
-      let location = await Location.getCurrentPositionAsync({});
-      if (location) {
-        setLocation(location);
-        getDistance(location);
+      let newLocation = await Location.getCurrentPositionAsync({});
+      if (newLocation) {
+        // Only update location state if user's location has changed
+        if (
+          !location ||
+          newLocation.coords.latitude !== location.coords.latitude ||
+          newLocation.coords.longitude !== location.coords.longitude
+        ) {
+          setLocation(newLocation);
+          GetDistanceRoundedOff(newLocation);
+        }
       }
     }
   }
 
-  // Refresh every 10 seconds
+  // Refresh every 15 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
-    }, 10000);
+    }, 15000);
 
     return () => clearInterval(interval);
   });
-
-  // Refresh when user moves location
-  useEffect(() => {
-    requestLocation();
-  }, [location]);
 
   // Run when screen loads
   useEffect(() => {
     requestLocation();
   }, []);
 
-  async function getDistance(location: LocationType) {
+  async function GetDistanceRoundedOff(location: LocationType) {
     let dist = GetDistance(
       location.coords.latitude,
       location.coords.longitude,
@@ -70,10 +71,10 @@ export default function Home() {
 
   function CustomMap() {
     if (dist && location) {
-      if (dist <= 2) {
+      if (dist >= 2) {
         // Just switch this condition for map debugging
         return (
-          <AnimatedMapView
+          <MapView
             style={styles.map}
             customMapStyle={[
               {
@@ -90,10 +91,9 @@ export default function Home() {
             zoomEnabled={true}
             toolbarEnabled={false}
             rotateEnabled={false}
-            zoomControlEnabled
-            minZoomLevel={18}
+            maxZoomLevel={19}
+            minZoomLevel={19}
             zoomTapEnabled
-            followsUserLocation={true}
             initialRegion={{
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
@@ -115,6 +115,33 @@ export default function Home() {
                 longitude: location.coords.longitude,
               }}
               onPress={() => console.log(location)}
+              draggable
+              onDragEnd={(e) => {
+                const newLocation = e.nativeEvent.coordinate;
+                const distance = GetDistance(
+                  newLocation.latitude,
+                  newLocation.longitude,
+                  location.coords.latitude,
+                  location.coords.longitude
+                );
+                console.log("Distance:", distance);
+                if (distance <= 0.1) {
+                  // If the new location is within 100 meters of the actual location, update the location state
+                  setLocation({
+                    ...location,
+                    coords: {
+                      ...location.coords,
+                      latitude: newLocation.latitude,
+                      longitude: newLocation.longitude,
+                    },
+                  });
+                } else {
+                  // If the new location is more than 100 meters away from the actual location, reset the marker to the actual location
+                  setLocation({
+                    ...location,
+                  });
+                }
+              }}
               pinColor={colors.primary_1}
             >
               <Callout>
@@ -125,7 +152,7 @@ export default function Home() {
                 </Text>
               </Callout>
             </Marker>
-          </AnimatedMapView>
+          </MapView>
         );
       } else {
         return (
@@ -134,7 +161,7 @@ export default function Home() {
               You are too far from USTP {"\n"}
               Get closer to use Stud-E
             </Text>
-            <AnimatedMapView
+            <MapView
               style={{
                 height: Viewport.height * 0.5,
                 width: Viewport.width * 0.8,
@@ -155,7 +182,6 @@ export default function Home() {
               zoomEnabled={false}
               toolbarEnabled={false}
               rotateEnabled={false}
-              followsUserLocation={true}
               minZoomLevel={18}
               initialRegion={{
                 latitude: location.coords.latitude,
@@ -188,7 +214,7 @@ export default function Home() {
                   </Text>
                 </Callout>
               </Marker>
-            </AnimatedMapView>
+            </MapView>
             <Text style={styles.text_white_small}>
               {dist}km away from USTP {"\n"}
             </Text>
