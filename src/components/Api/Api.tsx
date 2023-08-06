@@ -6,7 +6,7 @@ import {
   OnboardingParams,
   PatchStudentData,
   RegistrationParams,
-  StudentData,
+  StudentStatusParams,
 } from "../../interfaces/Interfaces";
 
 export let backendURL = "https://stude.keannu1.duckdns.org";
@@ -17,8 +17,8 @@ if (__DEV__) {
 }
 
 // Switch this on if you wanna run production URLs while in development
-let use_production = true;
-if (use_production) {
+let use_production = false;
+if (__DEV__ && use_production) {
   backendURL = "https://stude.keannu1.duckdns.org";
   backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
 }
@@ -254,6 +254,24 @@ export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
       console.log("Error updating onboarding info", error_message);
+      return [false, error_message];
+    });
+}
+
+export async function PostStudentStatus(info: StudentStatusParams) {
+  const config = await GetConfig();
+  console.log(info);
+  return instance
+    .post("/api/v1/student_status/self/", info, config)
+    .then((response) => {
+      console.log("heh1");
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log("heh2", error);
       return [false, error_message];
     });
 }

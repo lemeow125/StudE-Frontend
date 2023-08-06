@@ -361,7 +361,7 @@ export default function UserInfoPage() {
         </View>
         <View style={styles.padding} />
         <View style={{ zIndex: -1 }}>
-          <View style={styles.flex_row}>
+          <View style={{ ...styles.flex_row, ...{ alignSelf: "center" } }}>
             <BouncyCheckbox
               onPress={() => {
                 mutation.mutate({

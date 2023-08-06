@@ -1,4 +1,5 @@
 import "react-native-gesture-handler";
+import { Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Provider } from "react-redux";
@@ -21,6 +22,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import UserInfoPage from "./src/routes/UserInfoPage/UserInfoPage";
 import SubjectsPage from "./src/routes/SubjectsPage/SubjectsPage";
+import Loading from "./src/routes/Loading/Loading";
 
 const Drawer = createDrawerNavigator();
 
@@ -28,7 +30,7 @@ const linking = {
   prefixes: [Linking.makeUrl("/")],
   config: {
     screens: {
-      Home: "home",
+      Home: "",
       Login: "login",
       Register: "register",
       Onboarding: "onboarding",
@@ -59,7 +61,7 @@ export default function App() {
       <Provider store={store}>
         <StatusBar style="light" />
 
-        <NavigationContainer linking={linking}>
+        <NavigationContainer linking={linking} fallback={<Loading />}>
           <Drawer.Navigator
             initialRouteName="Revalidation"
             drawerContent={CustomDrawerContent}

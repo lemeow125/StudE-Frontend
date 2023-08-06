@@ -6,6 +6,8 @@ import MapView, { Callout, Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
+import { PostStudentStatus } from "../../components/Api/Api";
+import { StudentStatusParams } from "../../interfaces/Interfaces";
 type LocationType = Location.LocationObject;
 export default function Home() {
   const [location, setLocation] = useState<LocationType | null>(null);
@@ -74,85 +76,102 @@ export default function Home() {
       if (dist >= 2) {
         // Just switch this condition for map debugging
         return (
-          <MapView
-            style={styles.map}
-            customMapStyle={[
-              {
-                featureType: "poi",
-                stylers: [
-                  {
-                    visibility: "off",
-                  },
-                ],
-              },
-            ]}
-            mapType="none"
-            scrollEnabled={true}
-            zoomEnabled={true}
-            toolbarEnabled={false}
-            rotateEnabled={false}
-            maxZoomLevel={19}
-            minZoomLevel={19}
-            zoomTapEnabled
-            initialRegion={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-              latitudeDelta: 0.4,
-              longitudeDelta: 0.4,
-            }}
-            loadingBackgroundColor={colors.secondary_2}
-          >
-            <UrlTile
-              urlTemplate={urlProvider}
-              shouldReplaceMapContent={true}
-              maximumZ={19}
-              flipY={false}
-              zIndex={1}
-            />
-            <Marker
-              coordinate={{
+          <View>
+            <MapView
+              style={styles.map}
+              customMapStyle={[
+                {
+                  featureType: "poi",
+                  stylers: [
+                    {
+                      visibility: "off",
+                    },
+                  ],
+                },
+              ]}
+              mapType="none"
+              scrollEnabled={true}
+              zoomEnabled={true}
+              toolbarEnabled={false}
+              rotateEnabled={false}
+              maxZoomLevel={19}
+              minZoomLevel={19}
+              zoomTapEnabled
+              initialRegion={{
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
+                latitudeDelta: 0.4,
+                longitudeDelta: 0.4,
               }}
-              onPress={() => console.log(location)}
-              draggable
-              onDragEnd={(e) => {
-                const newLocation = e.nativeEvent.coordinate;
-                const distance = GetDistance(
-                  newLocation.latitude,
-                  newLocation.longitude,
-                  location.coords.latitude,
-                  location.coords.longitude
-                );
-                console.log("Distance:", distance);
-                if (distance <= 0.1) {
-                  // If the new location is within 100 meters of the actual location, update the location state
-                  setLocation({
-                    ...location,
-                    coords: {
-                      ...location.coords,
-                      latitude: newLocation.latitude,
-                      longitude: newLocation.longitude,
-                    },
-                  });
-                } else {
-                  // If the new location is more than 100 meters away from the actual location, reset the marker to the actual location
-                  setLocation({
-                    ...location,
-                  });
-                }
-              }}
-              pinColor={colors.primary_1}
+              loadingBackgroundColor={colors.secondary_2}
             >
-              <Callout>
-                <Text style={styles.text_black_tiny}>
-                  You are here {"\n"}
-                  X: {Math.round(location.coords.longitude) + "\n"}
-                  Z: {Math.round(location.coords.latitude)}
-                </Text>
-              </Callout>
-            </Marker>
-          </MapView>
+              <UrlTile
+                urlTemplate={urlProvider}
+                shouldReplaceMapContent={true}
+                maximumZ={19}
+                flipY={false}
+                zIndex={1}
+              />
+              <Marker
+                coordinate={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                }}
+                onPress={() => console.log(location)}
+                draggable
+                onDragEnd={(e) => {
+                  const newLocation = e.nativeEvent.coordinate;
+                  const distance = GetDistance(
+                    newLocation.latitude,
+                    newLocation.longitude,
+                    location.coords.latitude,
+                    location.coords.longitude
+                  );
+                  console.log("Distance:", distance);
+                  if (distance <= 0.1) {
+                    // If the new location is within 100 meters of the actual location, update the location state
+                    setLocation({
+                      ...location,
+                      coords: {
+                        ...location.coords,
+                        latitude: newLocation.latitude,
+                        longitude: newLocation.longitude,
+                      },
+                    });
+                  } else {
+                    // If the new location is more than 100 meters away from the actual location, reset the marker to the actual location
+                    setLocation({
+                      ...location,
+                    });
+                  }
+                }}
+                pinColor={colors.primary_1}
+              >
+                <Callout>
+                  <Text style={styles.text_black_medium}>
+                    You are here {"\n"}
+                    X: {Math.round(location.coords.longitude) + "\n"}
+                    Z: {Math.round(location.coords.latitude)}
+                  </Text>
+                </Callout>
+              </Marker>
+            </MapView>
+            <Button
+              onPress={async () => {
+                const postData: StudentStatusParams = {
+                  subject: "System Administration and Maintenance",
+                  location: {
+                    latitude: location.coords.latitude,
+                    longtitude: location.coords.longitude,
+                  },
+                };
+                await PostStudentStatus(postData);
+                console.log(postData);
+              }}
+            >
+              <Text style={styles.text_white_medium}>Start Studying</Text>
+            </Button>
+          </View>
         );
       } else {
         return (

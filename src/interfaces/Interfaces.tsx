@@ -138,3 +138,13 @@ export interface StudentData {
 }
 
 export type UserInfoParams = [boolean, StudentData];
+
+interface Location {
+  latitude: number;
+  longtitude: number;
+}
+
+export interface StudentStatusParams {
+  subject: string;
+  location: Location;
+}
