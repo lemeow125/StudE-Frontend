@@ -7,9 +7,15 @@ import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
 import { PostStudentStatus } from "../../components/Api/Api";
-import { StudentStatusParams } from "../../interfaces/Interfaces";
-type LocationType = Location.LocationObject;
+import {
+  RootDrawerParamList,
+  StudentStatusParams,
+} from "../../interfaces/Interfaces";
+import { LocationType } from "../../interfaces/Interfaces";
+import { useNavigation } from "@react-navigation/native";
+
 export default function Home() {
+  const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<LocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
   const [feedback, setFeedback] = useState(
@@ -158,15 +164,7 @@ export default function Home() {
             </MapView>
             <Button
               onPress={async () => {
-                const postData: StudentStatusParams = {
-                  subject: "System Administration and Maintenance",
-                  location: {
-                    latitude: location.coords.latitude,
-                    longtitude: location.coords.longitude,
-                  },
-                };
-                await PostStudentStatus(postData);
-                console.log(postData);
+                navigation.navigate("Start Studying", { location: location });
               }}
             >
               <Text style={styles.text_white_medium}>Start Studying</Text>

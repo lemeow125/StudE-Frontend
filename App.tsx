@@ -23,6 +23,7 @@ import { StatusBar } from "expo-status-bar";
 import UserInfoPage from "./src/routes/UserInfoPage/UserInfoPage";
 import SubjectsPage from "./src/routes/SubjectsPage/SubjectsPage";
 import Loading from "./src/routes/Loading/Loading";
+import StartStudying from "./src/routes/StartStudying/StartStudying";
 
 const Drawer = createDrawerNavigator();
 
@@ -75,6 +76,7 @@ export default function App() {
             <Drawer.Screen name="Activation" component={Activation} />
             <Drawer.Screen name="User Info" component={UserInfoPage} />
             <Drawer.Screen name="Subjects" component={SubjectsPage} />
+            <Drawer.Screen name="Start Studying" component={StartStudying} />
           </Drawer.Navigator>
         </NavigationContainer>
       </Provider>

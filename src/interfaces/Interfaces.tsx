@@ -1,3 +1,5 @@
+import * as Location from "expo-location";
+
 export interface IconProps {
   size: number;
 }
@@ -133,7 +135,7 @@ export interface StudentData {
   course_shortname: string;
   year_level: string;
   yearlevel_shortname: string;
-  subjects: Subject[]; // To-do
+  subjects: string[]; // To-do
   username: string;
 }
 
@@ -149,3 +151,5 @@ export interface StudentStatusParams {
   location?: Location;
   active?: boolean;
 }
+
+export type LocationType = Location.LocationObject;
