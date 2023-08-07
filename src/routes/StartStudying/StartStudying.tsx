@@ -1,20 +1,16 @@
 import * as React from "react";
-import styles from "../../styles";
+import styles, { Viewport } from "../../styles";
 import { View, Text } from "react-native";
 import { useState } from "react";
-import {
-  UserInfoParams,
-  Subject,
-  OptionType,
-} from "../../interfaces/Interfaces";
+import { UserInfoParams, OptionType } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfo } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
-import { useSelector } from "react-redux";
-import { RootState } from "../../features/redux/Store/Store";
+import { urlProvider } from "../../components/Api/Api";
+import MapView, { UrlTile, Marker } from "react-native-maps";
 
 export default function StartStudying({ route }: any) {
   const { location } = route.params;
@@ -43,6 +39,57 @@ export default function StartStudying({ route }: any) {
     return (
       <View style={styles.background}>
         <AnimatedContainerNoScroll>
+          <View style={{ zIndex: -1 }}>
+            <View style={styles.padding} />
+            <MapView
+              style={{
+                height: Viewport.height * 0.4,
+                width: Viewport.width * 0.8,
+                alignSelf: "center",
+              }}
+              customMapStyle={[
+                {
+                  featureType: "poi",
+                  stylers: [
+                    {
+                      visibility: "off",
+                    },
+                  ],
+                },
+              ]}
+              mapType="none"
+              scrollEnabled={false}
+              zoomEnabled={false}
+              toolbarEnabled={false}
+              rotateEnabled={false}
+              minZoomLevel={18}
+              initialRegion={{
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              loadingBackgroundColor={colors.secondary_2}
+            >
+              <UrlTile
+                urlTemplate={urlProvider}
+                shouldReplaceMapContent={true}
+                maximumZ={19}
+                flipY={false}
+                zIndex={1}
+              />
+              <Marker
+                coordinate={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                }}
+                pinColor={colors.primary_1}
+              />
+            </MapView>
+            <View style={styles.padding} />
+
+            <Text style={styles.text_white_small}>{feedback}</Text>
+          </View>
           <View style={styles.flex_row}>
             <View style={{ flex: 1 }}>
               <Text style={styles.text_white_small_bold}>Start Studying</Text>
@@ -80,17 +127,10 @@ export default function StartStudying({ route }: any) {
               />
             </View>
           </View>
-          <View style={{ zIndex: -1 }}>
-            <View style={styles.padding} />
-            <Text style={styles.text_white_small}>
-              {location.coords.longitude + "\n" + location.coords.latitude}
-            </Text>
-            <Button onPress={() => {}}>
-              <Text style={styles.text_white_small}>Start Studying</Text>
-            </Button>
-            <View style={styles.padding} />
-            <Text style={styles.text_white_small}>{feedback}</Text>
-          </View>
+          <View style={styles.padding} />
+          <Button onPress={() => {}}>
+            <Text style={styles.text_white_small}>Start Studying</Text>
+          </Button>
         </AnimatedContainerNoScroll>
       </View>
     );

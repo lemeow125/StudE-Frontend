@@ -6,13 +6,10 @@ import MapView, { Callout, Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
-import { PostStudentStatus } from "../../components/Api/Api";
-import {
-  RootDrawerParamList,
-  StudentStatusParams,
-} from "../../interfaces/Interfaces";
+import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import { LocationType } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
+import { urlProvider } from "../../components/Api/Api";
 
 export default function Home() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -21,8 +18,7 @@ export default function Home() {
   const [feedback, setFeedback] = useState(
     "To continue, please allow Stud-E permission to location services"
   );
-  const urlProvider =
-    "https://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=0f5cb5930d7642a8a921daea650754d9";
+
   const ustpCoords = {
     latitude: 8.4857,
     longitude: 124.6565,

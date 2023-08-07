@@ -30,6 +30,9 @@ const instance = axios.create({
 
 console.log(backendURL);
 
+// 3rd Party APIs
+export const urlProvider =
+  "https://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=0f5cb5930d7642a8a921daea650754d9";
 // App APIs
 
 // Token Handling
