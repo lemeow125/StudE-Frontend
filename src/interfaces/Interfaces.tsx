@@ -145,6 +145,7 @@ interface Location {
 }
 
 export interface StudentStatusParams {
-  subject: string;
-  location: Location;
+  subject?: string;
+  location?: Location;
+  active?: boolean;
 }

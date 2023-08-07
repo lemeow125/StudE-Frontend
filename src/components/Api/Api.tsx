@@ -262,7 +262,7 @@ export async function PostStudentStatus(info: StudentStatusParams) {
   const config = await GetConfig();
   console.log(info);
   return instance
-    .post("/api/v1/student_status/self/", info, config)
+    .patch("/api/v1/student_status/self/", info, config)
     .then((response) => {
       console.log("heh1");
       return [true, response.data];

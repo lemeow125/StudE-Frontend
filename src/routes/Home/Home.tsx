@@ -56,7 +56,7 @@ export default function Home() {
     return () => clearInterval(interval);
   });
 
-  // Run when screen loads
+  // Refresh when screen loads
   useEffect(() => {
     requestLocation();
   }, []);
@@ -65,8 +65,8 @@ export default function Home() {
     let dist = GetDistance(
       location.coords.latitude,
       location.coords.longitude,
-      8.4857, // LatitudeDelta
-      124.6565 // LongitudeDelta
+      ustpCoords.latitude,
+      ustpCoords.longitude
     );
     setDist(Math.round(dist));
   }
