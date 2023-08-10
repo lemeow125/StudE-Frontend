@@ -52,7 +52,7 @@ export default function SubjectsPage() {
     course_shortname: "",
     avatar: "",
     student_id_number: "",
-    subjects: [] as Subjects,
+    subjects: [] as string[],
   });
   const StudentInfo = useQuery({
     queryKey: ["user"],

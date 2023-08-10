@@ -1,21 +1,26 @@
 import * as React from "react";
 import styles, { Viewport } from "../../styles";
-import { View, Text } from "react-native";
+import { View, Text, ToastAndroid } from "react-native";
 import { useState } from "react";
-import { UserInfoParams, OptionType } from "../../interfaces/Interfaces";
+import {
+  UserInfoParams,
+  OptionType,
+  RootDrawerParamList,
+} from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { UserInfo } from "../../components/Api/Api";
+import { PatchStudentStatus, UserInfo } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 import { urlProvider } from "../../components/Api/Api";
 import MapView, { UrlTile, Marker } from "react-native-maps";
+import { useNavigation } from "@react-navigation/native";
 
 export default function StartStudying({ route }: any) {
   const { location } = route.params;
   const queryClient = useQueryClient();
-  const [feedback, setFeedback] = useState("");
+  const navigation = useNavigation<RootDrawerParamList>();
 
   // Subject choices
   const [selected_subject, setSelectedSubject] = useState("");
@@ -32,9 +37,32 @@ export default function StartStudying({ route }: any) {
       setSubjects(subjects);
     },
     onError: () => {
-      setFeedback("Unable to query available subjects");
+      ToastAndroid.show(
+        "Server error: Unable to query available subjects",
+        ToastAndroid.SHORT
+      );
     },
   });
+
+  const mutation = useMutation({
+    mutationFn: PatchStudentStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      ToastAndroid.show(
+        "You are now studying " + selected_subject,
+        ToastAndroid.SHORT
+      );
+      navigation.navigate("Home");
+    },
+    onError: () => {
+      ToastAndroid.show(
+        "A server error has occured. Please try again",
+        ToastAndroid.SHORT
+      );
+    },
+  });
+
   if (location && location.coords) {
     return (
       <View style={styles.background}>
@@ -87,50 +115,60 @@ export default function StartStudying({ route }: any) {
               />
             </MapView>
             <View style={styles.padding} />
-
-            <Text style={styles.text_white_small}>{feedback}</Text>
           </View>
-          <View style={styles.flex_row}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.text_white_small_bold}>Start Studying</Text>
-            </View>
-            <View style={{ flex: 3 }}>
-              <DropDownPicker
-                zIndex={1000}
-                max={16}
-                open={subjectsOpen}
-                value={selected_subject}
-                items={subjects}
-                setOpen={(open) => {
-                  setSubjectsOpen(open);
-                }}
-                setValue={setSelectedSubject}
-                placeholderStyle={{
-                  ...styles.text_white_tiny_bold,
-                  ...{ textAlign: "left" },
-                }}
-                placeholder="Select subject"
-                multipleText="Select subject"
-                style={styles.input}
-                textStyle={{
-                  ...styles.text_white_tiny_bold,
-                  ...{ textAlign: "left" },
-                }}
-                modalContentContainerStyle={{
-                  backgroundColor: colors.primary_2,
-                  borderWidth: 0,
-                  zIndex: 1000,
-                }}
-                autoScroll
-                dropDownDirection="BOTTOM"
-                listMode="MODAL"
-              />
-            </View>
-          </View>
+          <DropDownPicker
+            zIndex={1000}
+            max={16}
+            open={subjectsOpen}
+            value={selected_subject}
+            items={subjects}
+            setOpen={(open) => {
+              setSubjectsOpen(open);
+            }}
+            setValue={setSelectedSubject}
+            placeholderStyle={{
+              ...styles.text_white_tiny_bold,
+              ...{ textAlign: "left" },
+            }}
+            placeholder="Select subject"
+            multipleText="Select subject"
+            style={styles.input}
+            textStyle={{
+              ...styles.text_white_tiny_bold,
+              ...{ textAlign: "left" },
+            }}
+            modalContentContainerStyle={{
+              backgroundColor: colors.primary_2,
+              borderWidth: 0,
+              zIndex: 1000,
+            }}
+            autoScroll
+            dropDownDirection="BOTTOM"
+            listMode="MODAL"
+          />
           <View style={styles.padding} />
-          <Button onPress={() => {}}>
+          <Button
+            onPress={() => {
+              console.log({
+                subject: selected_subject,
+                location: {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                },
+              });
+              mutation.mutate({
+                active: true,
+                subject: selected_subject,
+                location: {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                },
+              });
+            }}
+          >
             <Text style={styles.text_white_small}>Start Studying</Text>
           </Button>
+          <View style={styles.padding} />
         </AnimatedContainerNoScroll>
       </View>
     );

@@ -6,7 +6,7 @@ import {
   OnboardingParams,
   PatchStudentData,
   RegistrationParams,
-  StudentStatusParams,
+  StudentStatus,
 } from "../../interfaces/Interfaces";
 
 export let backendURL = "https://stude.keannu1.duckdns.org";
@@ -261,20 +261,35 @@ export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
     });
 }
 
-export async function PostStudentStatus(info: StudentStatusParams) {
+export async function GetStudentStatus() {
   const config = await GetConfig();
-  console.log(info);
   return instance
-    .patch("/api/v1/student_status/self/", info, config)
+    .get("/api/v1/student_status/self/", config)
     .then((response) => {
-      console.log("heh1");
       return [true, response.data];
     })
     .catch((error) => {
       let error_message = "";
       if (error.response) error_message = error.response.data;
       else error_message = "Unable to reach servers";
-      console.log("heh2", error);
+      console.log(error_message);
+      return [false, error_message];
+    });
+}
+
+export async function PatchStudentStatus(info: StudentStatus) {
+  const config = await GetConfig();
+  console.log(info);
+  return instance
+    .patch("/api/v1/student_status/self/", info, config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = "";
+      if (error.response) error_message = error.response.data;
+      else error_message = "Unable to reach servers";
+      console.log(error_message);
       return [false, error_message];
     });
 }

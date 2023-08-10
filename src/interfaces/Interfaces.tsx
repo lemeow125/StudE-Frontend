@@ -122,6 +122,23 @@ export interface PatchStudentData {
   avatar?: string | null;
 }
 
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+export interface StudentStatus {
+  user?: string;
+  subject?: string;
+  location?: Location;
+  landmark?: string | null;
+  active?: boolean;
+}
+
+export type StudentStatusParams = [boolean, StudentStatus];
+
+export type LocationType = Location.LocationObject;
+
 export interface StudentData {
   first_name: string;
   last_name: string;
@@ -135,21 +152,8 @@ export interface StudentData {
   course_shortname: string;
   year_level: string;
   yearlevel_shortname: string;
-  subjects: string[]; // To-do
+  subjects: string[];
   username: string;
 }
 
 export type UserInfoParams = [boolean, StudentData];
-
-interface Location {
-  latitude: number;
-  longtitude: number;
-}
-
-export interface StudentStatusParams {
-  subject?: string;
-  location?: Location;
-  active?: boolean;
-}
-
-export type LocationType = Location.LocationObject;

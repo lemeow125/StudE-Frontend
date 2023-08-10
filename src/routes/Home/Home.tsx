@@ -1,23 +1,34 @@
 import styles, { Viewport, colors } from "../../styles";
-import { View, Text } from "react-native";
+import { View, Text, ToastAndroid } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
 import MapView, { Callout, Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
-import { RootDrawerParamList } from "../../interfaces/Interfaces";
+import {
+  RootDrawerParamList,
+  StudentStatusParams,
+} from "../../interfaces/Interfaces";
 import { LocationType } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
-import { urlProvider } from "../../components/Api/Api";
+import {
+  GetStudentStatus,
+  PatchStudentStatus,
+  urlProvider,
+} from "../../components/Api/Api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
+  // Switch this condition to see the main map when debugging
+  const map_debug = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<LocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
   const [feedback, setFeedback] = useState(
     "To continue, please allow Stud-E permission to location services"
   );
+  const queryClient = useQueryClient();
 
   const ustpCoords = {
     latitude: 8.4857,
@@ -28,8 +39,10 @@ export default function Home() {
   async function requestLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      setFeedback(
-        "Permission to access location was denied. Please allow permission"
+      setFeedback("Allow location permissions to continue");
+      ToastAndroid.show(
+        "Location permission was denied. Please allow in order to use StudE",
+        ToastAndroid.SHORT
       );
       return;
     }
@@ -71,12 +84,86 @@ export default function Home() {
       ustpCoords.longitude
     );
     setDist(Math.round(dist));
+    // Deactivate student status if too far away
+    if (dist >= 2 && !map_debug)
+      mutation.mutate({
+        active: false,
+      });
   }
 
+  // Student Status
+  const [studying, setStudying] = useState(false);
+  const [subject, setSubject] = useState("");
+  const [buttonLabel, setButtonLabel] = useState("Start studying");
+  const StudentStatus = useQuery({
+    queryKey: ["user_status"],
+    queryFn: GetStudentStatus,
+    onSuccess: (data: StudentStatusParams) => {
+      if (data[1].active !== undefined) {
+        setStudying(data[1].active);
+      }
+      if (data[1].subject !== undefined) {
+        setSubject(data[1].subject);
+      }
+      if (data[1].active == true) {
+        setButtonLabel("Stop Studying");
+      } else if (data[1].active == false) {
+        setButtonLabel("Start Studying");
+      }
+      console.log(data[1]);
+    },
+    onError: () => {
+      setFeedback("Unable to query available subjects");
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: PatchStudentStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      ToastAndroid.show(
+        "You are no longer studying " + subject,
+        ToastAndroid.SHORT
+      );
+    },
+    onError: () => {
+      ToastAndroid.show(
+        "Server error. Unable to update student status",
+        ToastAndroid.SHORT
+      );
+    },
+  });
+  function CustomCallout() {
+    if (location && location.coords) {
+      if (studying) {
+        return (
+          <Callout>
+            <Text style={styles.text_black_medium}>
+              You are here {"\n"}
+              X: {Math.round(location.coords.longitude) + "\n"}
+              Z: {Math.round(location.coords.latitude) + "\n"}
+              Studying: {subject}
+            </Text>
+          </Callout>
+        );
+      } else {
+        return (
+          <Callout>
+            <Text style={styles.text_black_medium}>
+              You are here {"\n"}
+              X: {Math.round(location.coords.longitude) + "\n"}
+              Z: {Math.round(location.coords.latitude)}
+            </Text>
+          </Callout>
+        );
+      }
+    }
+    return <></>;
+  }
   function CustomMap() {
     if (dist && location) {
-      if (dist >= 2) {
-        // Just switch this condition for map debugging
+      if (dist <= 2 || map_debug) {
         return (
           <View>
             <MapView
@@ -149,21 +236,21 @@ export default function Home() {
                 }}
                 pinColor={colors.primary_1}
               >
-                <Callout>
-                  <Text style={styles.text_black_medium}>
-                    You are here {"\n"}
-                    X: {Math.round(location.coords.longitude) + "\n"}
-                    Z: {Math.round(location.coords.latitude)}
-                  </Text>
-                </Callout>
+                <CustomCallout />
               </Marker>
             </MapView>
             <Button
               onPress={async () => {
-                navigation.navigate("Start Studying", { location: location });
+                if (!studying) {
+                  navigation.navigate("Start Studying", { location: location });
+                } else {
+                  mutation.mutate({
+                    active: false,
+                  });
+                }
               }}
             >
-              <Text style={styles.text_white_medium}>Start Studying</Text>
+              <Text style={styles.text_white_medium}>{buttonLabel}</Text>
             </Button>
           </View>
         );

@@ -28,6 +28,7 @@ import {
   GetSemesters,
   GetSubjects,
   GetYearLevels,
+  PatchStudentStatus,
   PatchUserInfo,
   UserInfo,
 } from "../../components/Api/Api";
@@ -47,6 +48,20 @@ export default function UserInfoPage() {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const [feedback, setFeedback] = useState("");
+
+  // Student Status
+  const studentstatus_mutation = useMutation({
+    mutationFn: PatchStudentStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      setFeedback("Changes applied successfully");
+    },
+    onError: () => {
+      setFeedback("An error has occured\nChanges have not been saved");
+    },
+  });
+
   // User Info
   const [user, setUser] = useState({
     first_name: "",
@@ -86,11 +101,16 @@ export default function UserInfoPage() {
       setFeedback("Unable to query user info");
     },
   });
+
   const mutation = useMutation({
     mutationFn: PatchUserInfo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
+      // Reset student status when changing user info to prevent bugs
+      studentstatus_mutation.mutate({
+        active: false,
+      });
       setFeedback("Changes applied successfully");
       dispatch(setUserinState(user));
     },
