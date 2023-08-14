@@ -56,7 +56,7 @@ export default function UserInfoPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      toast.show("Changes applied successfully", {
+      toast.show("Student Status has been reset", {
         type: "success",
         placement: "top",
         duration: 2000,
@@ -111,7 +111,7 @@ export default function UserInfoPage() {
     onError: () => {
       toast.show("Server Error: Unable to query user info", {
         type: "warning",
-        placement: "bottom",
+        placement: "top",
         duration: 2000,
         animationType: "slide-in",
       });
@@ -129,7 +129,7 @@ export default function UserInfoPage() {
       });
       toast.show("Changes applied successfully", {
         type: "success",
-        placement: "bottom",
+        placement: "top",
         duration: 2000,
         animationType: "slide-in",
       });
@@ -138,7 +138,7 @@ export default function UserInfoPage() {
     onError: () => {
       toast.show("An error has occured\nChanges have not been saved", {
         type: "warning",
-        placement: "bottom",
+        placement: "top",
         duration: 2000,
         animationType: "slide-in",
       });
