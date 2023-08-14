@@ -14,7 +14,6 @@ import Button from "../../components/Button/Button";
 import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import { GetUserInfo, UserLogin } from "../../components/Api/Api";
-import { ParseLoginError } from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
 import {
@@ -104,7 +103,6 @@ export default function Login() {
                 }
                 console.log(JSON.stringify(user_info));
               } else {
-                console.log(ParseLoginError(JSON.stringify(result[1])));
                 toast.show(JSON.stringify(result[1]), {
                   type: "warning",
                   placement: "top",

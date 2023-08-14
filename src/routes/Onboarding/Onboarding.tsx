@@ -39,7 +39,13 @@ export default function Onboarding() {
   ]);
   const semester_query = useQuery({
     queryKey: ["semesters"],
-    queryFn: GetSemesters,
+    queryFn: async () => {
+      const data = await GetSemesters();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
       let semesters = data[1].map((item: SemesterType) => ({
         label: item.name,
@@ -47,8 +53,8 @@ export default function Onboarding() {
       }));
       setSemesters(semesters);
     },
-    onError: () => {
-      toast.show("Server error: Unable to query available semesters", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,
@@ -65,7 +71,13 @@ export default function Onboarding() {
   ]);
   const yearlevel_query = useQuery({
     queryKey: ["year_levels"],
-    queryFn: GetYearLevels,
+    queryFn: async () => {
+      const data = await GetYearLevels();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
       let year_levels = data[1].map((item: YearLevelType) => ({
         label: item.name,
@@ -73,8 +85,8 @@ export default function Onboarding() {
       }));
       setYearLevels(year_levels);
     },
-    onError: () => {
-      toast.show("Server error: Unable to query available year levels", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,
@@ -94,7 +106,13 @@ export default function Onboarding() {
   ]);
   const course_query = useQuery({
     queryKey: ["courses"],
-    queryFn: GetCourses,
+    queryFn: async () => {
+      const data = await GetCourses();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
       let courses = data[1].map((item: CourseType) => ({
         label: item.name,
@@ -102,8 +120,8 @@ export default function Onboarding() {
       }));
       setCourses(courses);
     },
-    onError: () => {
-      toast.show("Server error: Unable to query available courses", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,

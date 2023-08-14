@@ -7,10 +7,15 @@ import {
   OptionType,
   RootDrawerParamList,
   StudentStatusType,
+  StudentStatusReturnType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { PatchStudentStatus, GetUserInfo } from "../../components/Api/Api";
+import {
+  PatchStudentStatus,
+  GetUserInfo,
+  ParseError,
+} from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
@@ -31,7 +36,13 @@ export default function StartStudying({ route }: any) {
   const [subjects, setSubjects] = useState<OptionType[]>([]);
   const StudentInfo = useQuery({
     queryKey: ["user"],
-    queryFn: GetUserInfo,
+    queryFn: async () => {
+      const data = await GetUserInfo();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data: UserInfoReturnType) => {
       let subjects = data[1].subjects.map((subject: string) => ({
         label: subject,
@@ -39,8 +50,8 @@ export default function StartStudying({ route }: any) {
       }));
       setSubjects(subjects);
     },
-    onError: () => {
-      toast.show("Server error: Unable to query available subjects", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,
@@ -53,7 +64,7 @@ export default function StartStudying({ route }: any) {
     mutationFn: async (info: StudentStatusType) => {
       const data = await PatchStudentStatus(info);
       if (data[0] == false) {
-        return Promise.reject(new Error("Error updating student status"));
+        return Promise.reject(new Error(JSON.stringify(data[1])));
       }
       return data;
     },
@@ -68,8 +79,8 @@ export default function StartStudying({ route }: any) {
       });
       navigation.navigate("Home");
     },
-    onError: () => {
-      toast.show("A server error has occured. Please try again", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,

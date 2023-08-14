@@ -25,7 +25,7 @@ import SubjectsPage from "./src/routes/SubjectsPage/SubjectsPage";
 import Loading from "./src/routes/Loading/Loading";
 import StartStudying from "./src/routes/StartStudying/StartStudying";
 import { ToastProvider } from "react-native-toast-notifications";
-import AppIcon from "./src/icons/AppIcon/AppIcon";
+import InfoIcon from "./src/icons/InfoIcon/InfoIcon";
 
 const Drawer = createDrawerNavigator();
 
@@ -61,7 +61,7 @@ export default function App() {
   }, [initialRoute]);
   return (
     <ToastProvider
-      icon={<AppIcon size={64} />}
+      icon={<InfoIcon size={32} />}
       textStyle={{ ...styles.text_white_tiny_bold }}
     >
       <QueryClientProvider client={queryClient}>

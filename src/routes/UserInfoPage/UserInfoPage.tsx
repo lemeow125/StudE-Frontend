@@ -17,7 +17,6 @@ import {
   CourseType,
   OptionType,
   StudentStatusType,
-  UserInfoType,
   PatchUserInfoType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
@@ -88,7 +87,13 @@ export default function UserInfoPage() {
   });
   const StudentInfo = useQuery({
     queryKey: ["user"],
-    queryFn: GetUserInfo,
+    queryFn: async () => {
+      const data = await GetUserInfo();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data: UserInfoReturnType) => {
       //  console.log(data[1]);
       setUser({
@@ -107,8 +112,8 @@ export default function UserInfoPage() {
       setSelectedYearLevel(data[1].year_level);
       dispatch(setUserinState(data[1]));
     },
-    onError: () => {
-      toast.show("Server Error: Unable to query user info", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,
@@ -156,7 +161,13 @@ export default function UserInfoPage() {
   const [semesters, setSemesters] = useState<OptionType[]>([]);
   const Semesters = useQuery({
     queryKey: ["semesters"],
-    queryFn: GetSemesters,
+    queryFn: async () => {
+      const data = await GetSemesters();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data: SemesterReturnType) => {
       let semestersData = data[1].map((semester: SemesterType) => ({
         label: semester.name,
@@ -166,8 +177,8 @@ export default function UserInfoPage() {
       // Update the 'semesters' state
       setSemesters(semestersData);
     },
-    onError: () => {
-      toast.show("Server Error: Unable to query semester info", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,
@@ -182,7 +193,13 @@ export default function UserInfoPage() {
   const [year_levels, setYearLevels] = useState<OptionType[]>([]);
   const yearlevel_query = useQuery({
     queryKey: ["year_levels"],
-    queryFn: GetYearLevels,
+    queryFn: async () => {
+      const data = await GetYearLevels();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
       let year_levels = data[1].map((yearlevel: YearLevelType) => ({
         label: yearlevel.name,
@@ -190,8 +207,8 @@ export default function UserInfoPage() {
       }));
       setYearLevels(year_levels);
     },
-    onError: () => {
-      toast.show("Server Error: Unable to query year level info", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,
@@ -206,7 +223,13 @@ export default function UserInfoPage() {
   const [courses, setCourses] = useState<OptionType[]>([]);
   const course_query = useQuery({
     queryKey: ["courses"],
-    queryFn: GetCourses,
+    queryFn: async () => {
+      const data = await GetCourses();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
       let courses = data[1].map((course: CourseType) => ({
         label: course.name,
@@ -214,8 +237,8 @@ export default function UserInfoPage() {
       }));
       setCourses(courses);
     },
-    onError: () => {
-      toast.show("Server Error: Unable to query course info", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,

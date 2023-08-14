@@ -8,6 +8,7 @@ import {
   SubjectType,
   OptionType,
   StudentStatusType,
+  PatchUserInfoType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { Image } from "react-native";
@@ -69,7 +70,13 @@ export default function SubjectsPage() {
   });
   const StudentInfo = useQuery({
     queryKey: ["user"],
-    queryFn: GetUserInfo,
+    queryFn: async () => {
+      const data = await GetUserInfo();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data: UserInfoReturnType) => {
       setUser({
         ...user,
@@ -84,8 +91,8 @@ export default function SubjectsPage() {
       });
       setSelectedSubjects(data[1].subjects);
     },
-    onError: () => {
-      toast.show("Server Error: Unable to query user info", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,
@@ -94,7 +101,13 @@ export default function SubjectsPage() {
     },
   });
   const mutation = useMutation({
-    mutationFn: PatchUserInfo,
+    mutationFn: async (info: PatchUserInfoType) => {
+      const data = await PatchUserInfo(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
@@ -105,6 +118,14 @@ export default function SubjectsPage() {
       });
       toast.show("Changes applied successfully.\nStudent status reset", {
         type: "success",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
         placement: "top",
         duration: 2000,
         animationType: "slide-in",
@@ -121,7 +142,13 @@ export default function SubjectsPage() {
   const Subjects = useQuery({
     enabled: StudentInfo.isFetched,
     queryKey: ["subjects"],
-    queryFn: GetSubjects,
+    queryFn: async () => {
+      const data = await GetSubjects();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
     onSuccess: (data: SubjectsReturnType) => {
       if (data[1]) {
         let subjects = data[1].map((subject: SubjectType) => ({
@@ -132,8 +159,8 @@ export default function SubjectsPage() {
         setSubjects(subjects);
       }
     },
-    onError: () => {
-      toast.show("Server Error: Unable to query subject info", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,

@@ -108,7 +108,7 @@ export default function Home() {
     queryFn: async () => {
       const data = await GetStudentStatus();
       if (data[0] == false) {
-        return Promise.reject(new Error());
+        return Promise.reject(new Error(JSON.stringify(data[1])));
       }
       return data;
     },
@@ -126,8 +126,13 @@ export default function Home() {
       }
       console.log(data[1]);
     },
-    onError: () => {
-      setFeedback("Unable to query available subjects");
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -149,8 +154,8 @@ export default function Home() {
         animationType: "slide-in",
       });
     },
-    onError: () => {
-      toast.show("Server error. Unable to update student status", {
+    onError: (error: Error) => {
+      toast.show(String(error), {
         type: "warning",
         placement: "top",
         duration: 2000,

@@ -35,6 +35,22 @@ export const urlProvider =
   "https://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=0f5cb5930d7642a8a921daea650754d9";
 // App APIs
 
+// Error Handling
+export function ParseError(error: any) {
+  if (error.response && error.response.data) {
+    return JSON.stringify(error.response.data)
+      .replaceAll(/[{}()"]/g, " ")
+      .replaceAll(/,/g, "\n")
+      .replaceAll("[", "")
+      .replaceAll("]", "")
+      .replaceAll(".", "")
+      .replaceAll(/"/g, "")
+      .replaceAll("non_field_errors", "")
+      .trim();
+  }
+  return "Unable to reach server";
+}
+
 // Token Handling
 export async function getAccessToken() {
   const accessToken = await AsyncStorage.getItem("access_token");
@@ -75,9 +91,7 @@ export function UserRegister(register: RegistrationType) {
       return [true, response.status];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -86,21 +100,12 @@ export function UserLogin(user: LoginType) {
   return instance
     .post("/api/v1/accounts/jwt/create/", user)
     .then(async (response) => {
-      /*console.log(
-        "Access Token:",
-        response.data.access,
-        "\nRefresh Token:",
-        response.data.refresh
-      );*/
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
       return [true];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      // console.log(error_message);
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -114,17 +119,10 @@ export async function TokenRefresh() {
     })
     .then(async (response) => {
       setAccessToken(response.data.access);
-      /*console.log(
-        "Token refresh success! New Access Token",
-        response.data.access
-      );*/
       return true;
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      console.log("Token Refresh error:", error_message);
+      let error_message = ParseError(error);
       return false;
     });
 }
@@ -137,9 +135,7 @@ export async function GetUserInfo() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -153,9 +149,7 @@ export async function PatchUserInfo(info: PatchUserInfoType) {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -186,9 +180,7 @@ export async function GetCourses() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -206,9 +198,7 @@ export async function GetSemesters() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -222,9 +212,7 @@ export async function GetYearLevels() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -237,9 +225,7 @@ export async function GetSubjects() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -252,10 +238,7 @@ export async function GetStudentStatus() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      console.log(error_message);
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -269,10 +252,7 @@ export async function PatchStudentStatus(info: StudentStatusType) {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      console.log(error_message);
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
