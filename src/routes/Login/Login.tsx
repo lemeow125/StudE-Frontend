@@ -13,7 +13,7 @@ import LoginIcon from "../../icons/LoginIcon/LoginIcon";
 import Button from "../../components/Button/Button";
 import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
-import { UserInfo, UserLogin } from "../../components/Api/Api";
+import { GetUserInfo, UserLogin } from "../../components/Api/Api";
 import { ParseLoginError } from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
@@ -75,7 +75,7 @@ export default function Login() {
             }).then(async (result) => {
               if (result[0]) {
                 setUser({ ...creds, username: "", password: "", error: "" });
-                let user_info = await UserInfo();
+                let user_info = await GetUserInfo();
                 dispatch(login());
                 dispatch(setUser(user_info[1]));
                 // Redirect to onboarding if no year level, course, or semester specified
