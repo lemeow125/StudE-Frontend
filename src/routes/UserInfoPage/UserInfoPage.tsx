@@ -10,15 +10,15 @@ import {
 } from "react-native";
 import { useState } from "react";
 import {
-  SemesterParams,
-  UserInfoParams,
-  Semester,
-  SubjectParams,
-  Subject,
-  YearLevel,
-  Course,
+  SemesterReturnType,
+  UserInfoReturnType,
+  SemesterType,
+  YearLevelType,
+  CourseType,
   OptionType,
-  Subjects,
+  StudentStatusType,
+  UserInfoType,
+  PatchUserInfoType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { Image } from "react-native";
@@ -26,11 +26,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   GetCourses,
   GetSemesters,
-  GetSubjects,
   GetYearLevels,
   PatchStudentStatus,
   PatchUserInfo,
-  UserInfo,
+  GetUserInfo,
 } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -52,16 +51,16 @@ export default function UserInfoPage() {
 
   // Student Status
   const studentstatus_mutation = useMutation({
-    mutationFn: PatchStudentStatus,
+    mutationFn: async (info: StudentStatusType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      toast.show("Student Status has been reset", {
-        type: "success",
-        placement: "top",
-        duration: 2000,
-        animationType: "slide-in",
-      });
     },
     onError: () => {
       toast.show("An error has occured\nChanges have not been saved", {
@@ -89,8 +88,8 @@ export default function UserInfoPage() {
   });
   const StudentInfo = useQuery({
     queryKey: ["user"],
-    queryFn: UserInfo,
-    onSuccess: (data: UserInfoParams) => {
+    queryFn: GetUserInfo,
+    onSuccess: (data: UserInfoReturnType) => {
       //  console.log(data[1]);
       setUser({
         ...user,
@@ -119,7 +118,13 @@ export default function UserInfoPage() {
   });
 
   const mutation = useMutation({
-    mutationFn: PatchUserInfo,
+    mutationFn: async (info: PatchUserInfoType) => {
+      const data = await PatchUserInfo(info);
+      if (data[0] == false) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
@@ -127,7 +132,7 @@ export default function UserInfoPage() {
       studentstatus_mutation.mutate({
         active: false,
       });
-      toast.show("Changes applied successfully", {
+      toast.show("Changes applied successfully.\nStudent status reset", {
         type: "success",
         placement: "top",
         duration: 2000,
@@ -152,8 +157,8 @@ export default function UserInfoPage() {
   const Semesters = useQuery({
     queryKey: ["semesters"],
     queryFn: GetSemesters,
-    onSuccess: (data: SemesterParams) => {
-      let semestersData = data[1].map((semester: Semester) => ({
+    onSuccess: (data: SemesterReturnType) => {
+      let semestersData = data[1].map((semester: SemesterType) => ({
         label: semester.name,
         value: semester.name,
         shortname: semester.shortname,
@@ -179,7 +184,7 @@ export default function UserInfoPage() {
     queryKey: ["year_levels"],
     queryFn: GetYearLevels,
     onSuccess: (data) => {
-      let year_levels = data[1].map((yearlevel: YearLevel) => ({
+      let year_levels = data[1].map((yearlevel: YearLevelType) => ({
         label: yearlevel.name,
         value: yearlevel.name,
       }));
@@ -203,7 +208,7 @@ export default function UserInfoPage() {
     queryKey: ["courses"],
     queryFn: GetCourses,
     onSuccess: (data) => {
-      let courses = data[1].map((course: Course) => ({
+      let courses = data[1].map((course: CourseType) => ({
         label: course.name,
         value: course.name,
       }));

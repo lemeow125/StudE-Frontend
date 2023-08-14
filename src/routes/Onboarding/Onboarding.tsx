@@ -3,10 +3,10 @@ import styles from "../../styles";
 import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
-  Course,
   RootDrawerParamList,
-  Semester,
-  YearLevel,
+  CourseType,
+  SemesterType,
+  YearLevelType,
 } from "../../interfaces/Interfaces";
 import { colors } from "../../styles";
 import { MotiView } from "moti";
@@ -18,12 +18,11 @@ import {
   GetCourses,
   GetSemesters,
   GetYearLevels,
-  OnboardingUpdateStudentInfo,
+  PatchUserInfo,
 } from "../../components/Api/Api";
 import { useDispatch } from "react-redux";
 import { unsetOnboarding } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
-import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 import { useToast } from "react-native-toast-notifications";
 export default function Onboarding() {
@@ -42,7 +41,7 @@ export default function Onboarding() {
     queryKey: ["semesters"],
     queryFn: GetSemesters,
     onSuccess: (data) => {
-      let semesters = data[1].map((item: Semester) => ({
+      let semesters = data[1].map((item: SemesterType) => ({
         label: item.name,
         value: item.name,
       }));
@@ -68,7 +67,7 @@ export default function Onboarding() {
     queryKey: ["year_levels"],
     queryFn: GetYearLevels,
     onSuccess: (data) => {
-      let year_levels = data[1].map((item: YearLevel) => ({
+      let year_levels = data[1].map((item: YearLevelType) => ({
         label: item.name,
         value: item.name,
       }));
@@ -97,7 +96,7 @@ export default function Onboarding() {
     queryKey: ["courses"],
     queryFn: GetCourses,
     onSuccess: (data) => {
-      let courses = data[1].map((item: Course) => ({
+      let courses = data[1].map((item: CourseType) => ({
         label: item.name,
         value: item.name,
       }));
@@ -241,7 +240,7 @@ export default function Onboarding() {
               !selected_yearlevel || !selected_course || !selected_semester
             }
             onPress={async () => {
-              let result = await OnboardingUpdateStudentInfo({
+              let result = await PatchUserInfo({
                 semester: selected_semester,
                 course: selected_course,
                 year_level: selected_yearlevel,

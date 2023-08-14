@@ -1,7 +1,7 @@
 import * as React from "react";
 import styles from "../../styles";
 import { View, Text, ActivityIndicator } from "react-native";
-import { TokenRefresh, UserInfo } from "../../components/Api/Api";
+import { TokenRefresh, GetUserInfo } from "../../components/Api/Api";
 import { useDispatch } from "react-redux";
 import { colors } from "../../styles";
 import { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ export default function Revalidation() {
   useEffect(() => {
     setState("Previous session found");
     TokenRefresh().then(async (response) => {
-      let user_info = await UserInfo();
+      let user_info = await GetUserInfo();
       if (response && user_info[0]) {
         dispatch(login());
         dispatch(setUser(user_info[1]));

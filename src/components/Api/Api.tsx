@@ -1,12 +1,12 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  ActivationParams,
-  LoginParams,
-  OnboardingParams,
-  PatchStudentData,
-  RegistrationParams,
-  StudentStatus,
+  ActivationType,
+  LoginType,
+  OnboardingType,
+  PatchUserInfoType,
+  RegistrationType,
+  StudentStatusType,
 } from "../../interfaces/Interfaces";
 
 export let backendURL = "https://stude.keannu1.duckdns.org";
@@ -67,7 +67,7 @@ export async function GetConfig() {
 }
 
 // User APIs
-export function UserRegister(register: RegistrationParams) {
+export function UserRegister(register: RegistrationType) {
   console.log(JSON.stringify(register));
   return instance
     .post("/api/v1/accounts/users/", register)
@@ -82,7 +82,7 @@ export function UserRegister(register: RegistrationParams) {
     });
 }
 
-export function UserLogin(user: LoginParams) {
+export function UserLogin(user: LoginType) {
   return instance
     .post("/api/v1/accounts/jwt/create/", user)
     .then(async (response) => {
@@ -128,7 +128,7 @@ export async function TokenRefresh() {
       return false;
     });
 }
-export async function UserInfo() {
+export async function GetUserInfo() {
   const config = await GetConfig();
   return instance
     .get("/api/v1/accounts/users/me/", config)
@@ -144,7 +144,7 @@ export async function UserInfo() {
     });
 }
 
-export async function PatchUserInfo(info: PatchStudentData) {
+export async function PatchUserInfo(info: PatchUserInfoType) {
   const config = await GetConfig();
   return instance
     .patch("/api/v1/accounts/users/me/", info, config)
@@ -160,13 +160,13 @@ export async function PatchUserInfo(info: PatchStudentData) {
     });
 }
 
-export function UserActivate(activation: ActivationParams) {
+export function UserActivate(activation: ActivationType) {
   return instance
     .post("/api/v1/accounts/users/activation/", activation)
-    .then(async (response) => {
+    .then(() => {
       return true;
     })
-    .catch((error) => {
+    .catch(() => {
       return false;
     });
 }
@@ -244,23 +244,6 @@ export async function GetSubjects() {
     });
 }
 
-export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
-  const config = await GetConfig();
-  return instance
-    .patch("/api/v1/accounts/users/me/", info, config)
-    .then((response) => {
-      console.log(JSON.stringify(response.data));
-      return [true, response.data];
-    })
-    .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      console.log("Error updating onboarding info", error_message);
-      return [false, error_message];
-    });
-}
-
 export async function GetStudentStatus() {
   const config = await GetConfig();
   return instance
@@ -277,7 +260,7 @@ export async function GetStudentStatus() {
     });
 }
 
-export async function PatchStudentStatus(info: StudentStatus) {
+export async function PatchStudentStatus(info: StudentStatusType) {
   const config = await GetConfig();
   console.log(info);
   return instance

@@ -3,15 +3,21 @@ import styles from "../../styles";
 import { View, Text } from "react-native";
 import { useState } from "react";
 import {
-  UserInfoParams,
-  SubjectParams,
-  Subject,
+  UserInfoReturnType,
+  SubjectsReturnType,
+  SubjectType,
   OptionType,
+  StudentStatusType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { Image } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { GetSubjects, PatchUserInfo, UserInfo } from "../../components/Api/Api";
+import {
+  GetSubjects,
+  PatchUserInfo,
+  GetUserInfo,
+  PatchStudentStatus,
+} from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
@@ -23,6 +29,30 @@ export default function SubjectsPage() {
   const logged_in_user = useSelector((state: RootState) => state.user.user);
   const queryClient = useQueryClient();
   const toast = useToast();
+
+  // Student Status
+  const studentstatus_mutation = useMutation({
+    mutationFn: async (info: StudentStatusType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+    },
+    onError: () => {
+      toast.show("An error has occured\nChanges have not been saved", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
   // User Info
   const [user, setUser] = useState({
     first_name: "",
@@ -39,8 +69,8 @@ export default function SubjectsPage() {
   });
   const StudentInfo = useQuery({
     queryKey: ["user"],
-    queryFn: UserInfo,
-    onSuccess: (data: UserInfoParams) => {
+    queryFn: GetUserInfo,
+    onSuccess: (data: UserInfoReturnType) => {
       setUser({
         ...user,
         first_name: data[1].first_name,
@@ -69,7 +99,11 @@ export default function SubjectsPage() {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
       setSelectedSubjects([]);
-      toast.show("Changes applied successfully", {
+      // Reset student status when changing user info to prevent bugs
+      studentstatus_mutation.mutate({
+        active: false,
+      });
+      toast.show("Changes applied successfully.\nStudent status reset", {
         type: "success",
         placement: "top",
         duration: 2000,
@@ -88,9 +122,9 @@ export default function SubjectsPage() {
     enabled: StudentInfo.isFetched,
     queryKey: ["subjects"],
     queryFn: GetSubjects,
-    onSuccess: (data: SubjectParams) => {
+    onSuccess: (data: SubjectsReturnType) => {
       if (data[1]) {
-        let subjects = data[1].map((subject: Subject) => ({
+        let subjects = data[1].map((subject: SubjectType) => ({
           label: subject.name,
           value: subject.name,
         }));

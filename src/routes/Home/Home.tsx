@@ -8,9 +8,10 @@ import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
 import {
   RootDrawerParamList,
-  StudentStatusParams,
+  StudentStatusReturnType,
+  LocationType,
+  StudentStatusType,
 } from "../../interfaces/Interfaces";
-import { LocationType } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
 import {
   GetStudentStatus,
@@ -104,8 +105,14 @@ export default function Home() {
   const [buttonLabel, setButtonLabel] = useState("Start studying");
   const StudentStatus = useQuery({
     queryKey: ["user_status"],
-    queryFn: GetStudentStatus,
-    onSuccess: (data: StudentStatusParams) => {
+    queryFn: async () => {
+      const data = await GetStudentStatus();
+      if (data[0] == false) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
+    onSuccess: (data: StudentStatusReturnType) => {
       if (data[1].active !== undefined) {
         setStudying(data[1].active);
       }
@@ -125,7 +132,13 @@ export default function Home() {
   });
 
   const mutation = useMutation({
-    mutationFn: PatchStudentStatus,
+    mutationFn: async (info: StudentStatusType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });

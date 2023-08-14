@@ -3,13 +3,14 @@ import styles, { Viewport } from "../../styles";
 import { View, Text, ToastAndroid } from "react-native";
 import { useState } from "react";
 import {
-  UserInfoParams,
+  UserInfoReturnType,
   OptionType,
   RootDrawerParamList,
+  StudentStatusType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { PatchStudentStatus, UserInfo } from "../../components/Api/Api";
+import { PatchStudentStatus, GetUserInfo } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
@@ -30,8 +31,8 @@ export default function StartStudying({ route }: any) {
   const [subjects, setSubjects] = useState<OptionType[]>([]);
   const StudentInfo = useQuery({
     queryKey: ["user"],
-    queryFn: UserInfo,
-    onSuccess: (data: UserInfoParams) => {
+    queryFn: GetUserInfo,
+    onSuccess: (data: UserInfoReturnType) => {
       let subjects = data[1].subjects.map((subject: string) => ({
         label: subject,
         value: subject,
@@ -49,7 +50,13 @@ export default function StartStudying({ route }: any) {
   });
 
   const mutation = useMutation({
-    mutationFn: PatchStudentStatus,
+    mutationFn: async (info: StudentStatusType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] == false) {
+        return Promise.reject(new Error("Error updating student status"));
+      }
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });

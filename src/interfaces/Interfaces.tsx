@@ -30,7 +30,7 @@ export interface LoggedInUserState {
 
 // API Interfaces
 
-export interface RegistrationParams {
+export interface RegistrationType {
   email: string;
   username: string;
   password: string;
@@ -39,12 +39,12 @@ export interface RegistrationParams {
   student_id_number: string;
 }
 
-export interface LoginParams {
+export interface LoginType {
   username: string;
   password: string;
 }
 
-export interface ActivationParams {
+export interface ActivationType {
   uid: string;
   token: string;
 }
@@ -55,38 +55,38 @@ export interface OptionType {
 }
 
 // Semester
-export interface Semester {
+export interface SemesterType {
   id: string;
   name: string;
   shortname: string;
 }
 
-export type Semesters = Array<Semester>;
+export type SemestersType = Array<SemesterType>;
 
-export type SemesterParams = [boolean, Semesters];
+export type SemesterReturnType = [boolean, SemestersType];
 
 // Year Level
-export interface YearLevel {
+export interface YearLevelType {
   id: string;
   name: string;
   shortname: string;
 }
 
-export type YearLevels = Array<YearLevel>;
+export type YearLevelsType = Array<YearLevelType>;
 
-export type YearLevelParams = [boolean, YearLevels];
+export type YearLevelReturnType = [boolean, YearLevelsType];
 
 // Course
-export interface Course {
+export interface CourseType {
   id: string;
   name: string;
   shortname: string;
 }
-export type Courses = Array<Course>;
-export type CourseParams = [boolean, Courses];
+export type CoursesType = Array<CourseType>;
+export type CourseReturnType = [boolean, CoursesType];
 
 // Subject
-export interface Subject {
+export interface SubjectType {
   id: number;
   name: string;
   code: string;
@@ -95,31 +95,31 @@ export interface Subject {
   semester: string;
 }
 
-export type Subjects = Array<Subject>;
-export type SubjectParams = [boolean, Subjects];
+export type SubjectsType = Array<SubjectType>;
+export type SubjectsReturnType = [boolean, SubjectsType];
 
-export type avatar = {
+export type AvatarType = {
   uri: string;
   type: string;
   name: string;
 };
 // For dropdown menu
 
-export interface OnboardingParams {
+export interface OnboardingType {
   year_level: string;
   course: string;
   semester: string;
 }
 
-export interface PatchStudentData {
-  course?: string | null;
-  first_name?: string | null;
-  last_name?: string | null;
-  semester?: string | null;
-  subjects?: any[] | null; // To-do, replace 'any' with your actual type
-  year_level?: string | null;
-  irregular?: boolean | null;
-  avatar?: string | null;
+export interface PatchUserInfoType {
+  course?: string;
+  first_name?: string;
+  last_name?: string;
+  semester?: string;
+  subjects?: string[];
+  year_level?: string;
+  irregular?: boolean;
+  avatar?: string;
 }
 
 interface Location {
@@ -127,7 +127,7 @@ interface Location {
   longitude: number;
 }
 
-export interface StudentStatus {
+export interface StudentStatusType {
   user?: string;
   subject?: string;
   location?: Location;
@@ -135,11 +135,11 @@ export interface StudentStatus {
   active?: boolean;
 }
 
-export type StudentStatusParams = [boolean, StudentStatus];
+export type StudentStatusReturnType = [boolean, StudentStatusType];
 
 export type LocationType = Location.LocationObject;
 
-export interface StudentData {
+export interface UserInfoType {
   first_name: string;
   last_name: string;
   email: string;
@@ -156,4 +156,4 @@ export interface StudentData {
   username: string;
 }
 
-export type UserInfoParams = [boolean, StudentData];
+export type UserInfoReturnType = [boolean, UserInfoType];

@@ -15,7 +15,6 @@ import { RootDrawerParamList } from "../../interfaces/Interfaces";
 import SignupIcon from "../../icons/SignupIcon/SignupIcon";
 import { UserRegister } from "../../components/Api/Api";
 import IsNumber from "../../components/IsNumber/IsNumber";
-import ParseError from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useToast } from "react-native-toast-notifications";
 
