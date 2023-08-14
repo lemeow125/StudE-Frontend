@@ -16,11 +16,13 @@ import AnimatedContainerNoScroll from "../../components/AnimatedContainer/Animat
 import { urlProvider } from "../../components/Api/Api";
 import MapView, { UrlTile, Marker } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
+import { useToast } from "react-native-toast-notifications";
 
 export default function StartStudying({ route }: any) {
   const { location } = route.params;
   const queryClient = useQueryClient();
   const navigation = useNavigation<RootDrawerParamList>();
+  const toast = useToast();
 
   // Subject choices
   const [selected_subject, setSelectedSubject] = useState("");
@@ -37,10 +39,12 @@ export default function StartStudying({ route }: any) {
       setSubjects(subjects);
     },
     onError: () => {
-      ToastAndroid.show(
-        "Server error: Unable to query available subjects",
-        ToastAndroid.SHORT
-      );
+      toast.show("Server error: Unable to query available subjects", {
+        type: "error",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -49,17 +53,21 @@ export default function StartStudying({ route }: any) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      ToastAndroid.show(
-        "You are now studying " + selected_subject,
-        ToastAndroid.SHORT
-      );
+      toast.show("You are now studying " + selected_subject, {
+        type: "success",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
       navigation.navigate("Home");
     },
     onError: () => {
-      ToastAndroid.show(
-        "A server error has occured. Please try again",
-        ToastAndroid.SHORT
-      );
+      toast.show("A server error has occured. Please try again", {
+        type: "error",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
 

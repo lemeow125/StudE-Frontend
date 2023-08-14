@@ -18,6 +18,7 @@ import {
   urlProvider,
 } from "../../components/Api/Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
@@ -29,6 +30,7 @@ export default function Home() {
     "To continue, please allow Stud-E permission to location services"
   );
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const ustpCoords = {
     latitude: 8.4857,
@@ -40,9 +42,14 @@ export default function Home() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setFeedback("Allow location permissions to continue");
-      ToastAndroid.show(
+      toast.show(
         "Location permission was denied. Please allow in order to use StudE",
-        ToastAndroid.SHORT
+        {
+          type: "warning",
+          placement: "bottom",
+          duration: 4000,
+          animationType: "slide-in",
+        }
       );
       return;
     }
@@ -122,16 +129,20 @@ export default function Home() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      ToastAndroid.show(
-        "You are no longer studying " + subject,
-        ToastAndroid.SHORT
-      );
+      toast.show("You are no longer studying " + subject, {
+        type: "success",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
     onError: () => {
-      ToastAndroid.show(
-        "Server error. Unable to update student status",
-        ToastAndroid.SHORT
-      );
+      toast.show("Server error. Unable to update student status", {
+        type: "warning",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
   function CustomCallout() {
@@ -139,7 +150,7 @@ export default function Home() {
       if (studying) {
         return (
           <Callout>
-            <Text style={styles.text_black_medium}>
+            <Text style={styles.text_black_tiny}>
               You are here {"\n"}
               X: {Math.round(location.coords.longitude) + "\n"}
               Z: {Math.round(location.coords.latitude) + "\n"}

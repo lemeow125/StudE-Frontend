@@ -23,6 +23,7 @@ import {
   setOnboarding,
   unsetOnboarding,
 } from "../../features/redux/slices/StatusSlice/StatusSlice";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -31,7 +32,7 @@ export default function Login() {
     username: "",
     password: "",
   });
-  const [error, setError] = useState("");
+  const toast = useToast();
   return (
     <View style={styles.background}>
       <AnimatedContainer>
@@ -66,8 +67,6 @@ export default function Login() {
             setCreds({ ...creds, password: e.nativeEvent.text });
           }}
         />
-        <View style={{ paddingVertical: 2 }} />
-        <Text style={styles.text_white_small}>{error}</Text>
         <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
@@ -88,14 +87,31 @@ export default function Login() {
                 ) {
                   dispatch(setOnboarding());
                   navigation.navigate("Onboarding");
+                  toast.show("Successfully logged in", {
+                    type: "success",
+                    placement: "bottom",
+                    duration: 4000,
+                    animationType: "slide-in",
+                  });
                 } else {
                   dispatch(unsetOnboarding());
+                  toast.show("Successfully logged in", {
+                    type: "success",
+                    placement: "bottom",
+                    duration: 4000,
+                    animationType: "slide-in",
+                  });
                   navigation.navigate("Home");
                 }
                 console.log(JSON.stringify(user_info));
               } else {
                 console.log(ParseLoginError(JSON.stringify(result[1])));
-                setError(ParseLoginError(JSON.stringify(result[1])));
+                toast.show(JSON.stringify(result[1]), {
+                  type: "warning",
+                  placement: "bottom",
+                  duration: 4000,
+                  animationType: "slide-in",
+                });
               }
             });
           }}

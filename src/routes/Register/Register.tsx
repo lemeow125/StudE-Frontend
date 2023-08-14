@@ -17,9 +17,11 @@ import { UserRegister } from "../../components/Api/Api";
 import IsNumber from "../../components/IsNumber/IsNumber";
 import ParseError from "../../components/ParseError/ParseError";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Register() {
   const navigation = useNavigation<RootDrawerParamList>();
+  const toast = useToast();
   // const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
   const [user, setUser] = useState({
@@ -29,7 +31,6 @@ export default function Register() {
     username: "",
     email: "",
     password: "",
-    feedback: "",
   });
   return (
     <View style={styles.background}>
@@ -120,8 +121,6 @@ export default function Register() {
           }}
         />
         <View style={{ paddingVertical: 4 }} />
-        <Text style={styles.text_white_small}>{user.feedback}</Text>
-        <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
             await UserRegister({
@@ -142,16 +141,25 @@ export default function Register() {
                   username: "",
                   email: "",
                   password: "",
-                  feedback:
-                    "Success! An email has been sent to activate your account",
                 });
+                toast.show(
+                  "Success! An email has been sent to activate your account",
+                  {
+                    type: "success",
+                    placement: "bottom",
+                    duration: 6000,
+                    animationType: "slide-in",
+                  }
+                );
                 setTimeout(() => {
                   navigation.navigate("Login");
                 }, 10000);
               } else {
-                setUser({
-                  ...user,
-                  feedback: ParseError(JSON.stringify(result[1])),
+                toast.show(JSON.stringify(result[1]), {
+                  type: "warning",
+                  placement: "bottom",
+                  duration: 6000,
+                  animationType: "slide-in",
                 });
               }
             });

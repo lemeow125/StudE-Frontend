@@ -24,6 +24,8 @@ import UserInfoPage from "./src/routes/UserInfoPage/UserInfoPage";
 import SubjectsPage from "./src/routes/SubjectsPage/SubjectsPage";
 import Loading from "./src/routes/Loading/Loading";
 import StartStudying from "./src/routes/StartStudying/StartStudying";
+import { ToastProvider } from "react-native-toast-notifications";
+import AppIcon from "./src/icons/AppIcon/AppIcon";
 
 const Drawer = createDrawerNavigator();
 
@@ -58,28 +60,30 @@ export default function App() {
     }
   }, [initialRoute]);
   return (
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <StatusBar style="light" />
+    <ToastProvider icon={<AppIcon size={64} />}>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <StatusBar style="light" />
 
-        <NavigationContainer linking={linking} fallback={<Loading />}>
-          <Drawer.Navigator
-            initialRouteName="Revalidation"
-            drawerContent={CustomDrawerContent}
-            screenOptions={DrawerScreenSettings}
-          >
-            <Drawer.Screen name="Home" component={Home} />
-            <Drawer.Screen name="Login" component={Login} />
-            <Drawer.Screen name="Register" component={Register} />
-            <Drawer.Screen name="Onboarding" component={Onboarding} />
-            <Drawer.Screen name="Revalidation" component={Revalidation} />
-            <Drawer.Screen name="Activation" component={Activation} />
-            <Drawer.Screen name="User Info" component={UserInfoPage} />
-            <Drawer.Screen name="Subjects" component={SubjectsPage} />
-            <Drawer.Screen name="Start Studying" component={StartStudying} />
-          </Drawer.Navigator>
-        </NavigationContainer>
-      </Provider>
-    </QueryClientProvider>
+          <NavigationContainer linking={linking} fallback={<Loading />}>
+            <Drawer.Navigator
+              initialRouteName="Revalidation"
+              drawerContent={CustomDrawerContent}
+              screenOptions={DrawerScreenSettings}
+            >
+              <Drawer.Screen name="Home" component={Home} />
+              <Drawer.Screen name="Login" component={Login} />
+              <Drawer.Screen name="Register" component={Register} />
+              <Drawer.Screen name="Onboarding" component={Onboarding} />
+              <Drawer.Screen name="Revalidation" component={Revalidation} />
+              <Drawer.Screen name="Activation" component={Activation} />
+              <Drawer.Screen name="User Info" component={UserInfoPage} />
+              <Drawer.Screen name="Subjects" component={SubjectsPage} />
+              <Drawer.Screen name="Start Studying" component={StartStudying} />
+            </Drawer.Navigator>
+          </NavigationContainer>
+        </Provider>
+      </QueryClientProvider>
+    </ToastProvider>
   );
 }

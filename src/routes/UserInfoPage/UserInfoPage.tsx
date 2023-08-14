@@ -42,12 +42,13 @@ import { useDispatch } from "react-redux";
 import { setUser as setUserinState } from "../../features/redux/slices/UserSlice/UserSlice";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import { useToast } from "react-native-toast-notifications";
 
 export default function UserInfoPage() {
   const logged_in_user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const [feedback, setFeedback] = useState("");
+  const toast = useToast();
 
   // Student Status
   const studentstatus_mutation = useMutation({
@@ -55,10 +56,20 @@ export default function UserInfoPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      setFeedback("Changes applied successfully");
+      toast.show("Changes applied successfully", {
+        type: "success",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
     onError: () => {
-      setFeedback("An error has occured\nChanges have not been saved");
+      toast.show("An error has occured\nChanges have not been saved", {
+        type: "warning",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -98,7 +109,12 @@ export default function UserInfoPage() {
       dispatch(setUserinState(data[1]));
     },
     onError: () => {
-      setFeedback("Unable to query user info");
+      toast.show("Server Error: Unable to query user info", {
+        type: "warning",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -111,11 +127,21 @@ export default function UserInfoPage() {
       studentstatus_mutation.mutate({
         active: false,
       });
-      setFeedback("Changes applied successfully");
+      toast.show("Changes applied successfully", {
+        type: "success",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
       dispatch(setUserinState(user));
     },
     onError: () => {
-      setFeedback("An error has occured\nChanges have not been saved");
+      toast.show("An error has occured\nChanges have not been saved", {
+        type: "warning",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -136,7 +162,12 @@ export default function UserInfoPage() {
       setSemesters(semestersData);
     },
     onError: () => {
-      setFeedback("Unable to query semester info");
+      toast.show("Server Error: Unable to query semester info", {
+        type: "warning",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -155,7 +186,12 @@ export default function UserInfoPage() {
       setYearLevels(year_levels);
     },
     onError: () => {
-      setFeedback("Unable to query year level info");
+      toast.show("Server Error: Unable to query year level info", {
+        type: "warning",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -174,7 +210,12 @@ export default function UserInfoPage() {
       setCourses(courses);
     },
     onError: () => {
-      setFeedback("Unable to query course info");
+      toast.show("Server Error: Unable to query course info", {
+        type: "warning",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -242,7 +283,6 @@ export default function UserInfoPage() {
                 e: NativeSyntheticEvent<TextInputChangeEventData>
               ): void => {
                 setUser({ ...user, first_name: e.nativeEvent.text });
-                setFeedback("");
               }}
               value={user.first_name}
             />
@@ -259,7 +299,6 @@ export default function UserInfoPage() {
                 e: NativeSyntheticEvent<TextInputChangeEventData>
               ): void => {
                 setUser({ ...user, last_name: e.nativeEvent.text });
-                setFeedback("");
               }}
               value={user.last_name}
             />
@@ -281,9 +320,6 @@ export default function UserInfoPage() {
                 setCourseOpen(false);
               }}
               setValue={setSelectedYearLevel}
-              onChangeValue={() => {
-                setFeedback("");
-              }}
               placeholder={user.year_level}
               placeholderStyle={{
                 ...styles.text_white_tiny_bold,
@@ -319,9 +355,6 @@ export default function UserInfoPage() {
                 setCourseOpen(false);
               }}
               setValue={setSelectedSemester}
-              onChangeValue={() => {
-                setFeedback("");
-              }}
               placeholder={user.semester}
               placeholderStyle={{
                 ...styles.text_white_tiny_bold,
@@ -357,9 +390,6 @@ export default function UserInfoPage() {
                 setCourseOpen(open);
               }}
               setValue={setSelectedCourse}
-              onChangeValue={() => {
-                setFeedback("");
-              }}
               placeholder={user.course}
               placeholderStyle={{
                 ...styles.text_white_tiny_bold,
@@ -412,7 +442,6 @@ export default function UserInfoPage() {
             <Text style={styles.text_white_small}>Save Changes</Text>
           </Button>
           <View style={styles.padding} />
-          <Text style={styles.text_white_small}>{feedback}</Text>
         </View>
       </AnimatedContainerNoScroll>
     </View>

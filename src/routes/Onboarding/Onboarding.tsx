@@ -25,11 +25,12 @@ import { unsetOnboarding } from "../../features/redux/slices/StatusSlice/StatusS
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
+import { useToast } from "react-native-toast-notifications";
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
   const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
-  const [error, setError] = useState("");
+  const toast = useToast();
   // Semesters
   const [selected_semester, setSelectedSemester] = useState("");
   const [semesterOpen, setSemesterOpen] = useState(false);
@@ -196,7 +197,6 @@ export default function Onboarding() {
             dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
           />
         </MotiView>
-        <Text style={styles.text_white_small}>{error}</Text>
         <MotiView
           from={{
             opacity: 0,
@@ -227,11 +227,25 @@ export default function Onboarding() {
                 setSelectedCourse("");
                 setSelectedYearLevel("");
                 setSelectedSemester("");
-                setError("Success!");
                 dispatch(setUser(result[1]));
+                toast.show("Changes applied successfully", {
+                  type: "success",
+                  placement: "bottom",
+                  duration: 6000,
+                  animationType: "slide-in",
+                });
                 navigation.navigate("Home");
               } else {
-                setError(result[1]);
+                dispatch(setUser(result[1]));
+                toast.show(
+                  "An error has occured\nChanges have not been saved",
+                  {
+                    type: "warning",
+                    placement: "bottom",
+                    duration: 6000,
+                    animationType: "slide-in",
+                  }
+                );
               }
             }}
           >
