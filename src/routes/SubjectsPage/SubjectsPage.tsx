@@ -1,45 +1,28 @@
 import * as React from "react";
 import styles from "../../styles";
+import { View, Text } from "react-native";
+import { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
-} from "react-native";
-import { useEffect, useState } from "react";
-import {
-  SemesterParams,
   UserInfoParams,
-  Semester,
   SubjectParams,
   Subject,
-  YearLevel,
-  Course,
   OptionType,
-  Subjects,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { Image } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  GetCourses,
-  GetSemesters,
-  GetSubjects,
-  GetYearLevels,
-  PatchUserInfo,
-  UserInfo,
-} from "../../components/Api/Api";
+import { GetSubjects, PatchUserInfo, UserInfo } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
+import { useToast } from "react-native-toast-notifications";
 
 export default function SubjectsPage() {
   const logged_in_user = useSelector((state: RootState) => state.user.user);
   const queryClient = useQueryClient();
-  const [feedback, setFeedback] = useState("");
+  const toast = useToast();
   // User Info
   const [user, setUser] = useState({
     first_name: "",
@@ -72,7 +55,12 @@ export default function SubjectsPage() {
       setSelectedSubjects(data[1].subjects);
     },
     onError: () => {
-      setFeedback("Unable to query user info");
+      toast.show("Server Error: Unable to query user info", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
   const mutation = useMutation({
@@ -81,7 +69,12 @@ export default function SubjectsPage() {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
       setSelectedSubjects([]);
-      setFeedback("Changes applied successfully");
+      toast.show("Changes applied successfully", {
+        type: "success",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -106,7 +99,12 @@ export default function SubjectsPage() {
       }
     },
     onError: () => {
-      setFeedback("Unable to query subject info");
+      toast.show("Server Error: Unable to query subject info", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -189,7 +187,6 @@ export default function SubjectsPage() {
             <Text style={styles.text_white_small}>Save Changes</Text>
           </Button>
           <View style={styles.padding} />
-          <Text style={styles.text_white_small}>{feedback}</Text>
         </View>
       </AnimatedContainerNoScroll>
     </View>

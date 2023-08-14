@@ -8,7 +8,6 @@ import {
   TextInputChangeEventData,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { colors } from "../../styles";
 import { useState } from "react";
 import LoginIcon from "../../icons/LoginIcon/LoginIcon";
 import Button from "../../components/Button/Button";
@@ -89,16 +88,16 @@ export default function Login() {
                   navigation.navigate("Onboarding");
                   toast.show("Successfully logged in", {
                     type: "success",
-                    placement: "bottom",
-                    duration: 4000,
+                    placement: "top",
+                    duration: 2000,
                     animationType: "slide-in",
                   });
                 } else {
                   dispatch(unsetOnboarding());
                   toast.show("Successfully logged in", {
                     type: "success",
-                    placement: "bottom",
-                    duration: 4000,
+                    placement: "top",
+                    duration: 2000,
                     animationType: "slide-in",
                   });
                   navigation.navigate("Home");
@@ -108,8 +107,8 @@ export default function Login() {
                 console.log(ParseLoginError(JSON.stringify(result[1])));
                 toast.show(JSON.stringify(result[1]), {
                   type: "warning",
-                  placement: "bottom",
-                  duration: 4000,
+                  placement: "top",
+                  duration: 2000,
                   animationType: "slide-in",
                 });
               }

@@ -40,9 +40,9 @@ export default function StartStudying({ route }: any) {
     },
     onError: () => {
       toast.show("Server error: Unable to query available subjects", {
-        type: "error",
-        placement: "bottom",
-        duration: 4000,
+        type: "warning",
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },
@@ -53,19 +53,19 @@ export default function StartStudying({ route }: any) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      toast.show("You are now studying " + selected_subject, {
+      toast.show("You are now studying  \n" + selected_subject, {
         type: "success",
-        placement: "bottom",
-        duration: 4000,
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
       navigation.navigate("Home");
     },
     onError: () => {
       toast.show("A server error has occured. Please try again", {
-        type: "error",
-        placement: "bottom",
-        duration: 4000,
+        type: "warning",
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },

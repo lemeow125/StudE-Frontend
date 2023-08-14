@@ -1,5 +1,5 @@
 import styles, { Viewport, colors } from "../../styles";
-import { View, Text, ToastAndroid } from "react-native";
+import { View, Text } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
 import MapView, { Callout, Marker, UrlTile } from "react-native-maps";
@@ -46,8 +46,8 @@ export default function Home() {
         "Location permission was denied. Please allow in order to use StudE",
         {
           type: "warning",
-          placement: "bottom",
-          duration: 4000,
+          placement: "top",
+          duration: 2000,
           animationType: "slide-in",
         }
       );
@@ -129,18 +129,18 @@ export default function Home() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      toast.show("You are no longer studying " + subject, {
+      toast.show("You are no longer studying  \n" + subject, {
         type: "success",
-        placement: "bottom",
-        duration: 4000,
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },
     onError: () => {
       toast.show("Server error. Unable to update student status", {
         type: "warning",
-        placement: "bottom",
-        duration: 4000,
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },

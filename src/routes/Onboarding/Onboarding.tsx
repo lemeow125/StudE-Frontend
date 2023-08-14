@@ -48,6 +48,14 @@ export default function Onboarding() {
       }));
       setSemesters(semesters);
     },
+    onError: () => {
+      toast.show("Server error: Unable to query available semesters", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
   });
   // Year Level
   const [selected_yearlevel, setSelectedYearLevel] = useState("");
@@ -65,6 +73,14 @@ export default function Onboarding() {
         value: item.name,
       }));
       setYearLevels(year_levels);
+    },
+    onError: () => {
+      toast.show("Server error: Unable to query available year levels", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
   // Course
@@ -86,6 +102,14 @@ export default function Onboarding() {
         value: item.name,
       }));
       setCourses(courses);
+    },
+    onError: () => {
+      toast.show("Server error: Unable to query available courses", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
   if (yearlevel_query.error || semester_query.error || course_query.error) {
@@ -230,8 +254,8 @@ export default function Onboarding() {
                 dispatch(setUser(result[1]));
                 toast.show("Changes applied successfully", {
                   type: "success",
-                  placement: "bottom",
-                  duration: 6000,
+                  placement: "top",
+                  duration: 2000,
                   animationType: "slide-in",
                 });
                 navigation.navigate("Home");
@@ -241,8 +265,8 @@ export default function Onboarding() {
                   "An error has occured\nChanges have not been saved",
                   {
                     type: "warning",
-                    placement: "bottom",
-                    duration: 6000,
+                    placement: "top",
+                    duration: 2000,
                     animationType: "slide-in",
                   }
                 );

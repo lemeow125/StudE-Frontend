@@ -58,16 +58,16 @@ export default function UserInfoPage() {
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
       toast.show("Changes applied successfully", {
         type: "success",
-        placement: "bottom",
-        duration: 4000,
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },
     onError: () => {
       toast.show("An error has occured\nChanges have not been saved", {
         type: "warning",
-        placement: "bottom",
-        duration: 4000,
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },
@@ -112,7 +112,7 @@ export default function UserInfoPage() {
       toast.show("Server Error: Unable to query user info", {
         type: "warning",
         placement: "bottom",
-        duration: 4000,
+        duration: 2000,
         animationType: "slide-in",
       });
     },
@@ -130,7 +130,7 @@ export default function UserInfoPage() {
       toast.show("Changes applied successfully", {
         type: "success",
         placement: "bottom",
-        duration: 4000,
+        duration: 2000,
         animationType: "slide-in",
       });
       dispatch(setUserinState(user));
@@ -139,7 +139,7 @@ export default function UserInfoPage() {
       toast.show("An error has occured\nChanges have not been saved", {
         type: "warning",
         placement: "bottom",
-        duration: 4000,
+        duration: 2000,
         animationType: "slide-in",
       });
     },
@@ -164,8 +164,8 @@ export default function UserInfoPage() {
     onError: () => {
       toast.show("Server Error: Unable to query semester info", {
         type: "warning",
-        placement: "bottom",
-        duration: 4000,
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },
@@ -188,8 +188,8 @@ export default function UserInfoPage() {
     onError: () => {
       toast.show("Server Error: Unable to query year level info", {
         type: "warning",
-        placement: "bottom",
-        duration: 4000,
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },
@@ -212,8 +212,8 @@ export default function UserInfoPage() {
     onError: () => {
       toast.show("Server Error: Unable to query course info", {
         type: "warning",
-        placement: "bottom",
-        duration: 4000,
+        placement: "top",
+        duration: 2000,
         animationType: "slide-in",
       });
     },
@@ -426,7 +426,7 @@ export default function UserInfoPage() {
             <Text style={styles.text_white_small}>Irregular </Text>
           </View>
           <Button
-            onPress={async () => {
+            onPress={() => {
               setYearLevelOpen(false);
               setSemesterOpen(false);
               setCourseOpen(false);

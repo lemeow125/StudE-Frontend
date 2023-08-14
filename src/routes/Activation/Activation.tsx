@@ -6,6 +6,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { UserActivate } from "../../components/Api/Api";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
+import { useToast } from "react-native-toast-notifications";
 
 interface ActivationRouteParams {
   uid?: string;
@@ -16,9 +17,7 @@ export default function Activation() {
   const route = useRoute();
   const { uid, token } = (route.params as ActivationRouteParams) || "";
   const navigation = useNavigation<RootDrawerParamList>();
-  const [state, setState] = useState(
-    "Activating with UID " + uid + " and Token " + token
-  );
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,16 +27,22 @@ export default function Activation() {
         token: String(token),
       });
       if (result) {
-        setTimeout(() => {
-          setState("Activation successful!");
-        }, 1000);
+        toast.show("Activation successful", {
+          type: "success",
+          placement: "top",
+          duration: 4000,
+          animationType: "slide-in",
+        });
         setTimeout(() => {
           navigation.navigate("Login");
         }, 2000);
       } else {
-        setTimeout(() => {
-          setState("Activation unsuccessful\nPlease contact support");
-        }, 1000);
+        toast.show("Activation unsuccessful. Please contact support", {
+          type: "warning",
+          placement: "top",
+          duration: 4000,
+          animationType: "slide-in",
+        });
       }
       setLoading(false);
     }
@@ -63,8 +68,9 @@ export default function Activation() {
           size={96}
           color={colors.secondary_1}
         />
-        <Text style={styles.text_white_medium}>{state}</Text>
-        <Text style={styles.text_white_tiny}>{uid + "\n" + token}</Text>
+        <Text style={styles.text_white_medium}>
+          {"Activating with UID: " + uid + "\nToken: " + token}
+        </Text>
       </AnimatedContainer>
     </View>
   );

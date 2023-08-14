@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import { Text } from "react-native";
+import styles from "./src/styles";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Provider } from "react-redux";
@@ -60,7 +60,10 @@ export default function App() {
     }
   }, [initialRoute]);
   return (
-    <ToastProvider icon={<AppIcon size={64} />}>
+    <ToastProvider
+      icon={<AppIcon size={64} />}
+      textStyle={{ ...styles.text_white_tiny_bold }}
+    >
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <StatusBar style="light" />

@@ -28,7 +28,7 @@ const instance = axios.create({
   timeout: 1000,
 });
 
-console.log(backendURL);
+console.log("Using backend API:", backendURL);
 
 // 3rd Party APIs
 export const urlProvider =

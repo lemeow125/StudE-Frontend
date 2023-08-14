@@ -37,8 +37,8 @@ export default function Revalidation() {
           dispatch(setOnboarding());
           toast.show("Previous session restored", {
             type: "success",
-            placement: "bottom",
-            duration: 4000,
+            placement: "top",
+            duration: 2000,
             animationType: "slide-in",
           });
           await setTimeout(() => {
@@ -48,8 +48,8 @@ export default function Revalidation() {
           dispatch(unsetOnboarding());
           toast.show("Previous session restored", {
             type: "success",
-            placement: "bottom",
-            duration: 4000,
+            placement: "top",
+            duration: 2000,
             animationType: "slide-in",
           });
           await setTimeout(() => {
@@ -60,8 +60,8 @@ export default function Revalidation() {
         await setState("Session expired");
         toast.show("Session expired. Please login again", {
           type: "warning",
-          placement: "bottom",
-          duration: 4000,
+          placement: "top",
+          duration: 2000,
           animationType: "slide-in",
         });
         await setTimeout(() => {

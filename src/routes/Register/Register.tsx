@@ -146,7 +146,7 @@ export default function Register() {
                   "Success! An email has been sent to activate your account",
                   {
                     type: "success",
-                    placement: "bottom",
+                    placement: "top",
                     duration: 6000,
                     animationType: "slide-in",
                   }
@@ -157,7 +157,7 @@ export default function Register() {
               } else {
                 toast.show(JSON.stringify(result[1]), {
                   type: "warning",
-                  placement: "bottom",
+                  placement: "top",
                   duration: 6000,
                   animationType: "slide-in",
                 });
