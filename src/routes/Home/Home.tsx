@@ -11,10 +11,12 @@ import {
   StudentStatusReturnType,
   LocationType,
   StudentStatusType,
+  StudentStatusListReturnType,
 } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
 import {
   GetStudentStatus,
+  GetStudentStatusList,
   PatchStudentStatus,
   urlProvider,
 } from "../../components/Api/Api";
@@ -124,7 +126,6 @@ export default function Home() {
       } else if (data[1].active == false) {
         setButtonLabel("Start Studying");
       }
-      console.log(data[1]);
     },
     onError: (error: Error) => {
       toast.show(String(error), {
@@ -163,6 +164,31 @@ export default function Home() {
       });
     },
   });
+
+  // Student Status List
+  const StudentStatusList = useQuery({
+    queryKey: ["user_status_list"],
+    queryFn: async () => {
+      const data = await GetStudentStatusList();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudentStatusListReturnType) => {
+      console.log("List of students:", data[1]);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
+  // Map popup for user's location
   function CustomCallout() {
     if (location && location.coords) {
       if (studying) {
@@ -235,7 +261,6 @@ export default function Home() {
                   latitude: location.coords.latitude,
                   longitude: location.coords.longitude,
                 }}
-                onPress={() => console.log(location)}
                 draggable
                 onDragEnd={(e) => {
                   const newLocation = e.nativeEvent.coordinate;
@@ -245,7 +270,6 @@ export default function Home() {
                     location.coords.latitude,
                     location.coords.longitude
                   );
-                  console.log("Distance:", distance);
                   if (distance <= 0.1) {
                     // If the new location is within 100 meters of the actual location, update the location state
                     setLocation({
@@ -332,7 +356,6 @@ export default function Home() {
                   latitude: location.coords.latitude,
                   longitude: location.coords.longitude,
                 }}
-                onPress={() => console.log(location)}
                 pinColor={colors.primary_1}
               >
                 <Callout>
@@ -351,10 +374,11 @@ export default function Home() {
         );
       }
     } else {
+      requestLocation();
       return (
         <AnimatedContainer>
           <Text style={styles.text_white_medium}>{feedback}</Text>
-          <Button onPress={() => requestLocation()}>
+          <Button onPress={requestLocation}>
             <Text style={styles.text_white_medium}>Allow Access</Text>
           </Button>
         </AnimatedContainer>

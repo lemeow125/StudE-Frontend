@@ -256,3 +256,16 @@ export async function PatchStudentStatus(info: StudentStatusType) {
       return [false, error_message];
     });
 }
+
+export async function GetStudentStatusList() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/student_status/list/", config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}

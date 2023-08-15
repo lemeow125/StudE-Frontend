@@ -1,4 +1,5 @@
 import * as Location from "expo-location";
+import { GetStudentStatus } from "../components/Api/Api";
 
 export interface IconProps {
   size: number;
@@ -136,6 +137,9 @@ export interface StudentStatusType {
 }
 
 export type StudentStatusReturnType = [boolean, StudentStatusType];
+
+export type StudentStatusListType = Array<StudentStatusType>;
+export type StudentStatusListReturnType = [boolean, StudentStatusListType];
 
 export type LocationType = Location.LocationObject;
 
