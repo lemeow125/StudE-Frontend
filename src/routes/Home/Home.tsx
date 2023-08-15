@@ -22,6 +22,7 @@ import {
 } from "../../components/Api/Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "react-native-toast-notifications";
+import CustomMapCallout from "../../components/CustomMapCallout/CustomMapCallout";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
@@ -188,34 +189,6 @@ export default function Home() {
     },
   });
 
-  // Map popup for user's location
-  function CustomCallout() {
-    if (location && location.coords) {
-      if (studying) {
-        return (
-          <Callout>
-            <Text style={styles.text_black_tiny}>
-              You are here {"\n"}
-              X: {Math.round(location.coords.longitude) + "\n"}
-              Z: {Math.round(location.coords.latitude) + "\n"}
-              Studying: {subject}
-            </Text>
-          </Callout>
-        );
-      } else {
-        return (
-          <Callout>
-            <Text style={styles.text_black_medium}>
-              You are here {"\n"}
-              X: {Math.round(location.coords.longitude) + "\n"}
-              Z: {Math.round(location.coords.latitude)}
-            </Text>
-          </Callout>
-        );
-      }
-    }
-    return <></>;
-  }
   function CustomMap() {
     if (dist && location) {
       if (dist <= 2 || map_debug) {
@@ -289,7 +262,11 @@ export default function Home() {
                 }}
                 pinColor={colors.primary_1}
               >
-                <CustomCallout />
+                <CustomMapCallout
+                  location={location}
+                  studying={studying}
+                  subject={subject}
+                />
               </Marker>
             </MapView>
             <Button
