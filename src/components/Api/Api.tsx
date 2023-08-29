@@ -17,7 +17,7 @@ if (__DEV__) {
 }
 
 // Switch this on if you wanna run production URLs while in development
-let use_production = false;
+let use_production = true;
 if (__DEV__ && use_production) {
   backendURL = "https://stude.keannu1.duckdns.org";
   backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
@@ -32,7 +32,7 @@ console.log("Using backend API:", backendURL);
 
 // 3rd Party APIs
 export const urlProvider =
-  "https://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=0f5cb5930d7642a8a921daea650754d9";
+  "https://openstreetmap.keannu1.duckdns.org/tile/{z}/{x}/{y}.png?";
 // App APIs
 
 // Error Handling
