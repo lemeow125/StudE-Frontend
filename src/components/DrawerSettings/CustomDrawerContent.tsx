@@ -124,7 +124,14 @@ export default function CustomDrawerContent(props: {}) {
           <SignupIcon size={32} />
           <Text style={styles.text_white_medium}>Register</Text>
         </DrawerButton>
-
+        <DrawerButton
+          onPress={() => {
+            navigation.navigate("Conversation");
+          }}
+        >
+          <SubjectIcon size={32} />
+          <Text style={styles.text_white_medium}>Conversation</Text>
+        </DrawerButton>
         {/*
         Debug buttons for accessing revalidation and activation page
         <DrawerButton

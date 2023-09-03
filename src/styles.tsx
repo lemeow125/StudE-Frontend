@@ -200,5 +200,15 @@ const styles = StyleSheet.create({
     padding: 0,
     border: 0,
   },
+  chatbox: {
+    paddingHorizontal: 8,
+    height: 50,
+    marginVertical: 10,
+    borderWidth: 1,
+    color: colors.text_default,
+    backgroundColor: colors.primary_2,
+    borderRadius: 20,
+    borderColor: colors.primary_3,
+  }
 });
 export default styles;
