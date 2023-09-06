@@ -17,7 +17,7 @@ if (__DEV__) {
 }
 
 // Switch this on if you wanna run production URLs while in development
-let use_production = true;
+let use_production = false;
 if (__DEV__ && use_production) {
   backendURL = "https://stude.keannu1.duckdns.org";
   backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
@@ -258,6 +258,33 @@ export async function PatchStudentStatus(info: StudentStatusType) {
 }
 
 export async function GetStudentStatusList() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/student_status/list/", config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudentStatusListFiltered() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/student_status/filter/near_student_status", config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+// To-do
+export async function GetStudentStatusListFilteredCurrentLocation() {
   const config = await GetConfig();
   return instance
     .get("/api/v1/student_status/list/", config)

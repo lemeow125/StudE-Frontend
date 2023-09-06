@@ -1,5 +1,6 @@
 import * as Location from "expo-location";
 import { GetStudentStatus } from "../components/Api/Api";
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 export interface IconProps {
   size: number;
@@ -124,8 +125,8 @@ export interface PatchUserInfoType {
 }
 
 interface Location {
-  latitude: number;
-  longitude: number;
+  latitude: Float;
+  longitude: Float;
 }
 
 export interface StudentStatusType {
@@ -136,9 +137,19 @@ export interface StudentStatusType {
   active?: boolean;
 }
 
+export interface StudentStatusFilterType {
+  active: boolean;
+  distance: number;
+  landmark: string | null;
+  location: Location;
+  study_group?: string;
+  subject: string;
+  user: string;
+}
+
 export type StudentStatusReturnType = [boolean, StudentStatusType];
 
-export type StudentStatusListType = Array<StudentStatusType>;
+export type StudentStatusListType = Array<StudentStatusFilterType>;
 export type StudentStatusListReturnType = [boolean, StudentStatusListType];
 
 export type LocationType = Location.LocationObject;

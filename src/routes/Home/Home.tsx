@@ -2,7 +2,15 @@ import styles, { Viewport, colors } from "../../styles";
 import { View, Text } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, { Callout, Marker, UrlTile } from "react-native-maps";
+import MapView, {
+  Callout,
+  Heatmap,
+  Circle,
+  Marker,
+  UrlTile,
+  Overlay,
+  Polygon,
+} from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
@@ -12,11 +20,13 @@ import {
   LocationType,
   StudentStatusType,
   StudentStatusListReturnType,
+  StudentStatusListType,
 } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
 import {
   GetStudentStatus,
   GetStudentStatusList,
+  GetStudentStatusListFiltered,
   PatchStudentStatus,
   urlProvider,
 } from "../../components/Api/Api";
@@ -166,18 +176,60 @@ export default function Home() {
     },
   });
 
+  const [student_statuses, setStudentStatuses] = useState<any>([]);
   // Student Status List
   const StudentStatusList = useQuery({
+    enabled: studying,
     queryKey: ["user_status_list"],
     queryFn: async () => {
-      const data = await GetStudentStatusList();
+      const data = await GetStudentStatusListFiltered();
       if (data[0] == false) {
         return Promise.reject(new Error(JSON.stringify(data[1])));
       }
       return data;
     },
     onSuccess: (data: StudentStatusListReturnType) => {
-      console.log("List of students:", data[1]);
+      if (data[1]) {
+        // We first flatten the data to remove nested entries
+        let flattened_data = data[1].map((item) => ({
+          active: item.active,
+          distance: item.distance,
+          landmark: item.landmark,
+          latitude: item.location.latitude,
+          longitude: item.location.longitude,
+          study_group: "",
+          subject: item.subject,
+          user: item.user,
+        }));
+        flattened_data.push({
+          active: true,
+          distance: 50,
+          landmark: "",
+          latitude: 9.498298904115586,
+          longitude: 125.59552381187677,
+          study_group: "",
+          subject: "Introduction to Computing",
+          user: "Keannu",
+        });
+        // We get each unique subject
+        let unique_subjects = [
+          ...new Set(flattened_data.map((item) => item.subject)),
+        ];
+        console.log("Unique Subjects:", unique_subjects);
+        let result: any[] = [];
+        // Then append all entries belonging to that subject to its own array
+        unique_subjects.forEach((subject) => {
+          let filteredData = flattened_data.filter(
+            (item) => item.subject === subject && item.study_group === ""
+          );
+          // We then concatenate this into the final array
+          result = result.concat([filteredData]);
+        });
+
+        console.log("Final Result:", result);
+
+        setStudentStatuses(result);
+      }
     },
     onError: (error: Error) => {
       toast.show(String(error), {
@@ -222,6 +274,66 @@ export default function Home() {
               }}
               loadingBackgroundColor={colors.secondary_2}
             >
+              {student_statuses.map((student_status: any, index: number) => {
+                console.log("TEST INDEX", index, student_status);
+                return (
+                  <Polygon
+                    key={index}
+                    coordinates={student_status}
+                    fillColor="red"
+                    strokeColor="50"
+                    zIndex={100}
+                    tappable
+                    onPress={() => {
+                      const users = student_statuses.map((item: any) => ({
+                        user: item.user,
+                      }));
+                      toast.hideAll();
+                      toast.show(
+                        <View
+                          style={{
+                            alignContent: "center",
+                            alignSelf: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text style={styles.text_white_tiny_bold}>
+                            Subject: {student_status[0].subject}
+                          </Text>
+                          <Text style={styles.text_white_tiny_bold}>
+                            Students Studying: {student_status.length}
+                          </Text>
+                          <Button
+                            onPress={() => {
+                              toast.show("Toledo para ma konsehal", {
+                                type: "warning",
+                                placement: "top",
+                                duration: 2000,
+                                animationType: "slide-in",
+                              });
+                            }}
+                          >
+                            <Text style={styles.text_white_tiny_bold}>
+                              Create Group & Invite
+                            </Text>
+                          </Button>
+                        </View>,
+                        {
+                          type: "normal",
+                          placement: "top",
+                          duration: 2000,
+                          animationType: "slide-in",
+                          style: {
+                            backgroundColor: colors.secondary_2,
+                            borderWidth: 1,
+                            borderColor: colors.primary_1,
+                          },
+                        }
+                      );
+                    }}
+                  />
+                );
+              })}
               <UrlTile
                 urlTemplate={urlProvider}
                 shouldReplaceMapContent={true}
@@ -229,6 +341,7 @@ export default function Home() {
                 flipY={false}
                 zIndex={1}
               />
+
               <Marker
                 coordinate={{
                   latitude: location.coords.latitude,
