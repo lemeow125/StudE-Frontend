@@ -176,6 +176,7 @@ export default function Home() {
     },
   });
 
+  // Can probably just get the max distance from the array and use it as radius
   const [student_statuses, setStudentStatuses] = useState<any>([]);
   // Student Status List
   const StudentStatusList = useQuery({
@@ -190,6 +191,7 @@ export default function Home() {
     },
     onSuccess: (data: StudentStatusListReturnType) => {
       if (data[1]) {
+        // Circle generation for students in a study group
         // We first flatten the data to remove nested entries
         let flattened_data = data[1].map((item) => ({
           active: item.active,
@@ -200,30 +202,77 @@ export default function Home() {
           study_group: "",
           subject: item.subject,
           user: item.user,
+          weight: 1,
         }));
+        // Dummy data
         flattened_data.push({
           active: true,
           distance: 50,
           landmark: "",
-          latitude: 9.498298904115586,
-          longitude: 125.59552381187677,
+          latitude: 8.498837,
+          longitude: 124.595422,
           study_group: "",
           subject: "Introduction to Computing",
-          user: "Keannu",
+          user: "Dummy",
+          weight: 1,
         });
         // We get each unique subject
         let unique_subjects = [
           ...new Set(flattened_data.map((item) => item.subject)),
         ];
-        console.log("Unique Subjects:", unique_subjects);
         let result: any[] = [];
         // Then append all entries belonging to that subject to its own array
-        unique_subjects.forEach((subject) => {
+        unique_subjects.forEach((subject, index: number) => {
+          index++;
           let filteredData = flattened_data.filter(
             (item) => item.subject === subject && item.study_group === ""
           );
-          // We then concatenate this into the final array
-          result = result.concat([filteredData]);
+          /*console.log(
+            "Subject #",
+            index,
+            "-",
+            filteredData[0].subject,
+            filteredData
+          );*/
+          // We get the circle radius based on the furthest point
+          let circle_radius = Math.max(
+            ...filteredData.map((item) => item.distance)
+          );
+          console.log(
+            "Radius of circle:",
+            Math.max(...filteredData.map((item) => item.distance))
+          );
+          // We get the circle's center by averaging all the points
+          // Calculate the average latitude and longitude
+          const totalLat = filteredData.reduce(
+            (sum, point) => sum + point.latitude,
+            0
+          );
+          const totalLng = filteredData.reduce(
+            (sum, point) => sum + point.longitude,
+            0
+          );
+
+          const avgLat = totalLat / filteredData.length;
+          const avgLng = totalLng / filteredData.length;
+
+          console.log("Center Latitude:", avgLat);
+          console.log("Center Longitude:", avgLng);
+          // We now build the object
+          const subjectUserMap: any = {};
+          filteredData.forEach((item) => {
+            if (!subjectUserMap["users"]) {
+              subjectUserMap["users"] = [];
+            }
+            subjectUserMap["subject"] = item.subject;
+            subjectUserMap["latitude"] = avgLat;
+            subjectUserMap["longitude"] = avgLng;
+            subjectUserMap["radius"] = circle_radius;
+            subjectUserMap["users"].push(item.user);
+          });
+          console.log(subjectUserMap);
+
+          result = result.concat([subjectUserMap]);
         });
 
         console.log("Final Result:", result);
@@ -258,7 +307,6 @@ export default function Home() {
                   ],
                 },
               ]}
-              mapType="none"
               scrollEnabled={true}
               zoomEnabled={true}
               toolbarEnabled={false}
@@ -275,73 +323,72 @@ export default function Home() {
               loadingBackgroundColor={colors.secondary_2}
             >
               {student_statuses.map((student_status: any, index: number) => {
-                console.log("TEST INDEX", index, student_status);
+                const randomColorWithOpacity = `rgba(${Math.floor(
+                  Math.random() * 256
+                )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                  Math.random() * 256
+                )}, 0.7)`;
+
                 return (
-                  <Polygon
-                    key={index}
-                    coordinates={student_status}
-                    fillColor="red"
-                    strokeColor="50"
-                    zIndex={100}
-                    tappable
-                    onPress={() => {
-                      const users = student_statuses.map((item: any) => ({
-                        user: item.user,
-                      }));
-                      toast.hideAll();
-                      toast.show(
-                        <View
-                          style={{
-                            alignContent: "center",
-                            alignSelf: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text style={styles.text_white_tiny_bold}>
-                            Subject: {student_status[0].subject}
-                          </Text>
-                          <Text style={styles.text_white_tiny_bold}>
-                            Students Studying: {student_status.length}
-                          </Text>
-                          <Button
-                            onPress={() => {
-                              toast.show("Toledo para ma konsehal", {
-                                type: "warning",
-                                placement: "top",
-                                duration: 2000,
-                                animationType: "slide-in",
-                              });
+                  <>
+                    <Marker
+                      coordinate={student_status}
+                      pinColor={randomColorWithOpacity}
+                      zIndex={1000}
+                      onPress={() => {
+                        toast.hideAll();
+                        toast.show(
+                          <View
+                            style={{
+                              alignContent: "center",
+                              alignSelf: "center",
+                              justifyContent: "center",
                             }}
                           >
                             <Text style={styles.text_white_tiny_bold}>
-                              Create Group & Invite
+                              Subject: {student_status.subject}
                             </Text>
-                          </Button>
-                        </View>,
-                        {
-                          type: "normal",
-                          placement: "top",
-                          duration: 2000,
-                          animationType: "slide-in",
-                          style: {
-                            backgroundColor: colors.secondary_2,
-                            borderWidth: 1,
-                            borderColor: colors.primary_1,
-                          },
-                        }
-                      );
-                    }}
-                  />
+                            <Text style={styles.text_white_tiny_bold}>
+                              Students Studying: {student_status.users.length}
+                            </Text>
+                            <Button
+                              onPress={() => {
+                                toast.show("Joined successfully", {
+                                  type: "success",
+                                  placement: "top",
+                                  duration: 2000,
+                                  animationType: "slide-in",
+                                });
+                              }}
+                            >
+                              <Text style={styles.text_white_tiny_bold}>
+                                Create Group & Invite
+                              </Text>
+                            </Button>
+                          </View>,
+                          {
+                            type: "normal",
+                            placement: "top",
+                            duration: 2000,
+                            animationType: "slide-in",
+                            style: {
+                              backgroundColor: colors.secondary_2,
+                              borderWidth: 1,
+                              borderColor: colors.primary_1,
+                            },
+                          }
+                        );
+                      }}
+                    />
+                    <Circle
+                      key={index}
+                      center={student_status}
+                      radius={student_status.radius}
+                      fillColor={randomColorWithOpacity}
+                    />
+                  </>
                 );
               })}
-              <UrlTile
-                urlTemplate={urlProvider}
-                shouldReplaceMapContent={true}
-                maximumZ={19}
-                flipY={false}
-                zIndex={1}
-              />
-
               <Marker
                 coordinate={{
                   latitude: location.coords.latitude,
