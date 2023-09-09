@@ -1,12 +1,12 @@
 import { Callout } from "react-native-maps";
-import { LocationType } from "../../interfaces/Interfaces";
+import { RawLocationType } from "../../interfaces/Interfaces";
 import styles from "../../styles";
 import { Text } from "react-native";
 
 // Map popup for user's location
 
 type props = {
-  location: LocationType;
+  location: RawLocationType;
   studying: boolean;
   subject?: string;
 };

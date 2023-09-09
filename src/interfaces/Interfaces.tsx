@@ -124,7 +124,7 @@ export interface PatchUserInfoType {
   avatar?: string;
 }
 
-interface Location {
+export interface LocationType {
   latitude: Float;
   longitude: Float;
 }
@@ -132,7 +132,7 @@ interface Location {
 export interface StudentStatusType {
   user?: string;
   subject?: string;
-  location?: Location;
+  location?: LocationType;
   landmark?: string | null;
   active?: boolean;
 }
@@ -141,10 +141,23 @@ export interface StudentStatusFilterType {
   active: boolean;
   distance: number;
   landmark: string | null;
-  location: Location;
+  location: LocationType;
   study_group?: string;
   subject: string;
   user: string;
+  weight?: number;
+}
+
+export interface StudentStatusFilterTypeFlattened {
+  active: boolean;
+  distance: number;
+  landmark: string | null;
+  latitude: Float;
+  longitude: Float;
+  study_group?: string;
+  subject: string;
+  user: string;
+  weight?: number;
 }
 
 export type StudentStatusReturnType = [boolean, StudentStatusType];
@@ -152,7 +165,7 @@ export type StudentStatusReturnType = [boolean, StudentStatusType];
 export type StudentStatusListType = Array<StudentStatusFilterType>;
 export type StudentStatusListReturnType = [boolean, StudentStatusListType];
 
-export type LocationType = Location.LocationObject;
+export type RawLocationType = Location.LocationObject;
 
 export interface UserInfoType {
   first_name: string;
@@ -172,3 +185,11 @@ export interface UserInfoType {
 }
 
 export type UserInfoReturnType = [boolean, UserInfoType];
+
+export type subjectUserMapType = {
+  subject: string;
+  users: string[];
+  latitude: Float;
+  longitude: Float;
+  radius: Float;
+};
