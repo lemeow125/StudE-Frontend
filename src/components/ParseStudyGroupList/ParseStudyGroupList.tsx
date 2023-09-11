@@ -132,12 +132,12 @@ export default function ParseStudyGroupList(
             user_location.longitude
           );
 
-          console.log(
+          /*console.log(
             "Haversine Distance for entry #",
             index + 1,
             ":",
             distance
-          );
+          );*/
           return distance;
         }
       )

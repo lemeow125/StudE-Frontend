@@ -22,6 +22,7 @@ import {
   StudentStatusListReturnType,
   StudentStatusListType,
   subjectUserMapType,
+  StudentStatusFilterTypeFlattened,
 } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -34,8 +35,9 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "react-native-toast-notifications";
 import CustomMapCallout from "../../components/CustomMapCallout/CustomMapCallout";
-import ParseStudentStatusList from "../../components/ParseStudyGroupList/ParseStudyGroupList";
 import React from "react";
+import ParseStudyGroupList from "../../components/ParseStudyGroupList/ParseStudyGroupList";
+import ParseStudentStatusList from "../../components/ParseStudentStatusList/ParseStudentStatusList";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
@@ -179,7 +181,9 @@ export default function Home() {
     },
   });
 
-  const [student_statuses, setStudentStatuses] = useState<any>([]);
+  const [student_statuses, setStudentStatuses] = useState<
+    StudentStatusFilterTypeFlattened[]
+  >([]);
   const [study_groups, setStudyGroups] = useState<subjectUserMapType[]>([]);
   // Student Status List
   const StudentStatusList = useQuery({
@@ -195,11 +199,12 @@ export default function Home() {
     onSuccess: (data: StudentStatusListReturnType) => {
       if (data[1] && location) {
         setStudyGroups(
-          ParseStudentStatusList(data[1], {
+          ParseStudyGroupList(data[1], {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
           })
         );
+        setStudentStatuses(ParseStudentStatusList(data[1]));
       }
     },
     onError: (error: Error) => {
@@ -244,6 +249,57 @@ export default function Home() {
               }}
               loadingBackgroundColor={colors.secondary_2}
             >
+              {student_statuses.map(
+                (
+                  student_status: StudentStatusFilterTypeFlattened,
+                  index: number
+                ) => {
+                  const randomColorWithOpacity = `rgba(${Math.floor(
+                    Math.random() * 256
+                  )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                    Math.random() * 256
+                  )}, 0.7)`;
+
+                  return (
+                    <Marker
+                      key={index}
+                      coordinate={student_status}
+                      pinColor={randomColorWithOpacity}
+                      zIndex={1000}
+                      onPress={() => {
+                        toast.hideAll();
+                        toast.show(
+                          <View
+                            style={{
+                              alignContent: "center",
+                              alignSelf: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={styles.text_white_tiny_bold}>
+                              Student: {student_status.user}
+                            </Text>
+                            <Text style={styles.text_white_tiny_bold}>
+                              Studying Subject: {student_status.subject}
+                            </Text>
+                          </View>,
+                          {
+                            type: "normal",
+                            placement: "top",
+                            duration: 2000,
+                            animationType: "slide-in",
+                            style: {
+                              backgroundColor: colors.secondary_2,
+                              borderWidth: 1,
+                              borderColor: colors.primary_1,
+                            },
+                          }
+                        );
+                      }}
+                    />
+                  );
+                }
+              )}
               {study_groups.map(
                 (student_status: subjectUserMapType, index: number) => {
                   const randomColorWithOpacity = `rgba(${Math.floor(
@@ -285,7 +341,7 @@ export default function Home() {
                                 }}
                               >
                                 <Text style={styles.text_white_tiny_bold}>
-                                  Create Group & Invite
+                                  Join Group
                                 </Text>
                               </Button>
                             </View>,
