@@ -9,59 +9,82 @@ import {
 } from "../../interfaces/Interfaces";
 import { Double, Float } from "react-native/Libraries/Types/CodegenTypes";
 
-export default function ParseStudyGroupList(data: any) {
-  let result: any[] = [];
+export default function ParseStudyGroupList(
+  data: any,
+  user_location: LocationType
+) {
   // Circle generation for students in a study group
+  let result: any[] = [];
+  // We first remove any instances that do not have a study group associated with it
+  let data_filtered = data.filter(
+    (item: StudentStatusFilterType) => item.study_group !== ""
+  );
+  // console.log("Filtered Data:", data_filtered);
+  // Then we flatten the data so that all attributes are in the first layer
   // We first flatten the data to remove nested entries
-  console.log("Initial Data:", data);
-  let flattened_data = data
-    .filter((item: StudentStatusFilterType) => item.study_group !== "")
-    .map((item: StudentStatusFilterType) => ({
-      active: item.active,
-      distance: item.distance,
-      landmark: item.landmark,
-      latitude: item.location.latitude,
-      longitude: item.location.longitude,
-      study_group: item.study_group,
-      subject: item.subject,
-      user: item.user,
-      weight: 1,
-    }));
-  console.log("Filtered Data:", flattened_data);
+  let data_flattened = data_filtered.map((item: StudentStatusFilterType) => ({
+    active: item.active,
+    distance: item.distance,
+    landmark: item.landmark,
+    latitude: item.location.latitude,
+    longitude: item.location.longitude,
+    study_group: item.study_group,
+    subject: item.subject,
+    user: item.user,
+    weight: 1,
+  }));
+  // console.log("Flattened Data:", data_flattened);
 
-  // We get each unique subject
+  // We take from the array all unique subject names
   let unique_subjects = [
     ...new Set(
-      flattened_data.map((item: StudentStatusFilterType) => item.subject)
+      data_flattened.map((item: StudentStatusFilterType) => item.subject)
     ),
   ];
 
-  // Then append all entries belonging to that subject to its own array
+  // Then we create arrays unique to each subject
   unique_subjects.forEach((subject, index: number) => {
-    index++;
-    let filteredData = flattened_data.filter(
+    // We build another array for each subject, including only those instances that are the same subject name
+    let unique_subject_list = data_flattened
+      .filter(
+        (item: StudentStatusFilterTypeFlattened) => item.subject === subject
+      )
+      .map((item: StudentStatusFilterTypeFlattened) => ({
+        active: item.active,
+        distance: item.distance,
+        landmark: item.landmark,
+        latitude: item.latitude,
+        longitude: item.longitude,
+        study_group: item.study_group,
+        subject: item.subject,
+        user: item.user,
+        weight: 1,
+      }));
+
+    /*
+    let unique_subject_object = data_flattened.filter(
       (item: StudentStatusFilterTypeFlattened) => item.subject === subject
     );
-    console.log("Subject #", index, "-", filteredData[0].subject, filteredData);
+    */
+
     // We get the circle's center by averaging all the points
     // Calculate the average latitude and longitude
-    const totalLat = filteredData.reduce(
+    const totalLat = unique_subject_list.reduce(
       (sum: Double, point: LocationType) => sum + point.latitude,
       0
     );
-    const totalLng = filteredData.reduce(
+    const totalLng = unique_subject_list.reduce(
       (sum: Double, point: LocationType) => sum + point.longitude,
       0
     );
 
-    const avgLat = totalLat / filteredData.length;
-    const avgLng = totalLng / filteredData.length;
+    let avgLat = totalLat / unique_subject_list.length;
+    let avgLng = totalLng / unique_subject_list.length;
 
-    console.log("Center Latitude:", avgLat);
-    console.log("Center Longitude:", avgLng);
+    // console.log("Center Latitude:", avgLat);
+    // console.log("Center Longitude:", avgLng);
 
-    // We now calculate the radius of the circle using the Haversine Distance Formula
-
+    // Haversine Distance Function
     function haversineDistance(
       lat1: number,
       lon1: number,
@@ -72,31 +95,56 @@ export default function ParseStudyGroupList(data: any) {
         return (x * Math.PI) / 180;
       }
 
-      var R = 6371; // km
-      var x1 = lat2 - lat1;
-      var dLat = toRad(x1);
-      var x2 = lon2 - lon1;
-      var dLon = toRad(x2);
-      var a =
+      lat1 = toRad(lat1);
+      lon1 = toRad(lon1);
+      lat2 = toRad(lat2);
+      lon2 = toRad(lon2);
+
+      let dLat = lat2 - lat1;
+      let dLon = lon2 - lon1;
+
+      let a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat1)) *
-          Math.cos(toRad(lat2)) *
+        Math.cos(lat1) *
+          Math.cos(lat2) *
           Math.sin(dLon / 2) *
           Math.sin(dLon / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c;
-      return d;
+      let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      // Multiply by Earth's radius (in kilometers) to obtain distance
+      let distance = 6371 * c;
+
+      // Convert to meters
+      return distance * 1000;
     }
 
-    let circle_radius =
-      Math.max(
-        ...filteredData.map((item: StudentStatusFilterTypeFlattened) =>
-          haversineDistance(avgLat, avgLng, item.latitude, item.longitude)
-        )
-      ) * 1000;
-    console.log("Radius:", circle_radius);
+    // We now calculate the radius of the circle using the Haversine Distance Formula
+    // For each entry, we calculate the Haversine Distance from the user's location.
+    // The largest value is used as the circle radius
 
-    // We now build the object
+    let circle_radius = Math.max(
+      ...unique_subject_list.map(
+        (item: StudentStatusFilterTypeFlattened, index: number) => {
+          let distance = haversineDistance(
+            item.latitude,
+            item.longitude,
+            user_location.latitude,
+            user_location.longitude
+          );
+
+          console.log(
+            "Haversine Distance for entry #",
+            index + 1,
+            ":",
+            distance
+          );
+          return distance;
+        }
+      )
+    );
+    // console.log("Radius:", circle_radius);
+
+    // We now build the object that we will return
     const subjectUserMap: subjectUserMapType = {
       subject: "",
       users: [],
@@ -104,7 +152,7 @@ export default function ParseStudyGroupList(data: any) {
       longitude: 0,
       radius: 0,
     };
-    filteredData.forEach((item: StudentStatusFilterType) => {
+    unique_subject_list.forEach((item: StudentStatusFilterType) => {
       if (!subjectUserMap["users"]) {
         subjectUserMap["users"] = [];
       }

@@ -193,8 +193,13 @@ export default function Home() {
       return data;
     },
     onSuccess: (data: StudentStatusListReturnType) => {
-      if (data[1]) {
-        setStudyGroups(ParseStudentStatusList(data[1]));
+      if (data[1] && location) {
+        setStudyGroups(
+          ParseStudentStatusList(data[1], {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          })
+        );
       }
     },
     onError: (error: Error) => {
