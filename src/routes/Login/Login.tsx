@@ -59,6 +59,7 @@ export default function Login() {
           placeholderTextColor="white"
           secureTextEntry={true}
           value={creds.password}
+          autoCapitalize={"none"}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {

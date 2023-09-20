@@ -113,6 +113,7 @@ export default function Register() {
           placeholderTextColor={colors.text_default}
           secureTextEntry={true}
           value={user.password}
+          autoCapitalize={"none"}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
