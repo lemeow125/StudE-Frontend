@@ -8,6 +8,7 @@ import {
   RootDrawerParamList,
   StudentStatusType,
   StudentStatusReturnType,
+  StudentStatusPatchType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -61,7 +62,7 @@ export default function StartStudying({ route }: any) {
   });
 
   const mutation = useMutation({
-    mutationFn: async (info: StudentStatusType) => {
+    mutationFn: async (info: StudentStatusPatchType) => {
       const data = await PatchStudentStatus(info);
       if (data[0] == false) {
         return Promise.reject(new Error(JSON.stringify(data[1])));

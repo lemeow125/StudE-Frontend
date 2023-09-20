@@ -44,7 +44,7 @@ import GetDistanceFromUSTP from "../../components/GetDistance/GetDistanceFromUST
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_debug = false;
+  const map_debug = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
@@ -119,6 +119,7 @@ export default function Home() {
   const [studying, setStudying] = useState(false);
   const [subject, setSubject] = useState("");
   const [buttonLabel, setButtonLabel] = useState("Start studying");
+  const [student_status, setStudentStatus] = useState<StudentStatusType>();
   const StudentStatus = useQuery({
     queryKey: ["user_status"],
     queryFn: async () => {
@@ -140,6 +141,8 @@ export default function Home() {
       } else if (data[1].active == false) {
         setButtonLabel("Start Studying");
       }
+      setStudentStatus(data[1]);
+      console.log(student_status);
     },
     onError: (error: Error) => {
       toast.show(String(error), {
@@ -373,7 +376,7 @@ export default function Home() {
                   latitude: location.coords.latitude,
                   longitude: location.coords.longitude,
                 }}
-                draggable
+                draggable={student_status?.active}
                 onDragEnd={(e) => {
                   const newLocation = e.nativeEvent.coordinate;
                   const distance = GetDistance(
@@ -402,7 +405,10 @@ export default function Home() {
                 pinColor={colors.primary_1}
               >
                 <CustomMapCallout
-                  location={location}
+                  location={{
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                  }}
                   studying={studying}
                   subject={subject}
                 />

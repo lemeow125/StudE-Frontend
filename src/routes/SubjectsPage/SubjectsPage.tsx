@@ -9,6 +9,7 @@ import {
   OptionType,
   StudentStatusType,
   PatchUserInfoType,
+  StudentStatusPatchType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { Image } from "react-native";
@@ -33,7 +34,7 @@ export default function SubjectsPage() {
 
   // Student Status
   const studentstatus_mutation = useMutation({
-    mutationFn: async (info: StudentStatusType) => {
+    mutationFn: async (info: StudentStatusPatchType) => {
       const data = await PatchStudentStatus(info);
       if (data[0] != true) {
         return Promise.reject(new Error());
