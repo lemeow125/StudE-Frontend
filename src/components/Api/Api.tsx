@@ -6,6 +6,7 @@ import {
   OnboardingType,
   PatchUserInfoType,
   RegistrationType,
+  StudentStatusPatchType,
   StudentStatusType,
 } from "../../interfaces/Interfaces";
 
@@ -243,7 +244,7 @@ export async function GetStudentStatus() {
     });
 }
 
-export async function PatchStudentStatus(info: StudentStatusType) {
+export async function PatchStudentStatus(info: StudentStatusPatchType) {
   const config = await GetConfig();
   console.log(info);
   return instance

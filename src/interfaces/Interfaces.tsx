@@ -130,7 +130,13 @@ export interface LocationType {
 }
 
 export interface StudentStatusType {
-  user?: string;
+  subject: string;
+  location: LocationType;
+  landmark: string | null;
+  active: boolean;
+}
+
+export interface StudentStatusPatchType {
   subject?: string;
   location?: LocationType;
   landmark?: string | null;

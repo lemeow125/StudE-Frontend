@@ -23,6 +23,7 @@ import {
   StudentStatusListType,
   subjectUserMapType,
   StudentStatusFilterTypeFlattened,
+  StudentStatusPatchType,
 } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -34,14 +35,16 @@ import {
 } from "../../components/Api/Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "react-native-toast-notifications";
-import CustomMapCallout from "../../components/CustomMapCallout/CustomMapCallout";
 import React from "react";
 import ParseStudyGroupList from "../../components/ParseStudyGroupList/ParseStudyGroupList";
 import ParseStudentStatusList from "../../components/ParseStudentStatusList/ParseStudentStatusList";
+import CustomMapCallout from "../../components/CustomMapCallout/CustomMapCallout";
+import MapRendererFar from "../../components/MapRenderer/MapRendererFar";
+import GetDistanceFromUSTP from "../../components/GetDistance/GetDistanceFromUSTP";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_debug = true;
+  const map_debug = false;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
@@ -103,12 +106,7 @@ export default function Home() {
   }, []);
 
   async function GetDistanceRoundedOff(location: RawLocationType) {
-    let dist = GetDistance(
-      location.coords.latitude,
-      location.coords.longitude,
-      ustpCoords.latitude,
-      ustpCoords.longitude
-    );
+    let dist = GetDistanceFromUSTP(location.coords);
     setDist(Math.round(dist));
     // Deactivate student status if too far away
     if (dist >= 2 && !map_debug)
@@ -154,7 +152,7 @@ export default function Home() {
   });
 
   const mutation = useMutation({
-    mutationFn: async (info: StudentStatusType) => {
+    mutationFn: async (info: StudentStatusPatchType) => {
       const data = await PatchStudentStatus(info);
       if (data[0] != true) {
         return Promise.reject(new Error());
@@ -426,70 +424,7 @@ export default function Home() {
           </View>
         );
       } else {
-        return (
-          <View>
-            <Text style={styles.text_white_medium}>
-              You are too far from USTP {"\n"}
-              Get closer to use Stud-E
-            </Text>
-            <MapView
-              style={{
-                height: Viewport.height * 0.5,
-                width: Viewport.width * 0.8,
-                alignSelf: "center",
-              }}
-              customMapStyle={[
-                {
-                  featureType: "poi",
-                  stylers: [
-                    {
-                      visibility: "off",
-                    },
-                  ],
-                },
-              ]}
-              mapType="none"
-              scrollEnabled={false}
-              zoomEnabled={false}
-              toolbarEnabled={false}
-              rotateEnabled={false}
-              minZoomLevel={18}
-              initialRegion={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              loadingBackgroundColor={colors.secondary_2}
-            >
-              <UrlTile
-                urlTemplate={urlProvider}
-                shouldReplaceMapContent={true}
-                maximumZ={19}
-                flipY={false}
-                zIndex={1}
-              />
-              <Marker
-                coordinate={{
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                }}
-                pinColor={colors.primary_1}
-              >
-                <Callout>
-                  <Text style={styles.text_black_tiny}>
-                    You are here {"\n"}
-                    X: {Math.round(location.coords.longitude) + "\n"}
-                    Z: {Math.round(location.coords.latitude)}
-                  </Text>
-                </Callout>
-              </Marker>
-            </MapView>
-            <Text style={styles.text_white_small}>
-              {dist}km away from USTP {"\n"}
-            </Text>
-          </View>
-        );
+        return <MapRendererFar location={location.coords} dist={dist} />;
       }
     } else {
       requestLocation();
