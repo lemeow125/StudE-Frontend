@@ -85,7 +85,7 @@ export default function Home() {
           newLocation.coords.longitude !== location.coords.longitude
         ) {
           setLocation(newLocation);
-          GetDistanceRoundedOff(newLocation);
+          DistanceHandler(newLocation);
         }
       }
     }
@@ -105,9 +105,9 @@ export default function Home() {
     requestLocation();
   }, []);
 
-  async function GetDistanceRoundedOff(location: RawLocationType) {
+  async function DistanceHandler(location: RawLocationType) {
     let dist = GetDistanceFromUSTP(location.coords);
-    setDist(Math.round(dist));
+    setDist(dist);
     // Deactivate student status if too far away
     if (dist >= 2 && !map_debug)
       mutation.mutate({
