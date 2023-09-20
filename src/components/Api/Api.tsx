@@ -12,8 +12,8 @@ import {
 export let backendURL = "https://stude.keannu1.duckdns.org";
 export let backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
 if (__DEV__) {
-  backendURL = "http://10.0.10.8:8000";
-  backendURLWebsocket = "ws://10.0.10.8:8000";
+  backendURL = "http://10.0.10.8:8083";
+  backendURLWebsocket = "ws://10.0.10.8:8083";
 }
 
 // Switch this on if you wanna run production URLs while in development
