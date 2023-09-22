@@ -17,7 +17,8 @@ export default function ParseStudyGroupList(
   let result: any[] = [];
   // We first remove any instances that do not have a study group associated with it
   let data_filtered = data.filter(
-    (item: StudentStatusFilterType) => item.study_group !== ""
+    (item: StudentStatusFilterType) =>
+      item.study_group !== undefined && item.study_group.length > 0
   );
   // console.log("Filtered Data:", data_filtered);
   // Then we flatten the data so that all attributes are in the first layer
@@ -35,19 +36,20 @@ export default function ParseStudyGroupList(
   }));
   // console.log("Flattened Data:", data_flattened);
 
-  // We take from the array all unique subject names
-  let unique_subjects = [
+  // We take from the array all unique study groups
+  let unique_studygroups = [
     ...new Set(
-      data_flattened.map((item: StudentStatusFilterType) => item.subject)
+      data_flattened.map((item: StudentStatusFilterType) => item.study_group)
     ),
   ];
 
   // Then we create arrays unique to each subject
-  unique_subjects.forEach((subject, index: number) => {
+  unique_studygroups.forEach((studygroup, index: number) => {
     // We build another array for each subject, including only those instances that are the same subject name
     let unique_subject_list = data_flattened
       .filter(
-        (item: StudentStatusFilterTypeFlattened) => item.subject === subject
+        (item: StudentStatusFilterTypeFlattened) =>
+          item.study_group === studygroup
       )
       .map((item: StudentStatusFilterTypeFlattened) => ({
         active: item.active,
@@ -147,6 +149,7 @@ export default function ParseStudyGroupList(
     // We now build the object that we will return
     const subjectUserMap: subjectUserMapType = {
       subject: "",
+      study_group: "",
       users: [],
       latitude: 0,
       longitude: 0,
@@ -155,6 +158,9 @@ export default function ParseStudyGroupList(
     unique_subject_list.forEach((item: StudentStatusFilterType) => {
       if (!subjectUserMap["users"]) {
         subjectUserMap["users"] = [];
+      }
+      if (!subjectUserMap["study_group"]) {
+        subjectUserMap["study_group"] = unique_subject_list[0].study_group;
       }
       subjectUserMap["subject"] = item.subject;
       subjectUserMap["latitude"] = avgLat;
@@ -167,7 +173,7 @@ export default function ParseStudyGroupList(
     result = result.concat([subjectUserMap]);
   });
 
-  // console.log("Final Result:", result);
+  console.log("Final Result:", result);
 
   return result;
 }
