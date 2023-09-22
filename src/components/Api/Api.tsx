@@ -246,7 +246,6 @@ export async function GetStudentStatus() {
 
 export async function PatchStudentStatus(info: StudentStatusPatchType) {
   const config = await GetConfig();
-  console.log(info);
   return instance
     .patch("/api/v1/student_status/self/", info, config)
     .then((response) => {
