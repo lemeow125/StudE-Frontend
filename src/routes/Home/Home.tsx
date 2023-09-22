@@ -243,8 +243,12 @@ export default function Home() {
               minZoomLevel={19}
               zoomTapEnabled
               initialRegion={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
+                latitude:
+                  student_status?.location?.latitude ||
+                  location.coords.latitude,
+                longitude:
+                  student_status?.location?.longitude ||
+                  location.coords.longitude,
                 latitudeDelta: 0.4,
                 longitudeDelta: 0.4,
               }}
@@ -372,11 +376,16 @@ export default function Home() {
                 }
               )}
               <Marker
+                zIndex={1001}
                 coordinate={{
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
+                  latitude:
+                    student_status?.location?.latitude ||
+                    location.coords.latitude,
+                  longitude:
+                    student_status?.location?.longitude ||
+                    location.coords.longitude,
                 }}
-                draggable={student_status?.active}
+                draggable={!student_status?.active}
                 onDragEnd={(e) => {
                   const newLocation = e.nativeEvent.coordinate;
                   const distance = GetDistance(
