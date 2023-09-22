@@ -16,7 +16,7 @@ export default function ParseStudentStatusList(data: any) {
   let data_filtered = data.filter(
     (item: StudentStatusFilterType) => item.study_group == ""
   );
-  console.log("Filtered Data:", data_filtered);
+  // console.log("Filtered Data:", data_filtered);
   // Then we flatten the data so that all attributes are in the first layer
   // We first flatten the data to remove nested entries
   let data_flattened = data_filtered.map((item: StudentStatusFilterType) => ({
