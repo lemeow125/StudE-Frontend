@@ -33,6 +33,7 @@ import {
   GetStudentStatus,
   GetStudentStatusList,
   GetStudentStatusListFiltered,
+  GetStudyGroupList,
   GetStudyGroupListFiltered,
   PatchStudentStatus,
   urlProvider,
@@ -242,6 +243,34 @@ export default function Home() {
       });
     },
   });
+  const [study_groups_global, setStudyGroupsGlobal] = useState<
+    StudyGroupType[]
+  >([]);
+  // Student Status List
+  const StudyGroupGlobalQuery = useQuery({
+    enabled: !studying,
+    queryKey: ["study_group_list_global"],
+    queryFn: async () => {
+      const data = await GetStudyGroupList();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudyGroupReturnType) => {
+      if (data[1] && location) {
+        setStudyGroupsGlobal(data[1]);
+      }
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
 
   function CustomMap() {
     if (dist && location) {
@@ -395,6 +424,76 @@ export default function Home() {
                   </React.Fragment>
                 );
               })}
+              {study_groups_global.map(
+                (studygroup: StudyGroupType, index: number) => {
+                  const randomColorWithOpacity = `rgba(${Math.floor(
+                    Math.random() * 256
+                  )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                    Math.random() * 256
+                  )}, 0.7)`;
+
+                  return (
+                    <React.Fragment key={index}>
+                      <Marker
+                        coordinate={studygroup.location}
+                        pinColor={randomColorWithOpacity}
+                        zIndex={1000}
+                        onPress={() => {
+                          toast.hideAll();
+                          toast.show(
+                            <View
+                              style={{
+                                alignContent: "center",
+                                alignSelf: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={styles.text_white_tiny_bold}>
+                                Subject: {studygroup.subject}
+                              </Text>
+                              <Text style={styles.text_white_tiny_bold}>
+                                Students Studying: {studygroup.users.length}
+                              </Text>
+                              <Button
+                                onPress={() => {
+                                  toast.show("Joined successfully", {
+                                    type: "success",
+                                    placement: "top",
+                                    duration: 2000,
+                                    animationType: "slide-in",
+                                  });
+                                }}
+                              >
+                                <Text style={styles.text_white_tiny_bold}>
+                                  Join Group
+                                </Text>
+                              </Button>
+                            </View>,
+                            {
+                              type: "normal",
+                              placement: "top",
+                              duration: 2000,
+                              animationType: "slide-in",
+                              style: {
+                                backgroundColor: colors.secondary_2,
+                                borderWidth: 1,
+                                borderColor: colors.primary_1,
+                              },
+                            }
+                          );
+                        }}
+                      />
+                      <Circle
+                        center={studygroup.location}
+                        radius={studygroup.radius}
+                        fillColor={randomColorWithOpacity}
+                        strokeColor="white"
+                        zIndex={1000}
+                      />
+                    </React.Fragment>
+                  );
+                }
+              )}
               <Marker
                 zIndex={1001}
                 coordinate={{
