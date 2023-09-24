@@ -296,3 +296,17 @@ export async function GetStudentStatusListFilteredCurrentLocation() {
       return [false, error_message];
     });
 }
+
+export async function GetStudyGroupListFiltered() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/study_groups/near/", config)
+    .then((response) => {
+      console.log("Data:", response.data);
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
