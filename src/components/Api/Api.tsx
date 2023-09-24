@@ -246,7 +246,6 @@ export async function GetStudentStatus() {
 
 export async function PatchStudentStatus(info: StudentStatusPatchType) {
   const config = await GetConfig();
-  console.log(info);
   return instance
     .patch("/api/v1/student_status/self/", info, config)
     .then((response) => {
@@ -290,6 +289,33 @@ export async function GetStudentStatusListFilteredCurrentLocation() {
   return instance
     .get("/api/v1/student_status/list/", config)
     .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudyGroupListFiltered() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/study_groups/near/", config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudyGroupList() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/study_groups/", config)
+    .then((response) => {
+      console.log("test", response.data);
       return [true, response.data];
     })
     .catch((error) => {

@@ -166,6 +166,17 @@ export interface StudentStatusFilterTypeFlattened {
   weight?: number;
 }
 
+export interface StudyGroupType {
+  name: string;
+  users: string[];
+  distance: number;
+  landmark: string | null;
+  location: LocationType;
+  subject: string;
+  radius: number;
+}
+export type StudyGroupReturnType = [boolean, StudyGroupType[]];
+
 export type StudentStatusReturnType = [boolean, StudentStatusType];
 
 export type StudentStatusListType = Array<StudentStatusFilterType>;

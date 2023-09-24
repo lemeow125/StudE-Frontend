@@ -24,20 +24,23 @@ import {
   subjectUserMapType,
   StudentStatusFilterTypeFlattened,
   StudentStatusPatchType,
+  StudyGroupType,
+  StudyGroupReturnType,
+  StudentStatusFilterType,
 } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
 import {
   GetStudentStatus,
   GetStudentStatusList,
   GetStudentStatusListFiltered,
+  GetStudyGroupList,
+  GetStudyGroupListFiltered,
   PatchStudentStatus,
   urlProvider,
 } from "../../components/Api/Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "react-native-toast-notifications";
 import React from "react";
-import ParseStudyGroupList from "../../components/ParseStudyGroupList/ParseStudyGroupList";
-import ParseStudentStatusList from "../../components/ParseStudentStatusList/ParseStudentStatusList";
 import CustomMapCallout from "../../components/CustomMapCallout/CustomMapCallout";
 import MapRendererFar from "../../components/MapRenderer/MapRendererFar";
 import GetDistanceFromUSTP from "../../components/GetDistance/GetDistanceFromUSTP";
@@ -120,7 +123,7 @@ export default function Home() {
   const [subject, setSubject] = useState("");
   const [buttonLabel, setButtonLabel] = useState("Start studying");
   const [student_status, setStudentStatus] = useState<StudentStatusType>();
-  const StudentStatus = useQuery({
+  const StudentStatusQuery = useQuery({
     queryKey: ["user_status"],
     queryFn: async () => {
       const data = await GetStudentStatus();
@@ -182,12 +185,10 @@ export default function Home() {
     },
   });
 
-  const [student_statuses, setStudentStatuses] = useState<
-    StudentStatusFilterTypeFlattened[]
-  >([]);
-  const [study_groups, setStudyGroups] = useState<subjectUserMapType[]>([]);
+  const [student_statuses, setStudentStatuses] =
+    useState<StudentStatusListType>([]);
   // Student Status List
-  const StudentStatusList = useQuery({
+  const StudentStatusListQuery = useQuery({
     enabled: studying,
     queryKey: ["user_status_list"],
     queryFn: async () => {
@@ -199,13 +200,66 @@ export default function Home() {
     },
     onSuccess: (data: StudentStatusListReturnType) => {
       if (data[1] && location) {
-        setStudyGroups(
-          ParseStudyGroupList(data[1], {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          })
+        // Filter to only include students studying solo
+        let data_filtered = data[1].filter(
+          (item: StudentStatusFilterType) => item.study_group == ""
         );
-        setStudentStatuses(ParseStudentStatusList(data[1]));
+        setStudentStatuses(data_filtered);
+      }
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
+  const [study_groups, setStudyGroups] = useState<StudyGroupType[]>([]);
+  // Student Status List
+  const StudyGroupQuery = useQuery({
+    enabled: studying,
+    queryKey: ["study_group_list"],
+    queryFn: async () => {
+      const data = await GetStudyGroupListFiltered();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudyGroupReturnType) => {
+      if (data[1] && location) {
+        setStudyGroups(data[1]);
+      }
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+  const [study_groups_global, setStudyGroupsGlobal] = useState<
+    StudyGroupType[]
+  >([]);
+  // Student Status List
+  const StudyGroupGlobalQuery = useQuery({
+    enabled: !studying,
+    queryKey: ["study_group_list_global"],
+    queryFn: async () => {
+      const data = await GetStudyGroupList();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudyGroupReturnType) => {
+      if (data[1] && location) {
+        setStudyGroupsGlobal(data[1]);
       }
     },
     onError: (error: Error) => {
@@ -243,18 +297,19 @@ export default function Home() {
               minZoomLevel={19}
               zoomTapEnabled
               initialRegion={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
+                latitude:
+                  student_status?.location?.latitude ||
+                  location.coords.latitude,
+                longitude:
+                  student_status?.location?.longitude ||
+                  location.coords.longitude,
                 latitudeDelta: 0.4,
                 longitudeDelta: 0.4,
               }}
               loadingBackgroundColor={colors.secondary_2}
             >
               {student_statuses.map(
-                (
-                  student_status: StudentStatusFilterTypeFlattened,
-                  index: number
-                ) => {
+                (student_status: StudentStatusFilterType, index: number) => {
                   const randomColorWithOpacity = `rgba(${Math.floor(
                     Math.random() * 256
                   )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
@@ -264,7 +319,7 @@ export default function Home() {
                   return (
                     <Marker
                       key={index}
-                      coordinate={student_status}
+                      coordinate={student_status.location}
                       pinColor={randomColorWithOpacity}
                       zIndex={1000}
                       onPress={() => {
@@ -301,8 +356,76 @@ export default function Home() {
                   );
                 }
               )}
-              {study_groups.map(
-                (student_status: subjectUserMapType, index: number) => {
+              {study_groups.map((studygroup: StudyGroupType, index: number) => {
+                const randomColorWithOpacity = `rgba(${Math.floor(
+                  Math.random() * 256
+                )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                  Math.random() * 256
+                )}, 0.7)`;
+
+                return (
+                  <React.Fragment key={index}>
+                    <Marker
+                      coordinate={studygroup.location}
+                      pinColor={randomColorWithOpacity}
+                      zIndex={1000}
+                      onPress={() => {
+                        toast.hideAll();
+                        toast.show(
+                          <View
+                            style={{
+                              alignContent: "center",
+                              alignSelf: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={styles.text_white_tiny_bold}>
+                              Subject: {studygroup.subject}
+                            </Text>
+                            <Text style={styles.text_white_tiny_bold}>
+                              Students Studying: {studygroup.users.length}
+                            </Text>
+                            <Button
+                              onPress={() => {
+                                toast.show("Joined successfully", {
+                                  type: "success",
+                                  placement: "top",
+                                  duration: 2000,
+                                  animationType: "slide-in",
+                                });
+                              }}
+                            >
+                              <Text style={styles.text_white_tiny_bold}>
+                                Join Group
+                              </Text>
+                            </Button>
+                          </View>,
+                          {
+                            type: "normal",
+                            placement: "top",
+                            duration: 2000,
+                            animationType: "slide-in",
+                            style: {
+                              backgroundColor: colors.secondary_2,
+                              borderWidth: 1,
+                              borderColor: colors.primary_1,
+                            },
+                          }
+                        );
+                      }}
+                    />
+                    <Circle
+                      center={studygroup.location}
+                      radius={studygroup.radius}
+                      fillColor={randomColorWithOpacity}
+                      strokeColor="white"
+                      zIndex={1000}
+                    />
+                  </React.Fragment>
+                );
+              })}
+              {study_groups_global.map(
+                (studygroup: StudyGroupType, index: number) => {
                   const randomColorWithOpacity = `rgba(${Math.floor(
                     Math.random() * 256
                   )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
@@ -312,7 +435,7 @@ export default function Home() {
                   return (
                     <React.Fragment key={index}>
                       <Marker
-                        coordinate={student_status}
+                        coordinate={studygroup.location}
                         pinColor={randomColorWithOpacity}
                         zIndex={1000}
                         onPress={() => {
@@ -326,10 +449,10 @@ export default function Home() {
                               }}
                             >
                               <Text style={styles.text_white_tiny_bold}>
-                                Subject: {student_status.subject}
+                                Subject: {studygroup.subject}
                               </Text>
                               <Text style={styles.text_white_tiny_bold}>
-                                Students Studying: {student_status.users.length}
+                                Students Studying: {studygroup.users.length}
                               </Text>
                               <Button
                                 onPress={() => {
@@ -361,8 +484,8 @@ export default function Home() {
                         }}
                       />
                       <Circle
-                        center={student_status}
-                        radius={student_status.radius}
+                        center={studygroup.location}
+                        radius={studygroup.radius}
                         fillColor={randomColorWithOpacity}
                         strokeColor="white"
                         zIndex={1000}
@@ -372,11 +495,16 @@ export default function Home() {
                 }
               )}
               <Marker
+                zIndex={1001}
                 coordinate={{
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
+                  latitude:
+                    student_status?.location?.latitude ||
+                    location.coords.latitude,
+                  longitude:
+                    student_status?.location?.longitude ||
+                    location.coords.longitude,
                 }}
-                draggable={student_status?.active}
+                draggable={!student_status?.active}
                 onDragEnd={(e) => {
                   const newLocation = e.nativeEvent.coordinate;
                   const distance = GetDistance(
