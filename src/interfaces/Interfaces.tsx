@@ -175,6 +175,13 @@ export interface StudyGroupType {
   subject: string;
   radius: number;
 }
+
+export interface StudyGroupCreateType {
+  name: string;
+  location: LocationType;
+  subject: string;
+}
+
 export type StudyGroupReturnType = [boolean, StudyGroupType[]];
 
 export type StudentStatusReturnType = [boolean, StudentStatusType];

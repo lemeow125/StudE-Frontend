@@ -27,9 +27,11 @@ import {
   StudyGroupType,
   StudyGroupReturnType,
   StudentStatusFilterType,
+  StudyGroupCreateType,
 } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
 import {
+  CreateStudyGroup,
   GetStudentStatus,
   GetStudentStatusList,
   GetStudentStatusListFiltered,
@@ -44,10 +46,13 @@ import React from "react";
 import CustomMapCallout from "../../components/CustomMapCallout/CustomMapCallout";
 import MapRendererFar from "../../components/MapRenderer/MapRendererFar";
 import GetDistanceFromUSTP from "../../components/GetDistance/GetDistanceFromUSTP";
+import { useSelector } from "react-redux";
+import { RootState } from "../../features/redux/Store/Store";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
   const map_debug = true;
+  const user_state = useSelector((state: RootState) => state.user);
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
@@ -169,6 +174,34 @@ export default function Home() {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
       toast.show("You are no longer studying  \n" + subject, {
+        type: "success",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
+  const study_group_create = useMutation({
+    mutationFn: async (info: StudyGroupCreateType) => {
+      const data = await CreateStudyGroup(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      toast.show("Created successfully", {
         type: "success",
         placement: "top",
         duration: 2000,
@@ -531,16 +564,73 @@ export default function Home() {
                   }
                 }}
                 pinColor={colors.primary_1}
-              >
-                <CustomMapCallout
-                  location={{
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                  }}
-                  studying={studying}
-                  subject={subject}
-                />
-              </Marker>
+                onPress={() => {
+                  toast.hideAll();
+                  toast.show(
+                    <View
+                      style={{
+                        alignContent: "center",
+                        alignSelf: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={styles.text_white_tiny_bold}>
+                        You are here
+                      </Text>
+
+                      <Text style={styles.text_white_tiny_bold}>
+                        {"x: " +
+                          (student_status?.location?.longitude != 0
+                            ? student_status?.location?.longitude.toFixed(4)
+                            : location.coords.longitude.toFixed(4))}
+                      </Text>
+                      <Text style={styles.text_white_tiny_bold}>
+                        {"y: " +
+                          (student_status?.location?.latitude != 0
+                            ? student_status?.location?.latitude.toFixed(4)
+                            : location.coords.latitude.toFixed(4))}
+                      </Text>
+                      {studying ? (
+                        <>
+                          <Text style={styles.text_white_tiny_bold}>
+                            {studying
+                              ? "Studying " + student_status?.subject
+                              : ""}
+                          </Text>
+                          <Button
+                            onPress={() => {
+                              if (student_status?.subject) {
+                                study_group_create.mutate({
+                                  name: "asdasdasdasd",
+                                  location: location.coords,
+                                  subject: student_status?.subject,
+                                });
+                              }
+                            }}
+                          >
+                            <Text style={styles.text_white_tiny_bold}>
+                              Create Group
+                            </Text>
+                          </Button>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </View>,
+                    {
+                      type: "normal",
+                      placement: "top",
+                      duration: 2000,
+                      animationType: "slide-in",
+                      style: {
+                        backgroundColor: colors.secondary_2,
+                        borderWidth: 1,
+                        borderColor: colors.primary_1,
+                      },
+                    }
+                  );
+                }}
+              ></Marker>
             </MapView>
             <Button
               onPress={async () => {

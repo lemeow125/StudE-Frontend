@@ -8,6 +8,8 @@ import {
   RegistrationType,
   StudentStatusPatchType,
   StudentStatusType,
+  StudyGroupCreateType,
+  StudyGroupType,
 } from "../../interfaces/Interfaces";
 
 export let backendURL = "https://stude.keannu1.duckdns.org";
@@ -275,6 +277,7 @@ export async function GetStudentStatusListFiltered() {
   return instance
     .get("/api/v1/student_status/filter/near_student_status", config)
     .then((response) => {
+      console.log("test", response.data);
       return [true, response.data];
     })
     .catch((error) => {
@@ -315,7 +318,20 @@ export async function GetStudyGroupList() {
   return instance
     .get("/api/v1/study_groups/", config)
     .then((response) => {
-      console.log("test", response.data);
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function CreateStudyGroup(info: StudyGroupCreateType) {
+  const config = await GetConfig();
+  console.log("Payload:", info);
+  return instance
+    .post("/api/v1/study_groups/create/", info, config)
+    .then((response) => {
       return [true, response.data];
     })
     .catch((error) => {
