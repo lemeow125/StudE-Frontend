@@ -255,6 +255,7 @@ export async function PatchStudentStatus(info: StudentStatusPatchType) {
     })
     .catch((error) => {
       let error_message = ParseError(error);
+      console.log("Error!", error.response.data);
       return [false, error_message];
     });
 }

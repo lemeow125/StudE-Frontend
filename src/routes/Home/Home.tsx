@@ -416,7 +416,7 @@ export default function Home() {
                               Subject: {studygroup.subject}
                             </Text>
                             <Text style={styles.text_white_tiny_bold}>
-                              Students Studying: {studygroup.users.length}
+                              Students Studying: {studygroup.students.length}
                             </Text>
                             <Button
                               onPress={() => {
@@ -485,7 +485,7 @@ export default function Home() {
                                 Subject: {studygroup.subject}
                               </Text>
                               <Text style={styles.text_white_tiny_bold}>
-                                Students Studying: {studygroup.users.length}
+                                Students Studying: {studygroup.students.length}
                               </Text>
                               <Button
                                 onPress={() => {
@@ -580,29 +580,41 @@ export default function Home() {
 
                       <Text style={styles.text_white_tiny_bold}>
                         {"x: " +
-                          (student_status?.location?.longitude != 0
+                          (student_status?.location?.longitude != undefined
                             ? student_status?.location?.longitude.toFixed(4)
                             : location.coords.longitude.toFixed(4))}
                       </Text>
                       <Text style={styles.text_white_tiny_bold}>
                         {"y: " +
-                          (student_status?.location?.latitude != 0
+                          (student_status?.location?.latitude != undefined
                             ? student_status?.location?.latitude.toFixed(4)
                             : location.coords.latitude.toFixed(4))}
                       </Text>
-                      {studying ? (
+                      {student_status?.active &&
+                      !student_status?.study_group ? (
                         <>
                           <Text style={styles.text_white_tiny_bold}>
-                            {studying
+                            {student_status?.active
                               ? "Studying " + student_status?.subject
                               : ""}
                           </Text>
                           <Button
                             onPress={() => {
                               if (student_status?.subject) {
-                                study_group_create.mutate({
-                                  name: "asdasdasdasd",
-                                  location: location.coords,
+                                console.log({
+                                  location: {
+                                    latitude: student_status?.location.latitude,
+                                    longitude:
+                                      student_status?.location.longitude,
+                                  },
+                                  subject: student_status?.subject,
+                                });
+                                navigation.navigate("Create Group", {
+                                  location: {
+                                    latitude: student_status?.location.latitude,
+                                    longitude:
+                                      student_status?.location.longitude,
+                                  },
                                   subject: student_status?.subject,
                                 });
                               }
@@ -612,6 +624,18 @@ export default function Home() {
                               Create Group
                             </Text>
                           </Button>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                      {student_status?.study_group ? (
+                        <>
+                          <Text style={styles.text_white_tiny_bold}>
+                            {`Studying ${student_status?.subject}`}
+                          </Text>
+                          <Text style={styles.text_white_tiny_bold}>
+                            {`In group ${student_status?.study_group}`}
+                          </Text>
                         </>
                       ) : (
                         <></>
@@ -634,7 +658,7 @@ export default function Home() {
             </MapView>
             <Button
               onPress={async () => {
-                if (!studying) {
+                if (!student_status?.active) {
                   navigation.navigate("Start Studying", { location: location });
                 } else {
                   mutation.mutate({

@@ -26,6 +26,7 @@ import Loading from "./src/routes/Loading/Loading";
 import StartStudying from "./src/routes/StartStudying/StartStudying";
 import { ToastProvider } from "react-native-toast-notifications";
 import InfoIcon from "./src/icons/InfoIcon/InfoIcon";
+import CreateGroup from "./src/routes/CreateGroup/CreateGroup";
 
 const Drawer = createDrawerNavigator();
 
@@ -83,6 +84,7 @@ export default function App() {
               <Drawer.Screen name="User Info" component={UserInfoPage} />
               <Drawer.Screen name="Subjects" component={SubjectsPage} />
               <Drawer.Screen name="Start Studying" component={StartStudying} />
+              <Drawer.Screen name="Create Group" component={CreateGroup} />
             </Drawer.Navigator>
           </NavigationContainer>
         </Provider>

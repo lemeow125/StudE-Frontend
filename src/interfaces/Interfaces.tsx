@@ -134,6 +134,7 @@ export interface StudentStatusType {
   location: LocationType;
   landmark: string | null;
   active: boolean;
+  study_group: string;
 }
 
 export interface StudentStatusPatchType {
@@ -141,6 +142,7 @@ export interface StudentStatusPatchType {
   location?: LocationType;
   landmark?: string | null;
   active?: boolean;
+  study_group?: string;
 }
 
 export interface StudentStatusFilterType {
@@ -168,7 +170,7 @@ export interface StudentStatusFilterTypeFlattened {
 
 export interface StudyGroupType {
   name: string;
-  users: string[];
+  students: string[];
   distance: number;
   landmark: string | null;
   location: LocationType;
