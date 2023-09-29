@@ -3,31 +3,20 @@ import styles, { Viewport } from "../../styles";
 import {
   View,
   Text,
-  ToastAndroid,
   TextInput,
   NativeSyntheticEvent,
   TextInputChangeEventData,
 } from "react-native";
 import { useState } from "react";
 import {
-  UserInfoReturnType,
-  OptionType,
   RootDrawerParamList,
-  StudentStatusType,
-  StudentStatusReturnType,
   StudentStatusPatchType,
   StudyGroupCreateType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  PatchStudentStatus,
-  GetUserInfo,
-  ParseError,
-  CreateStudyGroup,
-} from "../../components/Api/Api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { PatchStudentStatus, CreateStudyGroup } from "../../components/Api/Api";
 import { colors } from "../../styles";
-import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 import { urlProvider } from "../../components/Api/Api";
 import MapView, { UrlTile, Marker } from "react-native-maps";
@@ -170,13 +159,6 @@ export default function CreateGroup({ route }: any) {
           <View style={styles.padding} />
           <Button
             onPress={() => {
-              console.log({
-                group_name: name,
-                location: {
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                },
-              });
               study_group_create.mutate({
                 name: name,
                 location: location,

@@ -18,11 +18,13 @@ import { logout } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserIcon from "../../icons/UserIcon/UserIcon";
 import SubjectIcon from "../../icons/SubjectIcon/SubjectIcon";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
   const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   if (status.logged_in && status.onboarding) {
     return (
       <DrawerContentScrollView {...props}>
@@ -40,6 +42,7 @@ export default function CustomDrawerContent(props: {}) {
           onPress={async () => {
             dispatch(logout());
             await AsyncStorage.clear();
+            queryClient.clear();
             navigation.navigate("Login");
           }}
         >

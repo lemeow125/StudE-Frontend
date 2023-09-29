@@ -2,6 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   ActivationType,
+  LocationType,
   LoginType,
   OnboardingType,
   PatchUserInfoType,
@@ -87,7 +88,6 @@ export async function GetConfig() {
 
 // User APIs
 export function UserRegister(register: RegistrationType) {
-  console.log(JSON.stringify(register));
   return instance
     .post("/api/v1/accounts/users/", register)
     .then(async (response) => {
@@ -148,7 +148,6 @@ export async function PatchUserInfo(info: PatchUserInfoType) {
   return instance
     .patch("/api/v1/accounts/users/me/", info, config)
     .then((response) => {
-      console.log(JSON.stringify(response.data));
       return [true, response.data];
     })
     .catch((error) => {
@@ -255,7 +254,6 @@ export async function PatchStudentStatus(info: StudentStatusPatchType) {
     })
     .catch((error) => {
       let error_message = ParseError(error);
-      console.log("Error!", error.response.data);
       return [false, error_message];
     });
 }
@@ -273,12 +271,11 @@ export async function GetStudentStatusList() {
     });
 }
 
-export async function GetStudentStatusListFiltered() {
+export async function GetStudentStatusListNear() {
   const config = await GetConfig();
   return instance
-    .get("/api/v1/student_status/filter/near_student_status", config)
+    .get("/api/v1/student_status/near/", config)
     .then((response) => {
-      console.log("test", response.data);
       return [true, response.data];
     })
     .catch((error) => {
@@ -288,10 +285,18 @@ export async function GetStudentStatusListFiltered() {
 }
 
 // To-do
-export async function GetStudentStatusListFilteredCurrentLocation() {
+export async function GetStudentStatusListFilteredCurrentLocation(
+  location: LocationType
+) {
   const config = await GetConfig();
   return instance
-    .get("/api/v1/student_status/list/", config)
+    .post(
+      "/api/v1/student_status/near_current_location/",
+      {
+        location: location,
+      },
+      config
+    )
     .then((response) => {
       return [true, response.data];
     })
@@ -329,7 +334,7 @@ export async function GetStudyGroupList() {
 
 export async function CreateStudyGroup(info: StudyGroupCreateType) {
   const config = await GetConfig();
-  console.log("Payload:", info);
+  // console.log("Creating study group:", info);
   return instance
     .post("/api/v1/study_groups/create/", info, config)
     .then((response) => {
