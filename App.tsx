@@ -75,9 +75,9 @@ export default function App() {
               drawerContent={CustomDrawerContent}
               screenOptions={DrawerScreenSettings}
             >
-              <Drawer.Screen name="Home" component={Home} />
               <Drawer.Screen name="Login" component={Login} />
               <Drawer.Screen name="Register" component={Register} />
+              <Drawer.Screen name="Home" component={Home} />
               <Drawer.Screen name="Onboarding" component={Onboarding} />
               <Drawer.Screen name="Revalidation" component={Revalidation} />
               <Drawer.Screen name="Activation" component={Activation} />

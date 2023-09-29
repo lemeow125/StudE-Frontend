@@ -13,6 +13,7 @@ export interface ResponsiveIconProps {
 
 export interface RootDrawerParamList {
   navigate: any;
+  replace: any;
 }
 
 // Redux Interfaces
