@@ -456,6 +456,7 @@ export default function Home() {
                                     onPress={() => {
                                       change_study_group.mutate({
                                         study_group: studygroup.name,
+                                        subject: studygroup.subject,
                                       });
                                     }}
                                   >
