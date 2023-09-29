@@ -549,7 +549,7 @@ export default function Home() {
                                 {student_status?.study_group !=
                                 studygroup.name ? (
                                   <Text style={styles.text_white_tiny_bold}>
-                                    Get closer to join
+                                    Study nearby to join
                                   </Text>
                                 ) : (
                                   <></>
