@@ -3,7 +3,7 @@ import { IconProps } from "../../interfaces/Interfaces";
 import { Svg, Path } from "react-native-svg";
 import { colors } from "../../styles";
 
-export default function DropdownIcon(props: IconProps) {
+export default function CaretUpIcon(props: IconProps) {
   return (
     <>
       <Svg
@@ -17,7 +17,7 @@ export default function DropdownIcon(props: IconProps) {
         stroke-linejoin="round"
       >
         <Path stroke="none" d="M0 0h24v24H0z" fill="none"></Path>
-        <Path d="M6 10l6 6l6 -6h-12"></Path>
+        <Path d="M18 14l-6 -6l-6 6h12"></Path>
       </Svg>
     </>
   );

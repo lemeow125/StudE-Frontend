@@ -1,16 +1,8 @@
-import styles, { Viewport, colors } from "../../styles";
-import { View, Text } from "react-native";
+import styles, { colors } from "../../styles";
+import { View, Text, Pressable } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, {
-  Callout,
-  Heatmap,
-  Circle,
-  Marker,
-  UrlTile,
-  Overlay,
-  Polygon,
-} from "react-native-maps";
+import MapView, { Circle, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
@@ -21,13 +13,10 @@ import {
   StudentStatusType,
   StudentStatusListReturnType,
   StudentStatusListType,
-  subjectUserMapType,
-  StudentStatusFilterTypeFlattened,
   StudentStatusPatchType,
   StudyGroupType,
   StudyGroupReturnType,
   StudentStatusFilterType,
-  StudyGroupCreateType,
 } from "../../interfaces/Interfaces";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -40,16 +29,15 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "react-native-toast-notifications";
 import React from "react";
-import CustomMapCallout from "../../components/CustomMapCallout/CustomMapCallout";
 import MapRendererFar from "../../components/MapRenderer/MapRendererFar";
 import GetDistanceFromUSTP from "../../components/GetDistance/GetDistanceFromUSTP";
-import { useSelector } from "react-redux";
-import { RootState } from "../../features/redux/Store/Store";
+import Modal from "react-native-modal";
+import DropdownIcon from "../../icons/CaretDownIcon/CaretDownIcon";
+import CaretUpIcon from "../../icons/CaretUpIcon/CaretUpIcon";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
   const map_debug = true;
-  const user_state = useSelector((state: RootState) => state.user);
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
@@ -59,12 +47,8 @@ export default function Home() {
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  const ustpCoords = {
-    latitude: 8.4857,
-    longitude: 124.6565,
-    latitudeDelta: 0.000235,
-    longitudeDelta: 0.000067,
-  };
+  const [modalOpen, setModalOpen] = useState(false);
+
   async function requestLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -333,7 +317,7 @@ export default function Home() {
     if (dist && location) {
       if (dist <= 2 || map_debug) {
         return (
-          <View>
+          <>
             <MapView
               style={styles.map}
               customMapStyle={[
@@ -413,9 +397,7 @@ export default function Home() {
                   );
                 }
               )}
-              {!StudyGroupQuery.isPaused &&
-              !StudyGroupQuery.isRefetching &&
-              !StudyGroupQuery.error ? (
+              {studying ? (
                 study_groups.map(
                   (studygroup: StudyGroupType, index: number) => {
                     const randomColorWithOpacity = `rgba(${Math.floor(
@@ -697,20 +679,45 @@ export default function Home() {
                 <></>
               )}
             </MapView>
-            <Button
-              onPress={async () => {
-                if (!student_status?.active) {
-                  navigation.navigate("Start Studying", { location: location });
-                } else {
-                  stop_studying.mutate({
-                    active: false,
-                  });
-                }
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
               }}
             >
-              <Text style={styles.text_white_medium}>{buttonLabel}</Text>
-            </Button>
-          </View>
+              <Button
+                onPress={async () => {
+                  if (!student_status?.active) {
+                    navigation.navigate("Start Studying", {
+                      location: location,
+                    });
+                  } else {
+                    stop_studying.mutate({
+                      active: false,
+                    });
+                  }
+                }}
+              >
+                <Text style={styles.text_white_small}>{buttonLabel}</Text>
+              </Button>
+              <Pressable
+                style={{
+                  display: modalOpen ? "none" : "flex",
+                  backgroundColor: colors.secondary_3,
+                  borderRadius: 16,
+                  alignSelf: "center",
+                }}
+                onPress={() => {
+                  setModalOpen(true);
+                }}
+              >
+                <CaretUpIcon size={32} />
+              </Pressable>
+            </View>
+
+            <View style={styles.padding} />
+          </>
         );
       } else {
         return <MapRendererFar location={location.coords} dist={dist} />;
@@ -718,17 +725,38 @@ export default function Home() {
     } else {
       requestLocation();
       return (
-        <AnimatedContainer>
+        <>
           <Text style={styles.text_white_medium}>{feedback}</Text>
           <Button onPress={requestLocation}>
             <Text style={styles.text_white_medium}>Allow Access</Text>
           </Button>
-        </AnimatedContainer>
+        </>
       );
     }
   }
   return (
     <View style={styles.background}>
+      <Modal
+        coverScreen={false}
+        isVisible={modalOpen}
+        style={{ opacity: 0.85 }}
+        hasBackdrop={false}
+        useNativeDriver={true}
+      >
+        <AnimatedContainer>
+          <Text style={styles.text_white_medium}>Groups List</Text>
+          <Pressable
+            style={{
+              alignContent: "flex-start",
+              backgroundColor: colors.secondary_3,
+              borderRadius: 16,
+            }}
+            onPress={() => setModalOpen(false)}
+          >
+            <DropdownIcon size={32} />
+          </Pressable>
+        </AnimatedContainer>
+      </Modal>
       <AnimatedContainer>
         <CustomMap />
       </AnimatedContainer>

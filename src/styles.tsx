@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    flexGrow: 1,
   },
   flex_column: {
     display: "flex",

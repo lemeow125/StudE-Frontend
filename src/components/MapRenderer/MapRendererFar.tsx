@@ -13,7 +13,7 @@ type props = {
 
 export default function MapRendererFar(props: props) {
   return (
-    <View>
+    <>
       <Text style={styles.text_white_medium}>
         You are too far from USTP {"\n"}
         Get closer to use Stud-E
@@ -74,6 +74,6 @@ export default function MapRendererFar(props: props) {
       <Text style={styles.text_white_small}>
         {props.dist}km away from USTP {"\n"}
       </Text>
-    </View>
+    </>
   );
 }
