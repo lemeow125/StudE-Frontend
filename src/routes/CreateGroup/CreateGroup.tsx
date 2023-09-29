@@ -52,6 +52,7 @@ export default function CreateGroup({ route }: any) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      queryClient.invalidateQueries({ queryKey: ["study_group_list"] });
       student_status_patch.mutate({
         study_group: name,
       });

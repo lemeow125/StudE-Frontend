@@ -172,36 +172,14 @@ export default function Home() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      queryClient.invalidateQueries({ queryKey: ["study_group_list_global"] });
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["user_status"] });
+        queryClient.invalidateQueries({ queryKey: ["study_group_list"] });
+      }, 500);
+      setStudyGroups([]);
+      setStudying(false);
       toast.show("You are no longer studying  \n" + subject, {
-        type: "success",
-        placement: "top",
-        duration: 2000,
-        animationType: "slide-in",
-      });
-    },
-    onError: (error: Error) => {
-      toast.show(String(error), {
-        type: "warning",
-        placement: "top",
-        duration: 2000,
-        animationType: "slide-in",
-      });
-    },
-  });
-
-  const study_group_create = useMutation({
-    mutationFn: async (info: StudyGroupCreateType) => {
-      const data = await CreateStudyGroup(info);
-      if (data[0] != true) {
-        return Promise.reject(new Error());
-      }
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      toast.show("Created successfully", {
         type: "success",
         placement: "top",
         duration: 2000,
@@ -251,7 +229,7 @@ export default function Home() {
   });
 
   const [study_groups, setStudyGroups] = useState<StudyGroupType[]>([]);
-  // Student Status List
+  // Study Group List
   const StudyGroupQuery = useQuery({
     enabled: studying,
     queryKey: ["study_group_list"],
@@ -281,7 +259,7 @@ export default function Home() {
   >([]);
   // Student Status List
   const StudyGroupGlobalQuery = useQuery({
-    enabled: !studying,
+    enabled: !studying && !StudentStatusQuery.isFetching,
     queryKey: ["study_group_list_global"],
     queryFn: async () => {
       const data = await GetStudyGroupList();
@@ -420,11 +398,8 @@ export default function Home() {
                             </Text>
                             <Button
                               onPress={() => {
-                                toast.show("Joined successfully", {
-                                  type: "success",
-                                  placement: "top",
-                                  duration: 2000,
-                                  animationType: "slide-in",
+                                mutation.mutate({
+                                  study_group: studygroup.name,
                                 });
                               }}
                             >
