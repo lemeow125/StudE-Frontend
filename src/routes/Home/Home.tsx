@@ -1,5 +1,5 @@
 import styles, { colors } from "../../styles";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView, Switch } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
 import MapView, { Circle, Marker } from "react-native-maps";
@@ -48,6 +48,7 @@ export default function Home() {
   const toast = useToast();
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalByGroup, setModalByGroup] = useState(false);
 
   async function requestLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -240,10 +241,11 @@ export default function Home() {
       return data;
     },
     onSuccess: (data: StudentStatusListReturnType) => {
+      console.log("DEBUGGG", data[1]);
       if (data[1] && location) {
         // Filter to only include students studying solo
         let data_filtered = data[1].filter(
-          (item: StudentStatusFilterType) => item.study_group == ""
+          (item: StudentStatusFilterType) => item.study_group == null
         );
         setStudentStatuses(data_filtered);
       }
@@ -741,7 +743,6 @@ export default function Home() {
         isVisible={modalOpen}
         style={{ opacity: 0.85 }}
         hasBackdrop={false}
-        useNativeDriver={true}
       >
         <AnimatedContainer>
           <Text style={styles.text_white_medium}>Groups List</Text>
@@ -755,6 +756,84 @@ export default function Home() {
           >
             <DropdownIcon size={32} />
           </Pressable>
+          <Switch
+            value={modalByGroup}
+            onChange={() => {
+              setModalByGroup(!modalByGroup);
+            }}
+          />
+          <ScrollView>
+            {!modalByGroup ? (
+              student_statuses.map(
+                (student_status: StudentStatusFilterType, index: number) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        alignContent: "center",
+                        alignSelf: "center",
+                        justifyContent: "center",
+                        backgroundColor: colors.secondary_3,
+                        borderColor: colors.primary_2,
+                        borderWidth: 1,
+                        borderRadius: 16,
+                        width: 256,
+                      }}
+                    >
+                      <Text style={styles.text_white_tiny_bold}>
+                        Student: {student_status.user}
+                      </Text>
+                      <Text style={styles.text_white_tiny_bold}>
+                        Studying Subject: {student_status.subject}
+                      </Text>
+                    </View>
+                  );
+                }
+              )
+            ) : (
+              <></>
+            )}
+            {modalByGroup ? (
+              study_groups_global.map(
+                (studygroup: StudyGroupType, index: number) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        alignContent: "center",
+                        alignSelf: "center",
+                        justifyContent: "center",
+                        backgroundColor: colors.secondary_3,
+                        borderColor: colors.primary_2,
+                        borderWidth: 1,
+                        borderRadius: 16,
+                        width: 256,
+                      }}
+                    >
+                      <Text style={styles.text_white_tiny_bold}>
+                        Subject: {studygroup.subject}
+                      </Text>
+                      <Text style={styles.text_white_tiny_bold}>
+                        Group Name: {studygroup.name}
+                      </Text>
+                      <Text style={styles.text_white_tiny_bold}>
+                        Students Studying: {studygroup.students.length}
+                      </Text>
+                      {student_status?.study_group != studygroup.name ? (
+                        <Text style={styles.text_white_tiny_bold}>
+                          Study nearby to join
+                        </Text>
+                      ) : (
+                        <></>
+                      )}
+                    </View>
+                  );
+                }
+              )
+            ) : (
+              <></>
+            )}
+          </ScrollView>
         </AnimatedContainer>
       </Modal>
       <AnimatedContainer>

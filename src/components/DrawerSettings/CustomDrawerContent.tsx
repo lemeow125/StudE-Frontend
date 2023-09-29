@@ -31,8 +31,8 @@ export default function CustomDrawerContent(props: {}) {
   const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const debug = false;
   const toast = useToast();
+  const debug_disable_clear_on_logout = true;
   const stop_studying_logout = useMutation({
     mutationFn: async (info: StudentStatusPatchType) => {
       const data = await PatchStudentStatus(info);
@@ -77,10 +77,17 @@ export default function CustomDrawerContent(props: {}) {
         </View>
 
         <DrawerButton
-          onPress={() => {
-            stop_studying_logout.mutate({
-              active: false,
-            });
+          onPress={async () => {
+            if (debug_disable_clear_on_logout) {
+              queryClient.clear();
+              dispatch(logout());
+              await AsyncStorage.clear();
+              navigation.navigate("Login");
+            } else {
+              stop_studying_logout.mutate({
+                active: false,
+              });
+            }
           }}
         >
           <LogoutIcon size={32} />
@@ -125,10 +132,17 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Subjects</Text>
         </DrawerButton>
         <DrawerButton
-          onPress={() => {
-            stop_studying_logout.mutate({
-              active: false,
-            });
+          onPress={async () => {
+            if (debug_disable_clear_on_logout) {
+              queryClient.clear();
+              dispatch(logout());
+              await AsyncStorage.clear();
+              navigation.navigate("Login");
+            } else {
+              stop_studying_logout.mutate({
+                active: false,
+              });
+            }
           }}
         >
           <LogoutIcon size={32} />
