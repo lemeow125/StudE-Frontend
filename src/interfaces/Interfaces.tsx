@@ -1,3 +1,7 @@
+import * as Location from "expo-location";
+import { GetStudentStatus } from "../components/Api/Api";
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
+
 export interface IconProps {
   size: number;
 }
@@ -9,6 +13,7 @@ export interface ResponsiveIconProps {
 
 export interface RootDrawerParamList {
   navigate: any;
+  replace: any;
 }
 
 // Redux Interfaces
@@ -28,7 +33,7 @@ export interface LoggedInUserState {
 
 // API Interfaces
 
-export interface RegistrationParams {
+export interface RegistrationType {
   email: string;
   username: string;
   password: string;
@@ -37,12 +42,12 @@ export interface RegistrationParams {
   student_id_number: string;
 }
 
-export interface LoginParams {
+export interface LoginType {
   username: string;
   password: string;
 }
 
-export interface ActivationParams {
+export interface ActivationType {
   uid: string;
   token: string;
 }
@@ -53,80 +58,165 @@ export interface OptionType {
 }
 
 // Semester
-export interface Semester {
+export interface SemesterType {
   id: string;
   name: string;
   shortname: string;
 }
 
-export type Semesters = Array<Semester>;
+export type SemestersType = Array<SemesterType>;
 
-export type SemesterParams = [boolean, Semesters];
+export type SemesterReturnType = [boolean, SemestersType];
 
 // Year Level
-export interface YearLevel {
+export interface YearLevelType {
   id: string;
   name: string;
   shortname: string;
 }
 
-export type YearLevels = Array<YearLevel>;
+export type YearLevelsType = Array<YearLevelType>;
 
-export type YearLevelParams = [boolean, YearLevels];
+export type YearLevelReturnType = [boolean, YearLevelsType];
 
 // Course
-export interface Course {
+export interface CourseType {
   id: string;
   name: string;
   shortname: string;
 }
-export type Courses = Array<Course>;
-export type CourseParams = [boolean, Courses];
+export type CoursesType = Array<CourseType>;
+export type CourseReturnType = [boolean, CoursesType];
 
 // Subject
-export interface Subject {
+export interface SubjectType {
+  id: number;
   name: string;
   code: string;
-  // courses: any[]; // To-do
-  // year_levels: any[]; // To-do
-  // semesters: any[]; // To-do
+  course: string;
+  year_level: string;
+  semester: string;
 }
 
-export type Subjects = Array<Subject>;
-export type SubjectParams = [boolean, Subjects];
+export type SubjectsType = Array<SubjectType>;
+export type SubjectsReturnType = [boolean, SubjectsType];
 
+export type AvatarType = {
+  uri: string;
+  type: string;
+  name: string;
+};
 // For dropdown menu
 
-export interface OnboardingParams {
+export interface OnboardingType {
   year_level: string;
   course: string;
   semester: string;
 }
 
-export interface PatchStudentData {
-  course?: string | null;
-  first_name?: string | null;
-  last_name?: string | null;
-  semester?: string | null;
-  subjects?: any[] | null; // To-do, replace 'any' with your actual type
-  year_level?: string | null;
+export interface PatchUserInfoType {
+  course?: string;
+  first_name?: string;
+  last_name?: string;
+  semester?: string;
+  subjects?: string[];
+  year_level?: string;
+  irregular?: boolean;
+  avatar?: string;
 }
 
-export interface StudentData {
+export interface LocationType {
+  latitude: Float;
+  longitude: Float;
+}
+
+export interface StudentStatusType {
+  subject: string;
+  location: LocationType;
+  landmark: string | null;
+  active: boolean;
+  study_group: string;
+}
+
+export interface StudentStatusPatchType {
+  subject?: string;
+  location?: LocationType;
+  landmark?: string | null;
+  active?: boolean;
+  study_group?: string;
+}
+
+export interface StudentStatusFilterType {
+  active: boolean;
+  distance: number;
+  landmark: string | null;
+  location: LocationType;
+  study_group?: string;
+  subject: string;
+  user: string;
+  weight?: number;
+}
+
+export interface StudentStatusFilterTypeFlattened {
+  active: boolean;
+  distance: number;
+  landmark: string | null;
+  latitude: Float;
+  longitude: Float;
+  study_group?: string;
+  subject: string;
+  user: string;
+  weight?: number;
+}
+
+export interface StudyGroupType {
+  name: string;
+  students: string[];
+  distance: number;
+  landmark: string | null;
+  location: LocationType;
+  subject: string;
+  radius: number;
+}
+
+export interface StudyGroupCreateType {
+  name: string;
+  location: LocationType;
+  subject: string;
+}
+
+export type StudyGroupReturnType = [boolean, StudyGroupType[]];
+
+export type StudentStatusReturnType = [boolean, StudentStatusType];
+
+export type StudentStatusListType = Array<StudentStatusFilterType>;
+export type StudentStatusListReturnType = [boolean, StudentStatusListType];
+
+export type RawLocationType = Location.LocationObject;
+
+export interface UserInfoType {
   first_name: string;
   last_name: string;
   email: string;
   avatar: string;
   student_id_number: string;
-  is_banned: boolean;
+  irregular: boolean;
   semester: string;
   semester_shortname: string;
   course: string;
   course_shortname: string;
   year_level: string;
   yearlevel_shortname: string;
-  subjects: any[]; // To-do
+  subjects: string[];
   username: string;
 }
 
-export type UserInfoParams = [boolean, StudentData];
+export type UserInfoReturnType = [boolean, UserInfoType];
+
+export type subjectUserMapType = {
+  subject: string;
+  users: string[];
+  latitude: Float;
+  longitude: Float;
+  radius: Float;
+};

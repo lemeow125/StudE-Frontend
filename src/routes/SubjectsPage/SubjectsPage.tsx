@@ -1,42 +1,60 @@
 import * as React from "react";
 import styles from "../../styles";
+import { View, Text } from "react-native";
+import { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
-} from "react-native";
-import { useEffect, useState } from "react";
-import {
-  SemesterParams,
-  UserInfoParams,
-  Semester,
-  SubjectParams,
-  Subject,
-  YearLevel,
-  Course,
+  UserInfoReturnType,
+  SubjectsReturnType,
+  SubjectType,
   OptionType,
-  Subjects,
+  StudentStatusType,
+  PatchUserInfoType,
+  StudentStatusPatchType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { Image } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  GetCourses,
-  GetSemesters,
   GetSubjects,
-  GetYearLevels,
   PatchUserInfo,
-  UserInfo,
+  GetUserInfo,
+  PatchStudentStatus,
 } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { useSelector } from "react-redux";
+import { RootState } from "../../features/redux/Store/Store";
+import { useToast } from "react-native-toast-notifications";
 
 export default function SubjectsPage() {
+  const logged_in_user = useSelector((state: RootState) => state.user.user);
   const queryClient = useQueryClient();
+  const toast = useToast();
+
+  // Student Status
+  const studentstatus_mutation = useMutation({
+    mutationFn: async (info: StudentStatusPatchType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+    },
+    onError: () => {
+      toast.show("An error has occured\nChanges have not been saved", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
   // User Info
   const [user, setUser] = useState({
     first_name: "",
@@ -49,17 +67,18 @@ export default function SubjectsPage() {
     course_shortname: "",
     avatar: "",
     student_id_number: "",
-    subjects: [] as Subjects,
-  });
-  const [displayName, setDisplayName] = useState({
-    first_name: "",
-    last_name: "",
+    subjects: [] as string[],
   });
   const StudentInfo = useQuery({
     queryKey: ["user"],
-    queryFn: UserInfo,
-    onSuccess: (data: UserInfoParams) => {
-      //  console.log(data[1]);
+    queryFn: async () => {
+      const data = await GetUserInfo();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
+    onSuccess: (data: UserInfoReturnType) => {
       setUser({
         ...user,
         first_name: data[1].first_name,
@@ -71,30 +90,49 @@ export default function SubjectsPage() {
         student_id_number: data[1].student_id_number,
         subjects: data[1].subjects,
       });
-      setDisplayName({
-        first_name: data[1].first_name,
-        last_name: data[1].last_name,
+      setSelectedSubjects(data[1].subjects);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
       });
-      setSelectedSubjects(user.subjects);
     },
   });
   const mutation = useMutation({
-    mutationFn: PatchUserInfo,
+    mutationFn: async (info: PatchUserInfoType) => {
+      const data = await PatchUserInfo(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["subjects", viewAll] });
+      queryClient.invalidateQueries({ queryKey: ["subjects"] });
       setSelectedSubjects([]);
+      // Reset student status when changing user info to prevent bugs
+      studentstatus_mutation.mutate({
+        active: false,
+      });
+      toast.show("Changes applied successfully.\nStudent status reset", {
+        type: "success",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
-
-  // View all Subjects or only view those under current course, year level, and semester
-  // This is for irregular students
-  const [viewAll, setViewAll] = useState(false);
-
-  // If viewing all subjects, refresh the choices
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["subjects", viewAll] });
-  }, [viewAll]);
 
   // Subjects
 
@@ -104,42 +142,31 @@ export default function SubjectsPage() {
 
   const Subjects = useQuery({
     enabled: StudentInfo.isFetched,
-    queryKey: ["subjects", viewAll],
+    queryKey: ["subjects"],
     queryFn: async () => {
-      let data;
-      if (
-        StudentInfo.data &&
-        StudentInfo.data[1].course_shortname &&
-        StudentInfo.data[1].yearlevel_shortname &&
-        StudentInfo.data[1].semester_shortname
-      ) {
-        data = await GetSubjects(
-          viewAll,
-          StudentInfo.data[1].course_shortname,
-          StudentInfo.data[1].yearlevel_shortname,
-          StudentInfo.data[1].semester_shortname
-        );
-        console.log(JSON.stringify(data));
-      }
-      if (data) {
-        if (!data[0]) {
-          throw new Error("Error with query" + data[1]);
-        }
-        if (!data[1]) {
-          throw new Error("User has no course, year level, or semester!");
-        }
-        // console.log("Subjects available:", data[1]);
+      const data = await GetSubjects();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
       }
       return data;
     },
-    onSuccess: (data: SubjectParams) => {
-      let subjectsData = data[1].map((subject: Subject) => ({
-        label: subject.name,
-        value: subject.name,
-      }));
-      // Update the 'subjects' state
-      setSelectedSubjects(user.subjects);
-      setSubjects(subjectsData);
+    onSuccess: (data: SubjectsReturnType) => {
+      if (data[1]) {
+        let subjects = data[1].map((subject: SubjectType) => ({
+          label: subject.name,
+          value: subject.name,
+        }));
+
+        setSubjects(subjects);
+      }
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -163,9 +190,9 @@ export default function SubjectsPage() {
         <View style={styles.flex_row}>
           <Avatar />
           <Text style={{ ...styles.text_white_small, ...{ marginLeft: 16 } }}>
-            {(displayName.first_name || "Undefined") +
+            {(logged_in_user.first_name || "Undefined") +
               " " +
-              (displayName.last_name || "User") +
+              (logged_in_user.last_name || "User") +
               "\n" +
               user.student_id_number}
           </Text>
@@ -212,28 +239,16 @@ export default function SubjectsPage() {
         </View>
         <View style={{ zIndex: -1 }}>
           <View style={styles.padding} />
-          <View style={styles.flex_row}>
-            <BouncyCheckbox
-              onPress={() => {
-                setViewAll(!viewAll);
-                setSubjectsOpen(false);
-              }}
-              fillColor={colors.secondary_3}
-            />
-            <Text style={styles.text_white_small}>Irregular </Text>
-          </View>
-          <View style={styles.padding} />
           <Button
             onPress={() => {
-              setSelectedSubjects([]);
-              setSubjectsOpen(!subjectsOpen);
               mutation.mutate({
                 subjects: selected_subjects,
               });
             }}
           >
-            <Text style={styles.text_white_small}>Save Change</Text>
+            <Text style={styles.text_white_small}>Save Changes</Text>
           </Button>
+          <View style={styles.padding} />
         </View>
       </AnimatedContainerNoScroll>
     </View>

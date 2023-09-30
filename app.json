@@ -42,9 +42,15 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow Stud-E to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Allow StudE to use your location."
         }
-      ]
+      ],
+      [        
+      "expo-image-picker",
+      {
+        "photosPermission": "Allow StudE to take and send photos for sharing in-app"
+      }
+    ]
     ],
     "extra": {
       "eas": {
