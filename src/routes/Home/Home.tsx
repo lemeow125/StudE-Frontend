@@ -241,7 +241,6 @@ export default function Home() {
       return data;
     },
     onSuccess: (data: StudentStatusListReturnType) => {
-      console.log("DEBUGGG", data[1]);
       if (data[1] && location) {
         // Filter to only include students studying solo
         let data_filtered = data[1].filter(
@@ -379,7 +378,7 @@ export default function Home() {
                               Student: {student_status.user}
                             </Text>
                             <Text style={styles.text_white_tiny_bold}>
-                              Studying Subject: {student_status.subject}
+                              {`Studying ${student_status.subject}`}
                             </Text>
                           </View>,
                           {
@@ -425,14 +424,18 @@ export default function Home() {
                                 }}
                               >
                                 <Text style={styles.text_white_tiny_bold}>
-                                  Subject: {studygroup.subject}
+                                  Study Group: {studygroup.name}
                                 </Text>
                                 <Text style={styles.text_white_tiny_bold}>
-                                  Name: {studygroup.name}
+                                  {`Studying ${studygroup.subject}`}
                                 </Text>
+
                                 <Text style={styles.text_white_tiny_bold}>
-                                  Students Studying:{" "}
-                                  {studygroup.students.length}
+                                  {`${studygroup.students.length} ${
+                                    studygroup.students.length > 1
+                                      ? "students"
+                                      : "student"
+                                  } studying`}
                                 </Text>
                                 {student_status?.study_group !=
                                 studygroup.name ? (
@@ -522,14 +525,17 @@ export default function Home() {
                                 }}
                               >
                                 <Text style={styles.text_white_tiny_bold}>
-                                  Subject: {studygroup.subject}
+                                  Study Group: {studygroup.name}
                                 </Text>
                                 <Text style={styles.text_white_tiny_bold}>
-                                  Name: {studygroup.name}
+                                  {`Studying ${studygroup.subject}`}
                                 </Text>
                                 <Text style={styles.text_white_tiny_bold}>
-                                  Students Studying:{" "}
-                                  {studygroup.students.length}
+                                  {`${studygroup.students.length} ${
+                                    studygroup.students.length > 1
+                                      ? "students"
+                                      : "student"
+                                  } studying`}
                                 </Text>
                                 {student_status?.study_group !=
                                 studygroup.name ? (
@@ -714,7 +720,7 @@ export default function Home() {
                   setModalOpen(true);
                 }}
               >
-                <CaretUpIcon size={32} />
+                {studying ? <CaretUpIcon size={32} /> : <></>}
               </Pressable>
             </View>
 
@@ -725,11 +731,10 @@ export default function Home() {
         return <MapRendererFar location={location.coords} dist={dist} />;
       }
     } else {
-      requestLocation();
       return (
         <>
           <Text style={styles.text_white_medium}>{feedback}</Text>
-          <Button onPress={requestLocation}>
+          <Button onPress={() => requestLocation()}>
             <Text style={styles.text_white_medium}>Allow Access</Text>
           </Button>
         </>
@@ -740,7 +745,7 @@ export default function Home() {
     <View style={styles.background}>
       <Modal
         coverScreen={false}
-        isVisible={modalOpen}
+        isVisible={modalOpen && studying}
         style={{ opacity: 0.85 }}
         hasBackdrop={false}
       >
@@ -784,7 +789,10 @@ export default function Home() {
                         Student: {student_status.user}
                       </Text>
                       <Text style={styles.text_white_tiny_bold}>
-                        Studying Subject: {student_status.subject}
+                        {`Studying ${student_status.subject}`}
+                      </Text>
+                      <Text style={styles.text_white_tiny_bold}>
+                        {`${Math.round(student_status.distance * 1000)}m away`}
                       </Text>
                     </View>
                   );
@@ -794,42 +802,40 @@ export default function Home() {
               <></>
             )}
             {modalByGroup ? (
-              study_groups_global.map(
-                (studygroup: StudyGroupType, index: number) => {
-                  return (
-                    <View
-                      key={index}
-                      style={{
-                        alignContent: "center",
-                        alignSelf: "center",
-                        justifyContent: "center",
-                        backgroundColor: colors.secondary_3,
-                        borderColor: colors.primary_2,
-                        borderWidth: 1,
-                        borderRadius: 16,
-                        width: 256,
-                      }}
-                    >
+              study_groups.map((studygroup: StudyGroupType, index: number) => {
+                return (
+                  <View
+                    key={index}
+                    style={{
+                      alignContent: "center",
+                      alignSelf: "center",
+                      justifyContent: "center",
+                      backgroundColor: colors.secondary_3,
+                      borderColor: colors.primary_2,
+                      borderWidth: 1,
+                      borderRadius: 16,
+                      width: 256,
+                    }}
+                  >
+                    <Text style={styles.text_white_tiny_bold}>
+                      Group Name: {studygroup.name}
+                    </Text>
+                    <Text style={styles.text_white_tiny_bold}>
+                      {`Studying ${studygroup.subject}`}
+                    </Text>
+                    <Text style={styles.text_white_tiny_bold}>
+                      Students Studying: {studygroup.students.length}
+                    </Text>
+                    {student_status?.study_group != studygroup.name ? (
                       <Text style={styles.text_white_tiny_bold}>
-                        Subject: {studygroup.subject}
+                        {`${Math.round(studygroup.distance * 1000)}m away`}
                       </Text>
-                      <Text style={styles.text_white_tiny_bold}>
-                        Group Name: {studygroup.name}
-                      </Text>
-                      <Text style={styles.text_white_tiny_bold}>
-                        Students Studying: {studygroup.students.length}
-                      </Text>
-                      {student_status?.study_group != studygroup.name ? (
-                        <Text style={styles.text_white_tiny_bold}>
-                          Study nearby to join
-                        </Text>
-                      ) : (
-                        <></>
-                      )}
-                    </View>
-                  );
-                }
-              )
+                    ) : (
+                      <></>
+                    )}
+                  </View>
+                );
+              })
             ) : (
               <></>
             )}

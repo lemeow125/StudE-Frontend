@@ -311,6 +311,7 @@ export async function GetStudyGroupListFiltered() {
   return instance
     .get("/api/v1/study_groups/near/", config)
     .then((response) => {
+      console.log("DEBUGGG", response.data);
       return [true, response.data];
     })
     .catch((error) => {
