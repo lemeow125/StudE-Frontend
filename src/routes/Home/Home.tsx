@@ -1,127 +1,326 @@
-import styles, { Viewport, colors } from "../../styles";
-import { View, Text } from "react-native";
+import styles, { colors } from "../../styles";
+import { View, Text, Pressable, ScrollView, Switch } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, { Callout, Marker, UrlTile } from "react-native-maps";
+import MapView, { Circle, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
-import { AnimatedMapView } from "react-native-maps/lib/MapView";
-type LocationType = Location.LocationObject;
+import {
+  RootDrawerParamList,
+  StudentStatusReturnType,
+  RawLocationType,
+  StudentStatusType,
+  StudentStatusListReturnType,
+  StudentStatusListType,
+  StudentStatusPatchType,
+  StudyGroupType,
+  StudyGroupReturnType,
+  StudentStatusFilterType,
+} from "../../interfaces/Interfaces";
+import { useNavigation } from "@react-navigation/native";
+import {
+  GetStudentStatus,
+  GetStudentStatusListNear,
+  GetStudyGroupList,
+  GetStudyGroupListFiltered,
+  PatchStudentStatus,
+} from "../../components/Api/Api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "react-native-toast-notifications";
+import React from "react";
+import MapRendererFar from "../../components/MapRenderer/MapRendererFar";
+import GetDistanceFromUSTP from "../../components/GetDistance/GetDistanceFromUSTP";
+import Modal from "react-native-modal";
+import DropdownIcon from "../../icons/CaretDownIcon/CaretDownIcon";
+import CaretUpIcon from "../../icons/CaretUpIcon/CaretUpIcon";
+
 export default function Home() {
-  const [location, setLocation] = useState<LocationType | null>(null);
+  // Switch this condition to see the main map when debugging
+  const map_debug = true;
+  const navigation = useNavigation<RootDrawerParamList>();
+  const [location, setLocation] = useState<RawLocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
   const [feedback, setFeedback] = useState(
     "To continue, please allow Stud-E permission to location services"
   );
-  const urlProvider =
-    "https://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=0f5cb5930d7642a8a921daea650754d9";
-  const ustpCoords = {
-    latitude: 8.4857,
-    longitude: 124.6565,
-    latitudeDelta: 0.000235,
-    longitudeDelta: 0.000067,
-  };
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalByGroup, setModalByGroup] = useState(false);
+
   async function requestLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      setFeedback(
-        "Permission to access location was denied. Please allow permission"
+      setFeedback("Allow location permissions to continue");
+      toast.show(
+        "Location permission was denied. Please allow in order to use StudE",
+        {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        }
       );
       return;
     }
     if (status == "granted") {
-      let location = await Location.getCurrentPositionAsync({});
-      if (location) {
-        setLocation(location);
-        getDistance(location);
+      let newLocation = await Location.getCurrentPositionAsync({});
+      if (newLocation) {
+        // Only update location state if user's location has changed
+        if (
+          !location ||
+          newLocation.coords.latitude !== location.coords.latitude ||
+          newLocation.coords.longitude !== location.coords.longitude
+        ) {
+          setLocation(newLocation);
+          DistanceHandler(newLocation);
+        }
       }
     }
   }
 
-  // Refresh every 10 seconds
+  // Refresh every 15 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
-    }, 10000);
+    }, 15000);
 
     return () => clearInterval(interval);
   });
 
-  // Refresh when user moves location
-  useEffect(() => {
-    requestLocation();
-  }, [location]);
-
-  // Run when screen loads
+  // Refresh when screen loads
   useEffect(() => {
     requestLocation();
   }, []);
 
-  async function getDistance(location: LocationType) {
-    let dist = GetDistance(
-      location.coords.latitude,
-      location.coords.longitude,
-      8.4857, // LatitudeDelta
-      124.6565 // LongitudeDelta
-    );
-    setDist(Math.round(dist));
+  async function DistanceHandler(location: RawLocationType) {
+    let dist = GetDistanceFromUSTP(location.coords);
+    setDist(dist);
+    // Deactivate student status if too far away
+    if (dist >= 2 && !map_debug)
+      stop_studying.mutate({
+        active: false,
+      });
   }
+
+  // Student Status
+  const [studying, setStudying] = useState(false);
+  const [subject, setSubject] = useState("");
+  const [buttonLabel, setButtonLabel] = useState("Start studying");
+  const [student_status, setStudentStatus] = useState<StudentStatusType>();
+  const StudentStatusQuery = useQuery({
+    queryKey: ["user_status"],
+    queryFn: async () => {
+      const data = await GetStudentStatus();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudentStatusReturnType) => {
+      if (data[1].active !== undefined) {
+        setStudying(data[1].active);
+      }
+      if (data[1].subject !== undefined) {
+        setSubject(data[1].subject);
+      }
+      if (data[1].active == true) {
+        setButtonLabel("Stop Studying");
+      } else if (data[1].active == false) {
+        setButtonLabel("Start Studying");
+      }
+      setStudentStatus(data[1]);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
+  const stop_studying = useMutation({
+    mutationFn: async (info: StudentStatusPatchType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
+    onSuccess: () => {
+      if (student_status?.study_group) {
+        // Display separate toast if you stop studying while in a study group
+        toast.show("You left study group  \n" + student_status?.study_group, {
+          type: "success",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      }
+      toast.show("You are no longer studying  \n" + subject, {
+        type: "success",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      // Delay refetching for study groups since backend still needs to delete groups without students after leaving a study group
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["study_group_list"] });
+        queryClient.invalidateQueries({
+          queryKey: ["study_group_list_global"],
+        });
+      }, 500);
+      setStudyGroups([]);
+      setStudying(false);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
+  const change_study_group = useMutation({
+    mutationFn: async (info: StudentStatusPatchType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
+    onSuccess: () => {
+      if (student_status?.study_group) {
+        // Display separate toast if you stop studying while in a study group
+        toast.show("You left study group  \n" + student_status?.study_group, {
+          type: "success",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+
+      // Delay refetching for study groups since backend still needs to delete groups without students after leaving a study group
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["study_group_list"] });
+        queryClient.invalidateQueries({
+          queryKey: ["study_group_list_global"],
+        });
+      }, 500);
+      setStudyGroups([]);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
+  const [student_statuses, setStudentStatuses] =
+    useState<StudentStatusListType>([]);
+  // Student Status List
+  const StudentStatusListQuery = useQuery({
+    enabled: studying,
+    queryKey: ["user_status_list"],
+    queryFn: async () => {
+      const data = await GetStudentStatusListNear();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudentStatusListReturnType) => {
+      if (data[1] && location) {
+        // Filter to only include students studying solo
+        let data_filtered = data[1].filter(
+          (item: StudentStatusFilterType) => item.study_group == null
+        );
+        setStudentStatuses(data_filtered);
+      }
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
+  const [study_groups, setStudyGroups] = useState<StudyGroupType[]>([]);
+  // Study Group List
+  const StudyGroupQuery = useQuery({
+    enabled: studying,
+    queryKey: ["study_group_list"],
+    queryFn: async () => {
+      const data = await GetStudyGroupListFiltered();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudyGroupReturnType) => {
+      if (data[1] && location) {
+        setStudyGroups(data[1]);
+      }
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+  const [study_groups_global, setStudyGroupsGlobal] = useState<
+    StudyGroupType[]
+  >([]);
+  // Student Status List
+  const StudyGroupGlobalQuery = useQuery({
+    enabled: !studying,
+    queryKey: ["study_group_list_global"],
+    queryFn: async () => {
+      const data = await GetStudyGroupList();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudyGroupReturnType) => {
+      if (data[1] && location) {
+        setStudyGroupsGlobal(data[1]);
+      }
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
 
   function CustomMap() {
     if (dist && location) {
-      if (dist <= 1.5) {
-        // Just switch this condition for map debugging
+      if (dist <= 2 || map_debug) {
         return (
-          <AnimatedMapView
-            style={styles.map}
-            mapType="none"
-            initialRegion={ustpCoords}
-            scrollEnabled={false}
-            zoomEnabled={false}
-            rotateEnabled={false}
-            followsUserLocation={true}
-            minZoomLevel={18}
-            toolbarEnabled={false}
-            customMapStyle={[
-              {
-                featureType: "poi",
-                stylers: [
-                  {
-                    visibility: "off",
-                  },
-                ],
-              },
-            ]}
-          >
-            <UrlTile
-              urlTemplate={urlProvider}
-              shouldReplaceMapContent={true}
-              maximumZ={19}
-              flipY={false}
-              zIndex={1}
-            />
-            <Marker
-              coordinate={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              }}
-            />
-          </AnimatedMapView>
-        );
-      } else {
-        return (
-          <View>
-            <Text style={styles.text_white_medium}>
-              You are too far from USTP {"\n"}
-              Get closer to use Stud-E
-            </Text>
-            <AnimatedMapView
-              style={{
-                height: Viewport.height * 0.5,
-                width: Viewport.width * 0.8,
-                alignSelf: "center",
-              }}
+          <>
+            <MapView
+              style={styles.map}
               customMapStyle={[
                 {
                   featureType: "poi",
@@ -132,62 +331,517 @@ export default function Home() {
                   ],
                 },
               ]}
-              mapType="none"
-              scrollEnabled={false}
-              zoomEnabled={false}
+              scrollEnabled={true}
+              zoomEnabled={true}
               toolbarEnabled={false}
               rotateEnabled={false}
-              followsUserLocation={true}
-              minZoomLevel={18}
+              maxZoomLevel={19}
+              minZoomLevel={19}
+              zoomTapEnabled
               initialRegion={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
+                latitude:
+                  student_status?.location?.latitude ||
+                  location.coords.latitude,
+                longitude:
+                  student_status?.location?.longitude ||
+                  location.coords.longitude,
+                latitudeDelta: 0.4,
+                longitudeDelta: 0.4,
+              }}
+              loadingBackgroundColor={colors.secondary_2}
+            >
+              {student_statuses.map(
+                (student_status: StudentStatusFilterType, index: number) => {
+                  const randomColorWithOpacity = `rgba(${Math.floor(
+                    Math.random() * 256
+                  )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                    Math.random() * 256
+                  )}, 0.7)`;
+
+                  return (
+                    <Marker
+                      key={index}
+                      coordinate={student_status.location}
+                      pinColor={randomColorWithOpacity}
+                      zIndex={1000}
+                      onPress={() => {
+                        toast.hideAll();
+                        toast.show(
+                          <View
+                            style={{
+                              alignContent: "center",
+                              alignSelf: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={styles.text_white_tiny_bold}>
+                              Student: {student_status.user}
+                            </Text>
+                            <Text style={styles.text_white_tiny_bold}>
+                              {`Studying ${student_status.subject}`}
+                            </Text>
+                          </View>,
+                          {
+                            type: "normal",
+                            placement: "top",
+                            duration: 2000,
+                            animationType: "slide-in",
+                            style: {
+                              backgroundColor: colors.secondary_2,
+                              borderWidth: 1,
+                              borderColor: colors.primary_1,
+                            },
+                          }
+                        );
+                      }}
+                    />
+                  );
+                }
+              )}
+              {studying ? (
+                study_groups.map(
+                  (studygroup: StudyGroupType, index: number) => {
+                    const randomColorWithOpacity = `rgba(${Math.floor(
+                      Math.random() * 256
+                    )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                      Math.random() * 256
+                    )}, 0.7)`;
+
+                    return (
+                      <React.Fragment key={index}>
+                        <Marker
+                          coordinate={studygroup.location}
+                          pinColor={randomColorWithOpacity}
+                          zIndex={1000}
+                          onPress={() => {
+                            toast.hideAll();
+                            toast.show(
+                              <View
+                                style={{
+                                  alignContent: "center",
+                                  alignSelf: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={styles.text_white_tiny_bold}>
+                                  Study Group: {studygroup.name}
+                                </Text>
+                                <Text style={styles.text_white_tiny_bold}>
+                                  {`Studying ${studygroup.subject}`}
+                                </Text>
+
+                                <Text style={styles.text_white_tiny_bold}>
+                                  {`${studygroup.students.length} ${
+                                    studygroup.students.length > 1
+                                      ? "students"
+                                      : "student"
+                                  } studying`}
+                                </Text>
+                                {student_status?.study_group !=
+                                studygroup.name ? (
+                                  <Button
+                                    onPress={() => {
+                                      change_study_group.mutate({
+                                        study_group: studygroup.name,
+                                        subject: studygroup.subject,
+                                      });
+                                    }}
+                                  >
+                                    <Text style={styles.text_white_tiny_bold}>
+                                      Join Group
+                                    </Text>
+                                  </Button>
+                                ) : (
+                                  <></>
+                                )}
+                                {student_status?.study_group ==
+                                studygroup.name ? (
+                                  <Button
+                                    onPress={() => {
+                                      change_study_group.mutate({
+                                        study_group: "",
+                                      });
+                                    }}
+                                  >
+                                    <Text style={styles.text_white_tiny_bold}>
+                                      Leave Group
+                                    </Text>
+                                  </Button>
+                                ) : (
+                                  <></>
+                                )}
+                              </View>,
+                              {
+                                type: "normal",
+                                placement: "top",
+                                duration: 2000,
+                                animationType: "slide-in",
+                                style: {
+                                  backgroundColor: colors.secondary_2,
+                                  borderWidth: 1,
+                                  borderColor: colors.primary_1,
+                                },
+                              }
+                            );
+                          }}
+                        />
+                        <Circle
+                          center={studygroup.location}
+                          radius={studygroup.radius}
+                          fillColor={randomColorWithOpacity}
+                          strokeColor="white"
+                          zIndex={1000}
+                        />
+                      </React.Fragment>
+                    );
+                  }
+                )
+              ) : (
+                <></>
+              )}
+              {!studying ? (
+                study_groups_global.map(
+                  (studygroup: StudyGroupType, index: number) => {
+                    const randomColorWithOpacity = `rgba(${Math.floor(
+                      Math.random() * 256
+                    )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                      Math.random() * 256
+                    )}, 0.7)`;
+
+                    return (
+                      <React.Fragment key={index}>
+                        <Marker
+                          coordinate={studygroup.location}
+                          pinColor={randomColorWithOpacity}
+                          zIndex={1000}
+                          onPress={() => {
+                            toast.hideAll();
+                            toast.show(
+                              <View
+                                style={{
+                                  alignContent: "center",
+                                  alignSelf: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={styles.text_white_tiny_bold}>
+                                  Study Group: {studygroup.name}
+                                </Text>
+                                <Text style={styles.text_white_tiny_bold}>
+                                  {`Studying ${studygroup.subject}`}
+                                </Text>
+                                <Text style={styles.text_white_tiny_bold}>
+                                  {`${studygroup.students.length} ${
+                                    studygroup.students.length > 1
+                                      ? "students"
+                                      : "student"
+                                  } studying`}
+                                </Text>
+                                {student_status?.study_group !=
+                                studygroup.name ? (
+                                  <Text style={styles.text_white_tiny_bold}>
+                                    Study nearby to join
+                                  </Text>
+                                ) : (
+                                  <></>
+                                )}
+                              </View>,
+                              {
+                                type: "normal",
+                                placement: "top",
+                                duration: 2000,
+                                animationType: "slide-in",
+                                style: {
+                                  backgroundColor: colors.secondary_2,
+                                  borderWidth: 1,
+                                  borderColor: colors.primary_1,
+                                },
+                              }
+                            );
+                          }}
+                        />
+                        <Circle
+                          center={studygroup.location}
+                          radius={studygroup.radius}
+                          fillColor={randomColorWithOpacity}
+                          strokeColor="white"
+                          zIndex={1000}
+                        />
+                      </React.Fragment>
+                    );
+                  }
+                )
+              ) : (
+                <></>
+              )}
+              {!studying || !student_status?.study_group ? (
+                <Marker
+                  zIndex={1001}
+                  coordinate={{
+                    latitude:
+                      student_status?.location?.latitude ||
+                      location.coords.latitude,
+                    longitude:
+                      student_status?.location?.longitude ||
+                      location.coords.longitude,
+                  }}
+                  draggable={!student_status?.active}
+                  onDragEnd={(e) => {
+                    const newLocation = e.nativeEvent.coordinate;
+                    const distance = GetDistance(
+                      newLocation.latitude,
+                      newLocation.longitude,
+                      location.coords.latitude,
+                      location.coords.longitude
+                    );
+                    if (distance <= 0.1) {
+                      // If the new location is within 100 meters of the actual location, update the location state
+                      setLocation({
+                        ...location,
+                        coords: {
+                          ...location.coords,
+                          latitude: newLocation.latitude,
+                          longitude: newLocation.longitude,
+                        },
+                      });
+                    } else {
+                      // If the new location is more than 100 meters away from the actual location, reset the marker to the actual location
+                      setLocation({
+                        ...location,
+                      });
+                    }
+                  }}
+                  pinColor={colors.primary_1}
+                  onPress={() => {
+                    toast.hideAll();
+                    toast.show(
+                      <View
+                        style={{
+                          alignContent: "center",
+                          alignSelf: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={styles.text_white_tiny_bold}>
+                          You are here
+                        </Text>
+                        {student_status?.active &&
+                        !student_status?.study_group ? (
+                          <>
+                            <Text style={styles.text_white_tiny_bold}>
+                              {student_status?.active
+                                ? "Studying " + student_status?.subject
+                                : ""}
+                            </Text>
+                            <Button
+                              onPress={() => {
+                                if (student_status?.subject) {
+                                  navigation.navigate("Create Group", {
+                                    location: {
+                                      latitude:
+                                        student_status?.location.latitude,
+                                      longitude:
+                                        student_status?.location.longitude,
+                                    },
+                                    subject: student_status?.subject,
+                                  });
+                                }
+                              }}
+                            >
+                              <Text style={styles.text_white_tiny_bold}>
+                                Create Group
+                              </Text>
+                            </Button>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                        {student_status?.study_group ? (
+                          <>
+                            <Text style={styles.text_white_tiny_bold}>
+                              {`Studying: ${student_status?.subject}`}
+                            </Text>
+                            <Text style={styles.text_white_tiny_bold}>
+                              {`In group: ${student_status?.study_group}`}
+                            </Text>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </View>,
+                      {
+                        type: "normal",
+                        placement: "top",
+                        duration: 2000,
+                        animationType: "slide-in",
+                        style: {
+                          backgroundColor: colors.secondary_2,
+                          borderWidth: 1,
+                          borderColor: colors.primary_1,
+                        },
+                      }
+                    );
+                  }}
+                ></Marker>
+              ) : (
+                <></>
+              )}
+            </MapView>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
               }}
             >
-              <UrlTile
-                urlTemplate={urlProvider}
-                shouldReplaceMapContent={true}
-                maximumZ={19}
-                flipY={false}
-                zIndex={1}
-              />
-              <Marker
-                coordinate={{
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
+              <Button
+                onPress={async () => {
+                  if (!student_status?.active) {
+                    navigation.navigate("Start Studying", {
+                      location: location,
+                    });
+                  } else {
+                    stop_studying.mutate({
+                      active: false,
+                    });
+                  }
                 }}
-                onPress={() => console.log(location)}
-                pinColor={colors.primary_1}
               >
-                <Callout>
-                  <Text style={styles.text_black_tiny}>
-                    X: {Math.round(location.coords.longitude) + "\n"}
-                    Z: {Math.round(location.coords.latitude)}
-                  </Text>
-                </Callout>
-              </Marker>
-            </AnimatedMapView>
-            <Text style={styles.text_white_small}>
-              {dist}km away from USTP {"\n"}
-            </Text>
-          </View>
+                <Text style={styles.text_white_small}>{buttonLabel}</Text>
+              </Button>
+              <Pressable
+                style={{
+                  display: modalOpen ? "none" : "flex",
+                  backgroundColor: colors.secondary_3,
+                  borderRadius: 16,
+                  alignSelf: "center",
+                }}
+                onPress={() => {
+                  setModalOpen(true);
+                }}
+              >
+                {studying ? <CaretUpIcon size={32} /> : <></>}
+              </Pressable>
+            </View>
+
+            <View style={styles.padding} />
+          </>
         );
+      } else {
+        return <MapRendererFar location={location.coords} dist={dist} />;
       }
     } else {
       return (
-        <AnimatedContainer>
+        <>
           <Text style={styles.text_white_medium}>{feedback}</Text>
           <Button onPress={() => requestLocation()}>
             <Text style={styles.text_white_medium}>Allow Access</Text>
           </Button>
-        </AnimatedContainer>
+        </>
       );
     }
   }
   return (
     <View style={styles.background}>
+      <Modal
+        coverScreen={false}
+        isVisible={modalOpen && studying}
+        style={{ opacity: 0.85 }}
+        hasBackdrop={false}
+      >
+        <AnimatedContainer>
+          <Text style={styles.text_white_medium}>Groups List</Text>
+          <Pressable
+            style={{
+              alignContent: "flex-start",
+              backgroundColor: colors.secondary_3,
+              borderRadius: 16,
+            }}
+            onPress={() => setModalOpen(false)}
+          >
+            <DropdownIcon size={32} />
+          </Pressable>
+          <Switch
+            value={modalByGroup}
+            onChange={() => {
+              setModalByGroup(!modalByGroup);
+            }}
+          />
+          <ScrollView>
+            {!modalByGroup ? (
+              student_statuses.map(
+                (student_status: StudentStatusFilterType, index: number) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        alignContent: "center",
+                        alignSelf: "center",
+                        justifyContent: "center",
+                        backgroundColor: colors.secondary_3,
+                        borderColor: colors.primary_2,
+                        borderWidth: 1,
+                        borderRadius: 16,
+                        width: 256,
+                      }}
+                    >
+                      <Text style={styles.text_white_tiny_bold}>
+                        Student: {student_status.user}
+                      </Text>
+                      <Text style={styles.text_white_tiny_bold}>
+                        {`Studying ${student_status.subject}`}
+                      </Text>
+                      <Text style={styles.text_white_tiny_bold}>
+                        {`${Math.round(student_status.distance * 1000)}m away`}
+                      </Text>
+                    </View>
+                  );
+                }
+              )
+            ) : (
+              <></>
+            )}
+            {modalByGroup ? (
+              study_groups.map((studygroup: StudyGroupType, index: number) => {
+                return (
+                  <View
+                    key={index}
+                    style={{
+                      alignContent: "center",
+                      alignSelf: "center",
+                      justifyContent: "center",
+                      backgroundColor: colors.secondary_3,
+                      borderColor: colors.primary_2,
+                      borderWidth: 1,
+                      borderRadius: 16,
+                      width: 256,
+                    }}
+                  >
+                    <Text style={styles.text_white_tiny_bold}>
+                      Group Name: {studygroup.name}
+                    </Text>
+                    <Text style={styles.text_white_tiny_bold}>
+                      {`Studying ${studygroup.subject}`}
+                    </Text>
+                    <Text style={styles.text_white_tiny_bold}>
+                      Students Studying: {studygroup.students.length}
+                    </Text>
+                    {student_status?.study_group != studygroup.name ? (
+                      <Text style={styles.text_white_tiny_bold}>
+                        {`${Math.round(studygroup.distance * 1000)}m away`}
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                  </View>
+                );
+              })
+            ) : (
+              <></>
+            )}
+          </ScrollView>
+        </AnimatedContainer>
+      </Modal>
       <AnimatedContainer>
         <CustomMap />
       </AnimatedContainer>

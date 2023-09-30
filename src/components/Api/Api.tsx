@@ -1,21 +1,28 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  ActivationParams,
-  LoginParams,
-  OnboardingParams,
-  PatchStudentData,
-  RegistrationParams,
-  StudentData,
+  ActivationType,
+  LocationType,
+  LoginType,
+  OnboardingType,
+  PatchUserInfoType,
+  RegistrationType,
+  StudentStatusPatchType,
+  StudentStatusType,
+  StudyGroupCreateType,
+  StudyGroupType,
 } from "../../interfaces/Interfaces";
 
-export let backendURL = "";
-export let backendURLWebsocket = "";
-let use_production = true;
-if (__DEV__ || !use_production) {
-  backendURL = "http://10.0.10.8:8000";
-  backendURLWebsocket = "ws://10.0.10.8:8000";
-} else {
+export let backendURL = "https://stude.keannu1.duckdns.org";
+export let backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
+if (__DEV__) {
+  backendURL = "http://10.0.10.8:8083";
+  backendURLWebsocket = "ws://10.0.10.8:8083";
+}
+
+// Switch this on if you wanna run production URLs while in development
+let use_production = false;
+if (__DEV__ && use_production) {
   backendURL = "https://stude.keannu1.duckdns.org";
   backendURLWebsocket = "ws://stude.keannu1.duckdns.org";
 }
@@ -25,7 +32,28 @@ const instance = axios.create({
   timeout: 1000,
 });
 
+console.log("Using backend API:", backendURL);
+
+// 3rd Party APIs
+export const urlProvider =
+  "https://openstreetmap.keannu1.duckdns.org/tile/{z}/{x}/{y}.png?";
 // App APIs
+
+// Error Handling
+export function ParseError(error: any) {
+  if (error.response && error.response.data) {
+    return JSON.stringify(error.response.data)
+      .replaceAll(/[{}()"]/g, " ")
+      .replaceAll(/,/g, "\n")
+      .replaceAll("[", "")
+      .replaceAll("]", "")
+      .replaceAll(".", "")
+      .replaceAll(/"/g, "")
+      .replaceAll("non_field_errors", "")
+      .trim();
+  }
+  return "Unable to reach server";
+}
 
 // Token Handling
 export async function getAccessToken() {
@@ -59,40 +87,28 @@ export async function GetConfig() {
 }
 
 // User APIs
-export function UserRegister(register: RegistrationParams) {
-  console.log(JSON.stringify(register));
+export function UserRegister(register: RegistrationType) {
   return instance
     .post("/api/v1/accounts/users/", register)
     .then(async (response) => {
       return [true, response.status];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
 
-export function UserLogin(user: LoginParams) {
+export function UserLogin(user: LoginType) {
   return instance
     .post("/api/v1/accounts/jwt/create/", user)
     .then(async (response) => {
-      /*console.log(
-        "Access Token:",
-        response.data.access,
-        "\nRefresh Token:",
-        response.data.refresh
-      );*/
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
       return [true];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      // console.log(error_message);
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -106,21 +122,14 @@ export async function TokenRefresh() {
     })
     .then(async (response) => {
       setAccessToken(response.data.access);
-      /*console.log(
-        "Token refresh success! New Access Token",
-        response.data.access
-      );*/
       return true;
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      console.log("Token Refresh error:", error_message);
+      let error_message = ParseError(error);
       return false;
     });
 }
-export async function UserInfo() {
+export async function GetUserInfo() {
   const config = await GetConfig();
   return instance
     .get("/api/v1/accounts/users/me/", config)
@@ -129,37 +138,31 @@ export async function UserInfo() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
 
-export async function PatchUserInfo(info: PatchStudentData) {
+export async function PatchUserInfo(info: PatchUserInfoType) {
   const config = await GetConfig();
   return instance
     .patch("/api/v1/accounts/users/me/", info, config)
     .then((response) => {
-      console.log(JSON.stringify(response.data));
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      // console.log(error_message);
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
 
-export function UserActivate(activation: ActivationParams) {
+export function UserActivate(activation: ActivationType) {
   return instance
     .post("/api/v1/accounts/users/activation/", activation)
-    .then(async (response) => {
+    .then(() => {
       return true;
     })
-    .catch((error) => {
+    .catch(() => {
       return false;
     });
 }
@@ -179,9 +182,7 @@ export async function GetCourses() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -199,9 +200,7 @@ export async function GetSemesters() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
@@ -215,69 +214,135 @@ export async function GetYearLevels() {
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }
 
-export async function GetSubjects(
-  byCourseOnly: boolean,
-  course: string,
-  year_level?: string,
-  semester?: string
-) {
-  const config = await GetConfig();
-  console.log("by course only?", byCourseOnly);
-  // If year level and semester specified,
-  if (!byCourseOnly && year_level && semester) {
-    return instance
-      .get(
-        "/api/v1/subjects/" + course + "/" + year_level + "/" + semester,
-        config
-      )
-      .then((response) => {
-        // console.log(JSON.stringify(response.data));
-        return [true, response.data];
-      })
-      .catch((error) => {
-        let error_message = "";
-        if (error.response) error_message = error.response.data;
-        else error_message = "Unable to reach servers";
-        return [false, error_message];
-      });
-  }
-  // If only course is specified
-  else {
-    return instance
-      .get("/api/v1/subjects/" + course, config)
-      .then((response) => {
-        // console.log(JSON.stringify(response.data));
-        return [true, response.data];
-      })
-      .catch((error) => {
-        let error_message = "";
-        if (error.response) error_message = error.response.data;
-        else error_message = "Unable to reach servers";
-        return [false, error_message];
-      });
-  }
-}
-
-export async function OnboardingUpdateStudentInfo(info: OnboardingParams) {
+export async function GetSubjects() {
   const config = await GetConfig();
   return instance
-    .patch("/api/v1/accounts/users/me/", info, config)
+    .get("/api/v1/subjects/", config)
     .then((response) => {
-      console.log(JSON.stringify(response.data));
       return [true, response.data];
     })
     .catch((error) => {
-      let error_message = "";
-      if (error.response) error_message = error.response.data;
-      else error_message = "Unable to reach servers";
-      console.log("Error updating onboarding info", error_message);
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudentStatus() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/student_status/self/", config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function PatchStudentStatus(info: StudentStatusPatchType) {
+  const config = await GetConfig();
+  return instance
+    .patch("/api/v1/student_status/self/", info, config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudentStatusList() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/student_status/list/", config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudentStatusListNear() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/student_status/near/", config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+// To-do
+export async function GetStudentStatusListFilteredCurrentLocation(
+  location: LocationType
+) {
+  const config = await GetConfig();
+  return instance
+    .post(
+      "/api/v1/student_status/near_current_location/",
+      {
+        location: location,
+      },
+      config
+    )
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudyGroupListFiltered() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/study_groups/near/", config)
+    .then((response) => {
+      console.log("DEBUGGG", response.data);
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudyGroupList() {
+  const config = await GetConfig();
+  return instance
+    .get("/api/v1/study_groups/", config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function CreateStudyGroup(info: StudyGroupCreateType) {
+  const config = await GetConfig();
+  // console.log("Creating study group:", info);
+  return instance
+    .post("/api/v1/study_groups/create/", info, config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
       return [false, error_message];
     });
 }

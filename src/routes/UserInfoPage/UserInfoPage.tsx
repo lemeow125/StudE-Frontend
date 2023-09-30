@@ -6,18 +6,19 @@ import {
   TextInput,
   NativeSyntheticEvent,
   TextInputChangeEventData,
+  Pressable,
 } from "react-native";
 import { useState } from "react";
 import {
-  SemesterParams,
-  UserInfoParams,
-  Semester,
-  SubjectParams,
-  Subject,
-  YearLevel,
-  Course,
+  SemesterReturnType,
+  UserInfoReturnType,
+  SemesterType,
+  YearLevelType,
+  CourseType,
   OptionType,
-  Subjects,
+  StudentStatusType,
+  PatchUserInfoType,
+  StudentStatusPatchType,
 } from "../../interfaces/Interfaces";
 import Button from "../../components/Button/Button";
 import { Image } from "react-native";
@@ -25,18 +26,52 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   GetCourses,
   GetSemesters,
-  GetSubjects,
   GetYearLevels,
+  PatchStudentStatus,
   PatchUserInfo,
-  UserInfo,
+  GetUserInfo,
 } from "../../components/Api/Api";
 import { colors } from "../../styles";
 import DropDownPicker from "react-native-dropdown-picker";
-import { ValueType } from "react-native-dropdown-picker";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { useSelector } from "react-redux";
+import { RootState } from "../../features/redux/Store/Store";
+import { useDispatch } from "react-redux";
+import { setUser as setUserinState } from "../../features/redux/slices/UserSlice/UserSlice";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { useToast } from "react-native-toast-notifications";
 
 export default function UserInfoPage() {
+  const logged_in_user = useSelector((state: RootState) => state.user.user);
+  const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const toast = useToast();
+
+  // Student Status
+  const studentstatus_mutation = useMutation({
+    mutationFn: async (info: StudentStatusPatchType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+    },
+    onError: () => {
+      toast.show("An error has occured\nChanges have not been saved", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
   // User Info
   const [user, setUser] = useState({
     first_name: "",
@@ -49,15 +84,18 @@ export default function UserInfoPage() {
     course_shortname: "",
     avatar: "",
     student_id_number: "",
-  });
-  const [displayName, setDisplayName] = useState({
-    first_name: "",
-    last_name: "",
+    irregular: false,
   });
   const StudentInfo = useQuery({
     queryKey: ["user"],
-    queryFn: UserInfo,
-    onSuccess: (data: UserInfoParams) => {
+    queryFn: async () => {
+      const data = await GetUserInfo();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
+    onSuccess: (data: UserInfoReturnType) => {
       //  console.log(data[1]);
       setUser({
         ...user,
@@ -66,23 +104,55 @@ export default function UserInfoPage() {
         year_level: data[1].year_level,
         semester: data[1].semester,
         course: data[1].course,
-        avatar: data[1].avatar,
         student_id_number: data[1].student_id_number,
-      });
-      setDisplayName({
-        first_name: data[1].first_name,
-        last_name: data[1].last_name,
+        irregular: data[1].irregular,
+        avatar: data[1].avatar,
       });
       setSelectedCourse(data[1].course);
       setSelectedSemester(data[1].semester);
       setSelectedYearLevel(data[1].year_level);
+      dispatch(setUserinState(data[1]));
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
+
   const mutation = useMutation({
-    mutationFn: PatchUserInfo,
+    mutationFn: async (info: PatchUserInfoType) => {
+      const data = await PatchUserInfo(info);
+      if (data[0] == false) {
+        return Promise.reject(new Error());
+      }
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
+      // Reset student status when changing user info to prevent bugs
+      studentstatus_mutation.mutate({
+        active: false,
+      });
+      toast.show("Changes applied successfully.\nStudent status reset", {
+        type: "success",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+      dispatch(setUserinState(user));
+    },
+    onError: () => {
+      toast.show("An error has occured\nChanges have not been saved", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -92,15 +162,29 @@ export default function UserInfoPage() {
   const [semesters, setSemesters] = useState<OptionType[]>([]);
   const Semesters = useQuery({
     queryKey: ["semesters"],
-    queryFn: GetSemesters,
-    onSuccess: (data: SemesterParams) => {
-      let semestersData = data[1].map((semester: Semester) => ({
+    queryFn: async () => {
+      const data = await GetSemesters();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
+    onSuccess: (data: SemesterReturnType) => {
+      let semestersData = data[1].map((semester: SemesterType) => ({
         label: semester.name,
         value: semester.name,
         shortname: semester.shortname,
       }));
       // Update the 'semesters' state
       setSemesters(semestersData);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -110,13 +194,27 @@ export default function UserInfoPage() {
   const [year_levels, setYearLevels] = useState<OptionType[]>([]);
   const yearlevel_query = useQuery({
     queryKey: ["year_levels"],
-    queryFn: GetYearLevels,
+    queryFn: async () => {
+      const data = await GetYearLevels();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
-      let year_levels = data[1].map((yearlevel: YearLevel) => ({
+      let year_levels = data[1].map((yearlevel: YearLevelType) => ({
         label: yearlevel.name,
         value: yearlevel.name,
       }));
       setYearLevels(year_levels);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
 
@@ -126,27 +224,64 @@ export default function UserInfoPage() {
   const [courses, setCourses] = useState<OptionType[]>([]);
   const course_query = useQuery({
     queryKey: ["courses"],
-    queryFn: GetCourses,
+    queryFn: async () => {
+      const data = await GetCourses();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
-      let courses = data[1].map((course: Course) => ({
+      let courses = data[1].map((course: CourseType) => ({
         label: course.name,
         value: course.name,
       }));
       setCourses(courses);
     },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
   });
-  // Toggle editing of profile
-  const [isEditable, setIsEditable] = useState(false);
+
   // Profile photo
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      const encodedImage = await FileSystem.readAsStringAsync(
+        result.assets[0].uri,
+        { encoding: "base64" }
+      );
+      mutation.mutate({
+        avatar: encodedImage,
+      });
+    }
+  };
   function Avatar() {
     if (user.avatar) {
-      return <Image source={{ uri: user.avatar }} style={styles.profile} />;
+      return (
+        <Pressable onPress={pickImage}>
+          <Image source={{ uri: user.avatar }} style={styles.profile} />
+        </Pressable>
+      );
     } else {
       return (
-        <Image
-          source={require("../../img/user_profile_placeholder.png")}
-          style={{ ...styles.profile, ...{ marginRight: 48 } }}
-        />
+        <Pressable onPress={pickImage}>
+          <Image
+            source={require("../../img/user_profile_placeholder.png")}
+            style={{ ...styles.profile, ...{ marginRight: 48 } }}
+          />
+        </Pressable>
       );
     }
   }
@@ -157,9 +292,9 @@ export default function UserInfoPage() {
         <View style={styles.flex_row}>
           <Avatar />
           <Text style={{ ...styles.text_white_small, ...{ marginLeft: 16 } }}>
-            {(displayName.first_name || "Undefined") +
+            {(logged_in_user.first_name || "Undefined") +
               " " +
-              (displayName.last_name || "User") +
+              (logged_in_user.last_name || "User") +
               "\n" +
               user.student_id_number}
           </Text>
@@ -173,7 +308,6 @@ export default function UserInfoPage() {
           <View style={{ flex: 3 }}>
             <TextInput
               style={styles.input}
-              editable={isEditable}
               onChange={(
                 e: NativeSyntheticEvent<TextInputChangeEventData>
               ): void => {
@@ -190,7 +324,6 @@ export default function UserInfoPage() {
           <View style={{ flex: 3 }}>
             <TextInput
               style={styles.input}
-              editable={isEditable}
               onChange={(
                 e: NativeSyntheticEvent<TextInputChangeEventData>
               ): void => {
@@ -206,7 +339,6 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              disabled={!isEditable}
               zIndex={4000}
               open={yearLevelOpen}
               value={selected_yearlevel}
@@ -242,7 +374,6 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              disabled={!isEditable}
               zIndex={3000}
               open={semesterOpen}
               value={selected_semester}
@@ -278,7 +409,6 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              disabled={!isEditable}
               zIndex={2000}
               open={courseOpen}
               value={selected_course}
@@ -310,27 +440,37 @@ export default function UserInfoPage() {
         </View>
         <View style={styles.padding} />
         <View style={{ zIndex: -1 }}>
+          <View style={{ ...styles.flex_row, ...{ alignSelf: "center" } }}>
+            <BouncyCheckbox
+              onPress={() => {
+                mutation.mutate({
+                  irregular: !user.irregular,
+                });
+                setUser({ ...user, irregular: !user.irregular });
+              }}
+              isChecked={user.irregular}
+              disableBuiltInState
+              fillColor={colors.secondary_3}
+            />
+            <Text style={styles.text_white_small}>Irregular </Text>
+          </View>
           <Button
             onPress={() => {
-              if (isEditable) {
-                setYearLevelOpen(false);
-                setSemesterOpen(false);
-                setCourseOpen(false);
-                mutation.mutate({
-                  first_name: user.first_name,
-                  last_name: user.last_name,
-                  course: selected_course,
-                  semester: selected_semester,
-                  year_level: selected_yearlevel,
-                });
-              }
-              setIsEditable(!isEditable);
+              setYearLevelOpen(false);
+              setSemesterOpen(false);
+              setCourseOpen(false);
+              mutation.mutate({
+                first_name: user.first_name,
+                last_name: user.last_name,
+                course: selected_course,
+                semester: selected_semester,
+                year_level: selected_yearlevel,
+              });
             }}
           >
-            <Text style={styles.text_white_small}>
-              {isEditable && StudentInfo.isSuccess ? "Save" : "Edit Profile"}
-            </Text>
+            <Text style={styles.text_white_small}>Save Changes</Text>
           </Button>
+          <View style={styles.padding} />
         </View>
       </AnimatedContainerNoScroll>
     </View>

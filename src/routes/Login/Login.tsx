@@ -8,14 +8,12 @@ import {
   TextInputChangeEventData,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { colors } from "../../styles";
 import { useState } from "react";
 import LoginIcon from "../../icons/LoginIcon/LoginIcon";
 import Button from "../../components/Button/Button";
 import { useNavigation } from "@react-navigation/native";
 import { RootDrawerParamList } from "../../interfaces/Interfaces";
-import { UserInfo, UserLogin } from "../../components/Api/Api";
-import { ParseLoginError } from "../../components/ParseError/ParseError";
+import { GetUserInfo, UserLogin } from "../../components/Api/Api";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
 import {
@@ -23,6 +21,7 @@ import {
   setOnboarding,
   unsetOnboarding,
 } from "../../features/redux/slices/StatusSlice/StatusSlice";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
@@ -31,7 +30,7 @@ export default function Login() {
     username: "",
     password: "",
   });
-  const [error, setError] = useState("");
+  const toast = useToast();
   return (
     <View style={styles.background}>
       <AnimatedContainer>
@@ -60,14 +59,13 @@ export default function Login() {
           placeholderTextColor="white"
           secureTextEntry={true}
           value={creds.password}
+          autoCapitalize={"none"}
           onChange={(
             e: NativeSyntheticEvent<TextInputChangeEventData>
           ): void => {
             setCreds({ ...creds, password: e.nativeEvent.text });
           }}
         />
-        <View style={{ paddingVertical: 2 }} />
-        <Text style={styles.text_white_small}>{error}</Text>
         <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
@@ -77,7 +75,7 @@ export default function Login() {
             }).then(async (result) => {
               if (result[0]) {
                 setUser({ ...creds, username: "", password: "", error: "" });
-                let user_info = await UserInfo();
+                let user_info = await GetUserInfo();
                 dispatch(login());
                 dispatch(setUser(user_info[1]));
                 // Redirect to onboarding if no year level, course, or semester specified
@@ -88,14 +86,30 @@ export default function Login() {
                 ) {
                   dispatch(setOnboarding());
                   navigation.navigate("Onboarding");
+                  toast.show("Successfully logged in", {
+                    type: "success",
+                    placement: "top",
+                    duration: 2000,
+                    animationType: "slide-in",
+                  });
                 } else {
                   dispatch(unsetOnboarding());
+                  toast.show("Successfully logged in", {
+                    type: "success",
+                    placement: "top",
+                    duration: 2000,
+                    animationType: "slide-in",
+                  });
                   navigation.navigate("Home");
                 }
                 console.log(JSON.stringify(user_info));
               } else {
-                console.log("heh", ParseLoginError(JSON.stringify(result[1])));
-                setError(ParseLoginError(JSON.stringify(result[1])));
+                toast.show(JSON.stringify(result[1]), {
+                  type: "warning",
+                  placement: "top",
+                  duration: 2000,
+                  animationType: "slide-in",
+                });
               }
             });
           }}

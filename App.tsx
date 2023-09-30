@@ -1,4 +1,5 @@
 import "react-native-gesture-handler";
+import styles from "./src/styles";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Provider } from "react-redux";
@@ -21,6 +22,11 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import UserInfoPage from "./src/routes/UserInfoPage/UserInfoPage";
 import SubjectsPage from "./src/routes/SubjectsPage/SubjectsPage";
+import Loading from "./src/routes/Loading/Loading";
+import StartStudying from "./src/routes/StartStudying/StartStudying";
+import { ToastProvider } from "react-native-toast-notifications";
+import InfoIcon from "./src/icons/InfoIcon/InfoIcon";
+import CreateGroup from "./src/routes/CreateGroup/CreateGroup";
 
 const Drawer = createDrawerNavigator();
 
@@ -28,7 +34,7 @@ const linking = {
   prefixes: [Linking.makeUrl("/")],
   config: {
     screens: {
-      Home: "home",
+      Home: "",
       Login: "login",
       Register: "register",
       Onboarding: "onboarding",
@@ -55,27 +61,34 @@ export default function App() {
     }
   }, [initialRoute]);
   return (
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <StatusBar style="light" />
+    <ToastProvider
+      icon={<InfoIcon size={32} />}
+      textStyle={{ ...styles.text_white_tiny_bold }}
+    >
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <StatusBar style="light" />
 
-        <NavigationContainer linking={linking}>
-          <Drawer.Navigator
-            initialRouteName="Revalidation"
-            drawerContent={CustomDrawerContent}
-            screenOptions={DrawerScreenSettings}
-          >
-            <Drawer.Screen name="Home" component={Home} />
-            <Drawer.Screen name="Login" component={Login} />
-            <Drawer.Screen name="Register" component={Register} />
-            <Drawer.Screen name="Onboarding" component={Onboarding} />
-            <Drawer.Screen name="Revalidation" component={Revalidation} />
-            <Drawer.Screen name="Activation" component={Activation} />
-            <Drawer.Screen name="User Info" component={UserInfoPage} />
-            <Drawer.Screen name="Subjects" component={SubjectsPage} />
-          </Drawer.Navigator>
-        </NavigationContainer>
-      </Provider>
-    </QueryClientProvider>
+          <NavigationContainer linking={linking} fallback={<Loading />}>
+            <Drawer.Navigator
+              initialRouteName="Revalidation"
+              drawerContent={CustomDrawerContent}
+              screenOptions={DrawerScreenSettings}
+            >
+              <Drawer.Screen name="Login" component={Login} />
+              <Drawer.Screen name="Register" component={Register} />
+              <Drawer.Screen name="Home" component={Home} />
+              <Drawer.Screen name="Onboarding" component={Onboarding} />
+              <Drawer.Screen name="Revalidation" component={Revalidation} />
+              <Drawer.Screen name="Activation" component={Activation} />
+              <Drawer.Screen name="User Info" component={UserInfoPage} />
+              <Drawer.Screen name="Subjects" component={SubjectsPage} />
+              <Drawer.Screen name="Start Studying" component={StartStudying} />
+              <Drawer.Screen name="Create Group" component={CreateGroup} />
+            </Drawer.Navigator>
+          </NavigationContainer>
+        </Provider>
+      </QueryClientProvider>
+    </ToastProvider>
   );
 }

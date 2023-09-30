@@ -5,7 +5,10 @@ import { Text, View } from "react-native";
 import { colors } from "../../styles";
 import styles from "../../styles";
 
-import { RootDrawerParamList } from "../../interfaces/Interfaces";
+import {
+  RootDrawerParamList,
+  StudentStatusPatchType,
+} from "../../interfaces/Interfaces";
 import AppIcon from "../../icons/AppIcon/AppIcon";
 import HomeIcon from "../../icons/HomeIcon/HomeIcon";
 import LoginIcon from "../../icons/LoginIcon/LoginIcon";
@@ -18,11 +21,48 @@ import { logout } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserIcon from "../../icons/UserIcon/UserIcon";
 import SubjectIcon from "../../icons/SubjectIcon/SubjectIcon";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-native-toast-notifications/lib/typescript/toast";
+import { PatchStudentStatus } from "../Api/Api";
+import { useToast } from "react-native-toast-notifications";
 
 export default function CustomDrawerContent(props: {}) {
   const navigation = useNavigation<RootDrawerParamList>();
   const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const debug_disable_clear_on_logout = true;
+  const stop_studying_logout = useMutation({
+    mutationFn: async (info: StudentStatusPatchType) => {
+      const data = await PatchStudentStatus(info);
+      if (data[0] != true) {
+        return Promise.reject(new Error());
+      }
+      console.log("DEBUG", data);
+      return data;
+    },
+    onSuccess: async () => {
+      toast.show("Logged out. Stopped studying", {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+      queryClient.clear();
+      dispatch(logout());
+      await AsyncStorage.clear();
+      navigation.navigate("Login");
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
   if (status.logged_in && status.onboarding) {
     return (
       <DrawerContentScrollView {...props}>
@@ -38,9 +78,16 @@ export default function CustomDrawerContent(props: {}) {
 
         <DrawerButton
           onPress={async () => {
-            dispatch(logout());
-            await AsyncStorage.clear();
-            navigation.navigate("Login");
+            if (debug_disable_clear_on_logout) {
+              queryClient.clear();
+              dispatch(logout());
+              await AsyncStorage.clear();
+              navigation.navigate("Login");
+            } else {
+              stop_studying_logout.mutate({
+                active: false,
+              });
+            }
           }}
         >
           <LogoutIcon size={32} />
@@ -86,9 +133,16 @@ export default function CustomDrawerContent(props: {}) {
         </DrawerButton>
         <DrawerButton
           onPress={async () => {
-            dispatch(logout());
-            await AsyncStorage.clear();
-            navigation.navigate("Login");
+            if (debug_disable_clear_on_logout) {
+              queryClient.clear();
+              dispatch(logout());
+              await AsyncStorage.clear();
+              navigation.navigate("Login");
+            } else {
+              stop_studying_logout.mutate({
+                active: false,
+              });
+            }
           }}
         >
           <LogoutIcon size={32} />

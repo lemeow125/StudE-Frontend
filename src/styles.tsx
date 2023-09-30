@@ -171,7 +171,8 @@ const styles = StyleSheet.create({
     width: "70%",
   },
   map: {
-    height: Viewport.height * 0.8,
+    marginVertical: 4,
+    height: Viewport.height * 0.7,
     width: Viewport.width * 0.8,
     alignSelf: "center",
   },
@@ -182,6 +183,8 @@ const styles = StyleSheet.create({
     borderRadius: 150 / 2,
     overflow: "hidden",
     padding: 0,
+    borderColor: colors.primary_2,
+    borderWidth: 3,
   },
   input: {
     paddingHorizontal: 8,

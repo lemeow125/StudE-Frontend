@@ -3,10 +3,10 @@ import styles from "../../styles";
 import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
-  Course,
   RootDrawerParamList,
-  Semester,
-  YearLevel,
+  CourseType,
+  SemesterType,
+  YearLevelType,
 } from "../../interfaces/Interfaces";
 import { colors } from "../../styles";
 import { MotiView } from "moti";
@@ -18,18 +18,18 @@ import {
   GetCourses,
   GetSemesters,
   GetYearLevels,
-  OnboardingUpdateStudentInfo,
+  PatchUserInfo,
 } from "../../components/Api/Api";
 import { useDispatch } from "react-redux";
 import { unsetOnboarding } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import { setUser } from "../../features/redux/slices/UserSlice/UserSlice";
-import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
+import { useToast } from "react-native-toast-notifications";
 export default function Onboarding() {
   const navigation = useNavigation<RootDrawerParamList>();
   const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
-  const [error, setError] = useState("");
+  const toast = useToast();
   // Semesters
   const [selected_semester, setSelectedSemester] = useState("");
   const [semesterOpen, setSemesterOpen] = useState(false);
@@ -39,13 +39,27 @@ export default function Onboarding() {
   ]);
   const semester_query = useQuery({
     queryKey: ["semesters"],
-    queryFn: GetSemesters,
+    queryFn: async () => {
+      const data = await GetSemesters();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
-      let semesters = data[1].map((item: Semester) => ({
+      let semesters = data[1].map((item: SemesterType) => ({
         label: item.name,
         value: item.name,
       }));
       setSemesters(semesters);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
   // Year Level
@@ -57,13 +71,27 @@ export default function Onboarding() {
   ]);
   const yearlevel_query = useQuery({
     queryKey: ["year_levels"],
-    queryFn: GetYearLevels,
+    queryFn: async () => {
+      const data = await GetYearLevels();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
-      let year_levels = data[1].map((item: YearLevel) => ({
+      let year_levels = data[1].map((item: YearLevelType) => ({
         label: item.name,
         value: item.name,
       }));
       setYearLevels(year_levels);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
   // Course
@@ -78,13 +106,27 @@ export default function Onboarding() {
   ]);
   const course_query = useQuery({
     queryKey: ["courses"],
-    queryFn: GetCourses,
+    queryFn: async () => {
+      const data = await GetCourses();
+      if (data[0] == false) {
+        return Promise.reject(new Error(data[1]));
+      }
+      return data;
+    },
     onSuccess: (data) => {
-      let courses = data[1].map((item: Course) => ({
+      let courses = data[1].map((item: CourseType) => ({
         label: item.name,
         value: item.name,
       }));
       setCourses(courses);
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
     },
   });
   if (yearlevel_query.error || semester_query.error || course_query.error) {
@@ -196,7 +238,6 @@ export default function Onboarding() {
             dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
           />
         </MotiView>
-        <Text style={styles.text_white_small}>{error}</Text>
         <MotiView
           from={{
             opacity: 0,
@@ -217,7 +258,7 @@ export default function Onboarding() {
               !selected_yearlevel || !selected_course || !selected_semester
             }
             onPress={async () => {
-              let result = await OnboardingUpdateStudentInfo({
+              let result = await PatchUserInfo({
                 semester: selected_semester,
                 course: selected_course,
                 year_level: selected_yearlevel,
@@ -227,11 +268,25 @@ export default function Onboarding() {
                 setSelectedCourse("");
                 setSelectedYearLevel("");
                 setSelectedSemester("");
-                setError("Success!");
                 dispatch(setUser(result[1]));
+                toast.show("Changes applied successfully", {
+                  type: "success",
+                  placement: "top",
+                  duration: 2000,
+                  animationType: "slide-in",
+                });
                 navigation.navigate("Home");
               } else {
-                setError(result[1]);
+                dispatch(setUser(result[1]));
+                toast.show(
+                  "An error has occured\nChanges have not been saved",
+                  {
+                    type: "warning",
+                    placement: "top",
+                    duration: 2000,
+                    animationType: "slide-in",
+                  }
+                );
               }
             }}
           >
