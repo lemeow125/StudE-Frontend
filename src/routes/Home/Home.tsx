@@ -82,18 +82,14 @@ export default function Home() {
     }
   }
 
-  // Refresh every 15 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      requestLocation();
-    }, 15000);
-
-    return () => clearInterval(interval);
-  });
-
   // Refresh when screen loads
   useEffect(() => {
+    // Refresh every 15 seconds
+    const interval = setInterval(async () => {
+      await requestLocation();
+    }, 15000);
     requestLocation();
+    return () => clearInterval(interval);
   }, []);
 
   async function DistanceHandler(location: RawLocationType) {
@@ -829,7 +825,7 @@ export default function Home() {
       return (
         <>
           <Text style={styles.text_white_medium}>{feedback}</Text>
-          <Button onPress={() => requestLocation()}>
+          <Button onPress={async () => await requestLocation()}>
             <Text style={styles.text_white_medium}>Allow Access</Text>
           </Button>
         </>

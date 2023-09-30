@@ -186,6 +186,16 @@ const styles = StyleSheet.create({
     borderColor: colors.primary_2,
     borderWidth: 3,
   },
+  profile_mini: {
+    height: 32,
+    width: 32,
+    alignSelf: "center",
+    borderRadius: 150 / 2,
+    overflow: "hidden",
+    padding: 0,
+    borderColor: colors.primary_2,
+    borderWidth: 3,
+  },
   input: {
     paddingHorizontal: 8,
     marginVertical: 2,
@@ -212,6 +222,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary_2,
     borderRadius: 20,
     borderColor: colors.primary_3,
+    width: 256,
   },
   messageScrollViewContainer: {
     backgroundColor: colors.secondary_1,
