@@ -21,6 +21,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import {
   GetStudentStatus,
+  GetStudentStatusList,
   GetStudentStatusListNear,
   GetStudyGroupList,
   GetStudyGroupListFiltered,
@@ -259,6 +260,38 @@ export default function Home() {
     },
   });
 
+  const [student_statuses_global, setStudentStatusesGlobal] =
+    useState<StudentStatusListType>([]);
+  // Student Status List Global
+  const StudentStatusListGlobalQuery = useQuery({
+    enabled: !studying,
+    queryKey: ["user_status_list_global"],
+    queryFn: async () => {
+      const data = await GetStudentStatusList();
+      if (data[0] == false) {
+        return Promise.reject(new Error(JSON.stringify(data[1])));
+      }
+      return data;
+    },
+    onSuccess: (data: StudentStatusListReturnType) => {
+      if (data[1] && location) {
+        // Filter to only include students studying solo
+        let data_filtered = data[1].filter(
+          (item: StudentStatusFilterType) => item.study_group == null
+        );
+        setStudentStatusesGlobal(data_filtered);
+      }
+    },
+    onError: (error: Error) => {
+      toast.show(String(error), {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+      });
+    },
+  });
+
   const [study_groups, setStudyGroups] = useState<StudyGroupType[]>([]);
   // Study Group List
   const StudyGroupQuery = useQuery({
@@ -288,7 +321,7 @@ export default function Home() {
   const [study_groups_global, setStudyGroupsGlobal] = useState<
     StudyGroupType[]
   >([]);
-  // Student Status List
+  // Study Group Global List
   const StudyGroupGlobalQuery = useQuery({
     enabled: !studying,
     queryKey: ["study_group_list_global"],
@@ -350,53 +383,114 @@ export default function Home() {
               }}
               loadingBackgroundColor={colors.secondary_2}
             >
-              {student_statuses.map(
-                (student_status: StudentStatusFilterType, index: number) => {
-                  const randomColorWithOpacity = `rgba(${Math.floor(
-                    Math.random() * 256
-                  )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
-                    Math.random() * 256
-                  )}, 0.7)`;
+              {!studying ? (
+                student_statuses_global.map(
+                  (student_status: StudentStatusFilterType, index: number) => {
+                    const randomColorWithOpacity = `rgba(${Math.floor(
+                      Math.random() * 256
+                    )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                      Math.random() * 256
+                    )}, 0.7)`;
 
-                  return (
-                    <Marker
-                      key={index}
-                      coordinate={student_status.location}
-                      pinColor={randomColorWithOpacity}
-                      zIndex={1000}
-                      onPress={() => {
-                        toast.hideAll();
-                        toast.show(
-                          <View
-                            style={{
-                              alignContent: "center",
-                              alignSelf: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Text style={styles.text_white_tiny_bold}>
-                              Student: {student_status.user}
-                            </Text>
-                            <Text style={styles.text_white_tiny_bold}>
-                              {`Studying ${student_status.subject}`}
-                            </Text>
-                          </View>,
-                          {
-                            type: "normal",
-                            placement: "top",
-                            duration: 2000,
-                            animationType: "slide-in",
-                            style: {
-                              backgroundColor: colors.secondary_2,
-                              borderWidth: 1,
-                              borderColor: colors.primary_1,
-                            },
-                          }
-                        );
-                      }}
-                    />
-                  );
-                }
+                    return (
+                      <Marker
+                        key={index}
+                        coordinate={student_status.location}
+                        pinColor={randomColorWithOpacity}
+                        zIndex={1000}
+                        onPress={() => {
+                          toast.hideAll();
+                          toast.show(
+                            <View
+                              style={{
+                                alignContent: "center",
+                                alignSelf: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={styles.text_white_tiny_bold}>
+                                Student: {student_status.user}
+                              </Text>
+                              <Text style={styles.text_white_tiny_bold}>
+                                {`Studying ${student_status.subject}`}
+                              </Text>
+                            </View>,
+                            {
+                              type: "normal",
+                              placement: "top",
+                              duration: 2000,
+                              animationType: "slide-in",
+                              style: {
+                                backgroundColor: colors.secondary_2,
+                                borderWidth: 1,
+                                borderColor: colors.primary_1,
+                              },
+                            }
+                          );
+                        }}
+                      />
+                    );
+                  }
+                )
+              ) : (
+                <></>
+              )}
+              {studying ? (
+                student_statuses.map(
+                  (student_status: StudentStatusFilterType, index: number) => {
+                    const randomColorWithOpacity = `rgba(${Math.floor(
+                      Math.random() * 256
+                    )}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+                      Math.random() * 256
+                    )}, 0.7)`;
+
+                    return (
+                      <Marker
+                        key={index}
+                        coordinate={student_status.location}
+                        pinColor={randomColorWithOpacity}
+                        zIndex={1000}
+                        onPress={() => {
+                          toast.hideAll();
+                          toast.show(
+                            <View
+                              style={{
+                                alignContent: "center",
+                                alignSelf: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={styles.text_white_tiny_bold}>
+                                Student: {student_status.user}
+                              </Text>
+                              <Text style={styles.text_white_tiny_bold}>
+                                {`Studying ${student_status.subject}`}
+                              </Text>
+                              <Text style={styles.text_white_tiny_bold}>
+                                {`${Math.round(
+                                  student_status.distance * 1000
+                                )}m away`}
+                              </Text>
+                            </View>,
+                            {
+                              type: "normal",
+                              placement: "top",
+                              duration: 2000,
+                              animationType: "slide-in",
+                              style: {
+                                backgroundColor: colors.secondary_2,
+                                borderWidth: 1,
+                                borderColor: colors.primary_1,
+                              },
+                            }
+                          );
+                        }}
+                      />
+                    );
+                  }
+                )
+              ) : (
+                <></>
               )}
               {studying ? (
                 study_groups.map(
@@ -436,6 +530,11 @@ export default function Home() {
                                       ? "students"
                                       : "student"
                                   } studying`}
+                                </Text>
+                                <Text style={styles.text_white_tiny_bold}>
+                                  {`${Math.round(
+                                    studygroup.distance * 1000
+                                  )}m away`}
                                 </Text>
                                 {student_status?.study_group !=
                                 studygroup.name ? (
