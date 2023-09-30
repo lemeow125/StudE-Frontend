@@ -212,6 +212,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary_2,
     borderRadius: 20,
     borderColor: colors.primary_3,
-  }
+  },
+  messageScrollViewContainer: {
+    backgroundColor: colors.secondary_1,
+    padding: 15,
+  },
+  message_contentContainer: {
+    backgroundColor: "#00000038",
+    margin: 5,
+    padding: 10,
+    borderRadius: 20,
+  },
+  badge: {
+    height: 16,
+    width: 16,
+    justifyContent: "center",
+    borderRadius: 10,
+    marginLeft: 4,
+    marginRight: 4,
+  },
 });
 export default styles;

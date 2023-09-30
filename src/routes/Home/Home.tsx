@@ -121,17 +121,13 @@ export default function Home() {
       return data;
     },
     onSuccess: (data: StudentStatusReturnType) => {
-      if (data[1].active !== undefined) {
-        setStudying(data[1].active);
-      }
-      if (data[1].subject !== undefined) {
-        setSubject(data[1].subject);
-      }
       if (data[1].active == true) {
         setButtonLabel("Stop Studying");
       } else if (data[1].active == false) {
         setButtonLabel("Start Studying");
       }
+      setSubject(data[1].subject);
+      setStudying(data[1].active);
       setStudentStatus(data[1]);
     },
     onError: (error: Error) => {
@@ -264,6 +260,7 @@ export default function Home() {
     useState<StudentStatusListType>([]);
   // Student Status List Global
   const StudentStatusListGlobalQuery = useQuery({
+    enabled: !studying,
     queryKey: ["user_status_list_global"],
     queryFn: async () => {
       const data = await GetStudentStatusList();
@@ -322,6 +319,7 @@ export default function Home() {
   >([]);
   // Study Group Global List
   const StudyGroupGlobalQuery = useQuery({
+    enabled: !studying,
     queryKey: ["study_group_list_global"],
     queryFn: async () => {
       const data = await GetStudyGroupList();
