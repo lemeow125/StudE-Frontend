@@ -22,6 +22,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import UserInfoPage from "./src/routes/UserInfoPage/UserInfoPage";
 import SubjectsPage from "./src/routes/SubjectsPage/SubjectsPage";
+import ConversationPage from "./src/routes/ConversationPage/ConversationPage";
 import Loading from "./src/routes/Loading/Loading";
 import StartStudying from "./src/routes/StartStudying/StartStudying";
 import { ToastProvider } from "react-native-toast-notifications";
@@ -69,6 +70,7 @@ export default function App() {
         <Provider store={store}>
           <StatusBar style="light" />
 
+
           <NavigationContainer linking={linking} fallback={<Loading />}>
             <Drawer.Navigator
               initialRouteName="Revalidation"
@@ -85,6 +87,7 @@ export default function App() {
               <Drawer.Screen name="Subjects" component={SubjectsPage} />
               <Drawer.Screen name="Start Studying" component={StartStudying} />
               <Drawer.Screen name="Create Group" component={CreateGroup} />
+              <Drawer.Screen name="Conversation" component={ConversationPage} />
             </Drawer.Navigator>
           </NavigationContainer>
         </Provider>
