@@ -17,29 +17,38 @@ const FETCH_GROUP_MESSAGES = "GROUP_MESSAGES_TASK";
 TaskManager.defineTask(FETCH_GROUP_MESSAGES, async () => {
   const data = await GetStudyGroupMessages();
   if (data[0] && data[1]) {
-    let messages_prev = JSON.parse(
-      (await AsyncStorage.getItem("messages")) || "{}"
+    let messages_prev = await JSON.parse(
+      (await AsyncStorage.getItem("messages")) || "[]"
     );
-    if (!messages_prev) {
-      await AsyncStorage.setItem("messages", JSON.stringify(data[1]));
-    } else {
-      let message_curr = data[1];
-      let difference: Array<any> = messages_prev
-        .filter((x: any) => !message_curr.includes(x))
-        .concat(message_curr.filter((x: any) => !messages_prev.includes(x)));
+    await AsyncStorage.setItem("messages", JSON.stringify(data[1]));
+    let message_curr = data[1];
+    let difference: Array<any> = messages_prev
+      .filter(
+        (x: any) =>
+          !message_curr.some(
+            (y: any) => JSON.stringify(y) === JSON.stringify(x)
+          )
+      )
+      .concat(
+        message_curr.filter(
+          (x: any) =>
+            !messages_prev.some(
+              (y: any) => JSON.stringify(y) === JSON.stringify(x)
+            )
+        )
+      );
 
-      if (difference.length > 0) {
-        console.log(`${difference.length} unread messages`);
-        Notifications.scheduleNotificationAsync({
-          content: {
-            title: `${difference.length} unread messages`,
-            body: `${difference[0].user}: ${difference[0].message_content}`,
-          },
-          trigger: {
-            seconds: 1,
-          },
-        });
-      }
+    if (difference.length > 0) {
+      console.log(`${difference.length} unread messages`);
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: `${difference.length} unread messages`,
+          body: `${difference[0].user}: ${difference[0].message_content}`,
+        },
+        trigger: {
+          seconds: 1,
+        },
+      });
     }
   } else {
     console.log(data[1].response.data);
@@ -52,7 +61,7 @@ TaskManager.defineTask(FETCH_STUDENT_STATUS, async () => {
   const data = await GetStudyGroupListFiltered();
   const student_status_data = await GetStudentStatus();
   if (data[0] && data[1]) {
-    console.log("Background Fetch", data[1]);
+    console.log("Fetching nearby study groups...");
     const entryWithLeastDistance = data[1].reduce(
       (prev: StudyGroupType, curr: StudyGroupType) => {
         return prev.distance < curr.distance ? prev : curr;
@@ -63,6 +72,9 @@ TaskManager.defineTask(FETCH_STUDENT_STATUS, async () => {
       student_status_data[1].study_group == null ||
       student_status_data[1].study_group == ""
     ) {
+      console.log(
+        "User has no study group yet. Found nearby groups, pushing notification"
+      );
       Notifications.scheduleNotificationAsync({
         content: {
           title: "Students are studying nearby",
