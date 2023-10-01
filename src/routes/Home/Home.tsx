@@ -845,7 +845,6 @@ export default function Home() {
         hasBackdrop={false}
       >
         <AnimatedContainer>
-          <Text style={styles.text_white_medium}>Groups List</Text>
           <Pressable
             style={{
               alignContent: "flex-start",
@@ -856,12 +855,16 @@ export default function Home() {
           >
             <DropdownIcon size={32} />
           </Pressable>
-          <Switch
-            value={modalByGroup}
-            onChange={() => {
-              setModalByGroup(!modalByGroup);
-            }}
-          />
+          <View style={styles.flex_row}>
+            <Switch
+              value={modalByGroup}
+              onChange={() => {
+                setModalByGroup(!modalByGroup);
+              }}
+            />
+            <Text style={styles.text_white_medium}>List View</Text>
+          </View>
+
           <ScrollView>
             {!modalByGroup ? (
               student_statuses.map(

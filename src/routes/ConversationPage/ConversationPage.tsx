@@ -33,6 +33,7 @@ import {
 import { useToast } from "react-native-toast-notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ConversationPage() {
   const toast = useToast();
@@ -104,8 +105,9 @@ export default function ConversationPage() {
       }
       return data;
     },
-    onSuccess: (data: MessageReturnType) => {
+    onSuccess: async (data: MessageReturnType) => {
       if (data[1]) {
+        await AsyncStorage.setItem("messages", JSON.stringify(data[1]));
         setMessages(data[1]);
       }
     },
