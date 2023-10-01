@@ -41,7 +41,10 @@
     "react-native-toast-notifications": "^3.3.1",
     "react-query": "^3.39.3",
     "react-redux": "^8.1.1",
-    "redux": "^4.2.1"
+    "redux": "^4.2.1",
+    "expo-task-manager": "~11.1.1",
+    "expo-background-fetch": "~11.1.1",
+    "expo-notifications": "~0.18.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
