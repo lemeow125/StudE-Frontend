@@ -27,12 +27,12 @@ import { PatchStudentStatus } from "../Api/Api";
 import { useToast } from "react-native-toast-notifications";
 
 export default function CustomDrawerContent(props: {}) {
+  const debug = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const toast = useToast();
-  const debug_disable_clear_on_logout = true;
   const stop_studying_logout = useMutation({
     mutationFn: async (info: StudentStatusPatchType) => {
       const data = await PatchStudentStatus(info);
@@ -78,7 +78,8 @@ export default function CustomDrawerContent(props: {}) {
 
         <DrawerButton
           onPress={async () => {
-            if (debug_disable_clear_on_logout) {
+            // We don't clear student statuses when logging out on debug
+            if (!debug) {
               queryClient.clear();
               dispatch(logout());
               await AsyncStorage.clear();
@@ -141,7 +142,8 @@ export default function CustomDrawerContent(props: {}) {
         </DrawerButton>
         <DrawerButton
           onPress={async () => {
-            if (debug_disable_clear_on_logout) {
+            // We don't clear student statuses when logging out on debug
+            if (!debug) {
               queryClient.clear();
               dispatch(logout());
               await AsyncStorage.clear();

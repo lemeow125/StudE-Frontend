@@ -34,14 +34,6 @@ import { useToast } from "react-native-toast-notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 
-type ConversationType = {
-  id: number;
-  user: string;
-  message_content: string;
-  study_group: string;
-  color: string;
-};
-
 export default function ConversationPage() {
   const toast = useToast();
   // Student Status

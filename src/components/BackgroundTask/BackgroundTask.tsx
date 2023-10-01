@@ -3,11 +3,7 @@ import { View } from "react-native";
 import * as BackgroundFetch from "expo-background-fetch";
 import * as TaskManager from "expo-task-manager";
 import * as Notifications from "expo-notifications";
-import {
-  GetStudentStatus,
-  GetStudyGroupListFiltered,
-  GetUserInfo,
-} from "../Api/Api";
+import { GetStudentStatus, GetStudyGroupListFiltered } from "../Api/Api";
 import { StudyGroupType } from "../../interfaces/Interfaces";
 
 const FETCH_STUDENT_STATUS = "STUDENT_STATUS_TASK";
@@ -47,6 +43,7 @@ TaskManager.defineTask(FETCH_STUDENT_STATUS, async () => {
 });
 
 const BackgroundComponent = () => {
+  const notification_debug = true;
   const [isRegistered, setIsRegistered] = React.useState(false);
   const [status, setStatus] = React.useState<any>();
   const checkStatusAsync = async () => {
@@ -64,7 +61,7 @@ const BackgroundComponent = () => {
         await checkStatusAsync();
         if (!isRegistered) {
           await BackgroundFetch.registerTaskAsync(FETCH_STUDENT_STATUS, {
-            minimumInterval: 5, // seconds,
+            minimumInterval: notification_debug ? 5 : 60 * 3, // Check every 5 seconds in dev & every 3 minutes in production builds
           });
           console.log("Task registered");
         } else {

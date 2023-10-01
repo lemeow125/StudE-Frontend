@@ -38,7 +38,7 @@ import CaretUpIcon from "../../icons/CaretUpIcon/CaretUpIcon";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_debug = true;
+  const map_distance_override = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
@@ -100,7 +100,7 @@ export default function Home() {
     let dist = GetDistanceFromUSTP(location.coords);
     setDist(dist);
     // Deactivate student status if too far away
-    if (dist >= 2 && !map_debug)
+    if (dist >= 2 && !map_distance_override)
       stop_studying.mutate({
         active: false,
       });
@@ -345,7 +345,7 @@ export default function Home() {
 
   function CustomMap() {
     if (dist && location) {
-      if (dist <= 2 || map_debug) {
+      if (dist <= 2 || map_distance_override) {
         return (
           <>
             <MapView
