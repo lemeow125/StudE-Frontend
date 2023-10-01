@@ -95,7 +95,7 @@ TaskManager.defineTask(FETCH_STUDENT_STATUS, async () => {
 });
 
 const BackgroundComponent = () => {
-  const notification_debug = true;
+  const notification_debug = false;
   const [Task1_isRegistered, Task1_setIsRegistered] = React.useState(false);
   const [Task2_isRegistered, Task2_setIsRegistered] = React.useState(false);
   const [status, setStatus] = React.useState<any>();

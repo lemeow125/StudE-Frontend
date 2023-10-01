@@ -22,12 +22,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserIcon from "../../icons/UserIcon/UserIcon";
 import SubjectIcon from "../../icons/SubjectIcon/SubjectIcon";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-native-toast-notifications/lib/typescript/toast";
 import { PatchStudentStatus } from "../Api/Api";
 import { useToast } from "react-native-toast-notifications";
 
 export default function CustomDrawerContent(props: {}) {
-  const debug = true;
+  const debug = false;
   const navigation = useNavigation<RootDrawerParamList>();
   const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
