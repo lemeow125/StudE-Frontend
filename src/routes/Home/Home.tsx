@@ -228,7 +228,7 @@ export default function Home() {
     useState<StudentStatusListType>([]);
   // Student Status List
   const StudentStatusListQuery = useQuery({
-    enabled: studying,
+    enabled: studying && !StudentStatusQuery.isLoading,
     queryKey: ["user_status_list"],
     queryFn: async () => {
       const data = await GetStudentStatusListNear();
@@ -260,7 +260,7 @@ export default function Home() {
     useState<StudentStatusListType>([]);
   // Student Status List Global
   const StudentStatusListGlobalQuery = useQuery({
-    enabled: !studying,
+    enabled: !studying && !StudentStatusQuery.isLoading,
     queryKey: ["user_status_list_global"],
     queryFn: async () => {
       const data = await GetStudentStatusList();
@@ -291,7 +291,7 @@ export default function Home() {
   const [study_groups, setStudyGroups] = useState<StudyGroupType[]>([]);
   // Study Group List
   const StudyGroupQuery = useQuery({
-    enabled: studying,
+    enabled: studying && !StudentStatusQuery.isLoading,
     queryKey: ["study_group_list"],
     queryFn: async () => {
       const data = await GetStudyGroupListFiltered();
@@ -319,7 +319,7 @@ export default function Home() {
   >([]);
   // Study Group Global List
   const StudyGroupGlobalQuery = useQuery({
-    enabled: !studying,
+    enabled: !studying && !StudentStatusQuery.isLoading,
     queryKey: ["study_group_list_global"],
     queryFn: async () => {
       const data = await GetStudyGroupList();
