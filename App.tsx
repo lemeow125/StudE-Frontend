@@ -28,6 +28,7 @@ import StartStudying from "./src/routes/StartStudying/StartStudying";
 import { ToastProvider } from "react-native-toast-notifications";
 import InfoIcon from "./src/icons/InfoIcon/InfoIcon";
 import CreateGroup from "./src/routes/CreateGroup/CreateGroup";
+import BackgroundComponent from "./src/components/BackgroundTask/BackgroundTask";
 
 const Drawer = createDrawerNavigator();
 
@@ -66,10 +67,10 @@ export default function App() {
       icon={<InfoIcon size={32} />}
       textStyle={{ ...styles.text_white_tiny_bold }}
     >
+      <BackgroundComponent />
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <StatusBar style="light" />
-
 
           <NavigationContainer linking={linking} fallback={<Loading />}>
             <Drawer.Navigator

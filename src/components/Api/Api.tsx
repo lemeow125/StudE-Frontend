@@ -4,6 +4,7 @@ import {
   ActivationType,
   LocationType,
   LoginType,
+  MessagePostType,
   OnboardingType,
   PatchUserInfoType,
   RegistrationType,
@@ -311,7 +312,6 @@ export async function GetStudyGroupListFiltered() {
   return instance
     .get("/api/v1/study_groups/near/", config)
     .then((response) => {
-      console.log("DEBUGGG", response.data);
       return [true, response.data];
     })
     .catch((error) => {
@@ -342,6 +342,59 @@ export async function CreateStudyGroup(info: StudyGroupCreateType) {
       return [true, response.data];
     })
     .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudyGroup(name: string) {
+  const config = await GetConfig();
+  return instance
+    .get(`/api/v1/study_groups/${name}`, config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudyGroupMessages() {
+  const config = await GetConfig();
+  return instance
+    .get(`/api/v1/messages/`, config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function GetStudyGroupMemberAvatars() {
+  const config = await GetConfig();
+  return instance
+    .get(`/api/v1/study_groups/member_avatars`, config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      let error_message = ParseError(error);
+      return [false, error_message];
+    });
+}
+
+export async function PostMessage(info: MessagePostType) {
+  const config = await GetConfig();
+  return instance
+    .post(`/api/v1/messages/`, info, config)
+    .then((response) => {
+      return [true, response.data];
+    })
+    .catch((error) => {
+      console.log("Error:", error.response.data);
       let error_message = ParseError(error);
       return [false, error_message];
     });

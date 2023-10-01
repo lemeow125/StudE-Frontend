@@ -185,13 +185,31 @@ export interface StudyGroupCreateType {
   subject: string;
 }
 
+export interface MessageType {
+  id: number;
+  user: string;
+  study_group: string;
+  message_content: string;
+  timestamp: string;
+}
+
+export interface MessagePostType {
+  message_content: string;
+}
+
+export interface GroupMessageAvatarType {
+  username: string;
+  avatar: string;
+}
+
+export type GroupMessageAvatarListType = GroupMessageAvatarType[];
+export type GroupMessageAvatarReturnType = [boolean, GroupMessageAvatarType[]];
+export type MessageReturnType = [boolean, MessageType[]];
+export type StudyGroupDetailReturnType = [boolean, StudyGroupType];
 export type StudyGroupReturnType = [boolean, StudyGroupType[]];
-
 export type StudentStatusReturnType = [boolean, StudentStatusType];
-
 export type StudentStatusListType = Array<StudentStatusFilterType>;
 export type StudentStatusListReturnType = [boolean, StudentStatusListType];
-
 export type RawLocationType = Location.LocationObject;
 
 export interface UserInfoType {

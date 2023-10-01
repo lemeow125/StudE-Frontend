@@ -27,12 +27,12 @@ import { PatchStudentStatus } from "../Api/Api";
 import { useToast } from "react-native-toast-notifications";
 
 export default function CustomDrawerContent(props: {}) {
+  const debug = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const toast = useToast();
-  const debug_disable_clear_on_logout = true;
   const stop_studying_logout = useMutation({
     mutationFn: async (info: StudentStatusPatchType) => {
       const data = await PatchStudentStatus(info);
@@ -78,7 +78,8 @@ export default function CustomDrawerContent(props: {}) {
 
         <DrawerButton
           onPress={async () => {
-            if (debug_disable_clear_on_logout) {
+            // We don't clear student statuses when logging out on debug
+            if (!debug) {
               queryClient.clear();
               dispatch(logout());
               await AsyncStorage.clear();
@@ -132,8 +133,17 @@ export default function CustomDrawerContent(props: {}) {
           <Text style={styles.text_white_medium}>Subjects</Text>
         </DrawerButton>
         <DrawerButton
+          onPress={() => {
+            navigation.navigate("Conversation");
+          }}
+        >
+          <SubjectIcon size={32} />
+          <Text style={styles.text_white_medium}>Conversation</Text>
+        </DrawerButton>
+        <DrawerButton
           onPress={async () => {
-            if (debug_disable_clear_on_logout) {
+            // We don't clear student statuses when logging out on debug
+            if (!debug) {
               queryClient.clear();
               dispatch(logout());
               await AsyncStorage.clear();
@@ -177,14 +187,6 @@ export default function CustomDrawerContent(props: {}) {
         >
           <SignupIcon size={32} />
           <Text style={styles.text_white_medium}>Register</Text>
-        </DrawerButton>
-        <DrawerButton
-          onPress={() => {
-            navigation.navigate("Conversation");
-          }}
-        >
-          <SubjectIcon size={32} />
-          <Text style={styles.text_white_medium}>Conversation</Text>
         </DrawerButton>
         {/*
         Debug buttons for accessing revalidation and activation page

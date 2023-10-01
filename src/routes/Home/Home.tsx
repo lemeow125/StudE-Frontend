@@ -38,7 +38,7 @@ import CaretUpIcon from "../../icons/CaretUpIcon/CaretUpIcon";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_debug = true;
+  const map_distance_override = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [dist, setDist] = useState<number | null>(null);
@@ -100,7 +100,7 @@ export default function Home() {
     let dist = GetDistanceFromUSTP(location.coords);
     setDist(dist);
     // Deactivate student status if too far away
-    if (dist >= 2 && !map_debug)
+    if (dist >= 2 && !map_distance_override)
       stop_studying.mutate({
         active: false,
       });
@@ -121,17 +121,13 @@ export default function Home() {
       return data;
     },
     onSuccess: (data: StudentStatusReturnType) => {
-      if (data[1].active !== undefined) {
-        setStudying(data[1].active);
-      }
-      if (data[1].subject !== undefined) {
-        setSubject(data[1].subject);
-      }
       if (data[1].active == true) {
         setButtonLabel("Stop Studying");
       } else if (data[1].active == false) {
         setButtonLabel("Start Studying");
       }
+      setSubject(data[1].subject);
+      setStudying(data[1].active);
       setStudentStatus(data[1]);
     },
     onError: (error: Error) => {
@@ -232,7 +228,7 @@ export default function Home() {
     useState<StudentStatusListType>([]);
   // Student Status List
   const StudentStatusListQuery = useQuery({
-    enabled: studying,
+    enabled: studying && !StudentStatusQuery.isLoading,
     queryKey: ["user_status_list"],
     queryFn: async () => {
       const data = await GetStudentStatusListNear();
@@ -264,7 +260,7 @@ export default function Home() {
     useState<StudentStatusListType>([]);
   // Student Status List Global
   const StudentStatusListGlobalQuery = useQuery({
-    enabled: !studying,
+    enabled: !studying && !StudentStatusQuery.isLoading,
     queryKey: ["user_status_list_global"],
     queryFn: async () => {
       const data = await GetStudentStatusList();
@@ -295,7 +291,7 @@ export default function Home() {
   const [study_groups, setStudyGroups] = useState<StudyGroupType[]>([]);
   // Study Group List
   const StudyGroupQuery = useQuery({
-    enabled: studying,
+    enabled: studying && !StudentStatusQuery.isLoading,
     queryKey: ["study_group_list"],
     queryFn: async () => {
       const data = await GetStudyGroupListFiltered();
@@ -323,7 +319,7 @@ export default function Home() {
   >([]);
   // Study Group Global List
   const StudyGroupGlobalQuery = useQuery({
-    enabled: !studying,
+    enabled: !studying && !StudentStatusQuery.isLoading,
     queryKey: ["study_group_list_global"],
     queryFn: async () => {
       const data = await GetStudyGroupList();
@@ -349,7 +345,7 @@ export default function Home() {
 
   function CustomMap() {
     if (dist && location) {
-      if (dist <= 2 || map_debug) {
+      if (dist <= 2 || map_distance_override) {
         return (
           <>
             <MapView
@@ -833,7 +829,7 @@ export default function Home() {
       return (
         <>
           <Text style={styles.text_white_medium}>{feedback}</Text>
-          <Button onPress={() => requestLocation()}>
+          <Button onPress={async () => await requestLocation()}>
             <Text style={styles.text_white_medium}>Allow Access</Text>
           </Button>
         </>
@@ -849,7 +845,6 @@ export default function Home() {
         hasBackdrop={false}
       >
         <AnimatedContainer>
-          <Text style={styles.text_white_medium}>Groups List</Text>
           <Pressable
             style={{
               alignContent: "flex-start",
@@ -860,12 +855,16 @@ export default function Home() {
           >
             <DropdownIcon size={32} />
           </Pressable>
-          <Switch
-            value={modalByGroup}
-            onChange={() => {
-              setModalByGroup(!modalByGroup);
-            }}
-          />
+          <View style={styles.flex_row}>
+            <Switch
+              value={modalByGroup}
+              onChange={() => {
+                setModalByGroup(!modalByGroup);
+              }}
+            />
+            <Text style={styles.text_white_medium}>List View</Text>
+          </View>
+
           <ScrollView>
             {!modalByGroup ? (
               student_statuses.map(
