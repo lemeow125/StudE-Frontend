@@ -2,7 +2,7 @@ import styles, { colors } from "../../styles";
 import { View, Text, Pressable, ScrollView, Switch } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, { Circle, Marker } from "react-native-maps";
+import MapView, { Circle, Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
@@ -26,6 +26,7 @@ import {
   GetStudyGroupList,
   GetStudyGroupListFiltered,
   PatchStudentStatus,
+  urlProvider,
 } from "../../components/Api/Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "react-native-toast-notifications";
@@ -379,6 +380,13 @@ export default function Home() {
               }}
               loadingBackgroundColor={colors.secondary_2}
             >
+              <UrlTile
+                urlTemplate={urlProvider}
+                shouldReplaceMapContent={true}
+                maximumZ={19}
+                flipY={false}
+                zIndex={1}
+              />
               {!studying ? (
                 student_statuses_global.map(
                   (student_status: StudentStatusFilterType, index: number) => {
