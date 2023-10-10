@@ -15,6 +15,6 @@ export default function GetDistanceFromUSTP(location: LocationType) {
     ustpCoords.latitude,
     ustpCoords.longitude
   );
-  dist = Math.round(dist);
+  dist = Math.round(dist * 100) / 100;
   return dist;
 }

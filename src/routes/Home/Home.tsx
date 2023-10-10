@@ -345,7 +345,7 @@ export default function Home() {
 
   function CustomMap() {
     if (dist && location) {
-      if (dist <= 2 || map_distance_override) {
+      if (dist <= 1 || map_distance_override) {
         return (
           <>
             <MapView
