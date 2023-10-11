@@ -350,6 +350,7 @@ export default function Home() {
         return (
           <>
             <MapView
+              mapType={"none"}
               style={styles.map}
               customMapStyle={[
                 {
