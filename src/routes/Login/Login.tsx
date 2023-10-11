@@ -7,8 +7,8 @@ import {
   NativeSyntheticEvent,
   TextInputChangeEventData,
 } from "react-native";
-import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import LoginIcon from "../../icons/LoginIcon/LoginIcon";
 import Button from "../../components/Button/Button";
 import { useNavigation } from "@react-navigation/native";
@@ -22,15 +22,22 @@ import {
   unsetOnboarding,
 } from "../../features/redux/slices/StatusSlice/StatusSlice";
 import { useToast } from "react-native-toast-notifications";
+import { RootState } from "../../features/redux/Store/Store";
 
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
+  const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
   const [creds, setCreds] = useState({
     username: "",
     password: "",
   });
   const toast = useToast();
+  useEffect(() => {
+    if (status.logged_in) {
+      navigation.navigate("Home");
+    }
+  }, []);
   return (
     <View style={styles.background}>
       <AnimatedContainer>

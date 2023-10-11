@@ -1,6 +1,6 @@
 import * as React from "react";
 import styles from "../../styles";
-import { View, Text } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import {
   UserInfoReturnType,
@@ -183,7 +183,17 @@ export default function SubjectsPage() {
       );
     }
   }
-
+  if (StudentInfo.isLoading || Subjects.isLoading) {
+    return (
+      <View style={styles.background}>
+        <AnimatedContainerNoScroll>
+          <View style={{ paddingVertical: 8 }} />
+          <ActivityIndicator size={96} color={colors.secondary_1} />
+          <Text style={styles.text_white_medium}>Loading...</Text>
+        </AnimatedContainerNoScroll>
+      </View>
+    );
+  }
   return (
     <View style={styles.background}>
       <AnimatedContainerNoScroll>

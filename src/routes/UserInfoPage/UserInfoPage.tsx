@@ -7,6 +7,7 @@ import {
   NativeSyntheticEvent,
   TextInputChangeEventData,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import {
@@ -285,7 +286,22 @@ export default function UserInfoPage() {
       );
     }
   }
-
+  if (
+    StudentInfo.isLoading ||
+    Semesters.isLoading ||
+    yearlevel_query.isLoading ||
+    course_query.isLoading
+  ) {
+    return (
+      <View style={styles.background}>
+        <AnimatedContainerNoScroll>
+          <View style={{ paddingVertical: 8 }} />
+          <ActivityIndicator size={96} color={colors.secondary_1} />
+          <Text style={styles.text_white_medium}>Loading...</Text>
+        </AnimatedContainerNoScroll>
+      </View>
+    );
+  }
   return (
     <View style={styles.background}>
       <AnimatedContainerNoScroll>
