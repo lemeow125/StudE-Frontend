@@ -103,6 +103,7 @@ export default function Home() {
   });
 
   // Refresh when screen loads
+  requestLocation();
   useEffect(() => {
     requestLocation();
   }, []);
