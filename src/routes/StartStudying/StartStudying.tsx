@@ -1,6 +1,12 @@
 import * as React from "react";
 import styles, { Viewport } from "../../styles";
-import { View, Text, ToastAndroid } from "react-native";
+import {
+  View,
+  Text,
+  ToastAndroid,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { useState } from "react";
 import {
   UserInfoReturnType,
@@ -24,6 +30,7 @@ import { urlProvider } from "../../components/Api/Api";
 import MapView, { UrlTile, Marker } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
+import CaretLeftIcon from "../../icons/CaretLeftIcon/CaretLeftIcon";
 
 export default function StartStudying({ route }: any) {
   const { location } = route.params;
@@ -90,6 +97,17 @@ export default function StartStudying({ route }: any) {
     },
   });
 
+  if (StudentInfo.isLoading) {
+    return (
+      <View style={styles.background}>
+        <AnimatedContainerNoScroll>
+          <View style={{ paddingVertical: 8 }} />
+          <ActivityIndicator size={96} color={colors.secondary_1} />
+          <Text style={styles.text_white_medium}>Loading...</Text>
+        </AnimatedContainerNoScroll>
+      </View>
+    );
+  }
   if (location && location.coords) {
     return (
       <View style={styles.background}>
@@ -174,28 +192,32 @@ export default function StartStudying({ route }: any) {
             listMode="MODAL"
           />
           <View style={styles.padding} />
-          <Button
-            onPress={() => {
-              console.log({
-                subject: selected_subject,
-                location: {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                },
-              });
-              mutation.mutate({
-                active: true,
-                subject: selected_subject,
-                location: {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                },
-              });
-            }}
-          >
-            <Text style={styles.text_white_small}>Start Studying</Text>
-          </Button>
-          <View style={styles.padding} />
+          <View style={styles.flex_row}>
+            <Pressable onPress={() => navigation.navigate("Home")}>
+              <CaretLeftIcon size={32} />
+            </Pressable>
+            <Button
+              onPress={() => {
+                console.log({
+                  subject: selected_subject,
+                  location: {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                  },
+                });
+                mutation.mutate({
+                  active: true,
+                  subject: selected_subject,
+                  location: {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                  },
+                });
+              }}
+            >
+              <Text style={styles.text_white_small}>Start Studying</Text>
+            </Button>
+          </View>
         </AnimatedContainerNoScroll>
       </View>
     );

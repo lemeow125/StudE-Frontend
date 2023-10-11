@@ -6,6 +6,7 @@ import {
   TextInput,
   NativeSyntheticEvent,
   TextInputChangeEventData,
+  Pressable,
 } from "react-native";
 import { useState } from "react";
 import {
@@ -22,6 +23,7 @@ import { urlProvider } from "../../components/Api/Api";
 import MapView, { UrlTile, Marker } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
+import CaretLeftIcon from "../../icons/CaretLeftIcon/CaretLeftIcon";
 
 export default function CreateGroup({ route }: any) {
   const { location, subject } = route.params;
@@ -157,17 +159,23 @@ export default function CreateGroup({ route }: any) {
             }}
           />
           <View style={styles.padding} />
-          <Button
-            onPress={() => {
-              study_group_create.mutate({
-                name: name,
-                location: location,
-                subject: subject,
-              });
-            }}
-          >
-            <Text style={styles.text_white_small}>Start Studying</Text>
-          </Button>
+          <View style={styles.flex_row}>
+            <Pressable onPress={() => navigation.navigate("Home")}>
+              <CaretLeftIcon size={32} />
+            </Pressable>
+            <Button
+              onPress={() => {
+                study_group_create.mutate({
+                  name: name,
+                  location: location,
+                  subject: subject,
+                });
+              }}
+            >
+              <Text style={styles.text_white_small}>Start Studying</Text>
+            </Button>
+          </View>
+
           <View style={styles.padding} />
         </AnimatedContainerNoScroll>
       </View>
