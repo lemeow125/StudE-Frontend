@@ -26,6 +26,9 @@ import AnimatedContainerNoScroll from "../../components/AnimatedContainer/Animat
 import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
 import { useToast } from "react-native-toast-notifications";
+import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import Loading from "../Loading/Loading";
+import LoadingFeedback from "../../components/LoadingFeedback/LoadingFeedback";
 
 export default function SubjectsPage() {
   const logged_in_user = useSelector((state: RootState) => state.user.user);
@@ -184,15 +187,7 @@ export default function SubjectsPage() {
     }
   }
   if (StudentInfo.isLoading || Subjects.isLoading) {
-    return (
-      <View style={styles.background}>
-        <AnimatedContainerNoScroll>
-          <View style={{ paddingVertical: 8 }} />
-          <ActivityIndicator size={96} color={colors.secondary_1} />
-          <Text style={styles.text_white_medium}>Loading...</Text>
-        </AnimatedContainerNoScroll>
-      </View>
-    );
+    return <LoadingFeedback />;
   }
   return (
     <View style={styles.background}>

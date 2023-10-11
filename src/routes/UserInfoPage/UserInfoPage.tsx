@@ -43,6 +43,9 @@ import { setUser as setUserinState } from "../../features/redux/slices/UserSlice
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useToast } from "react-native-toast-notifications";
+import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
+import Loading from "../Loading/Loading";
+import LoadingFeedback from "../../components/LoadingFeedback/LoadingFeedback";
 
 export default function UserInfoPage() {
   const logged_in_user = useSelector((state: RootState) => state.user.user);
@@ -292,15 +295,7 @@ export default function UserInfoPage() {
     yearlevel_query.isLoading ||
     course_query.isLoading
   ) {
-    return (
-      <View style={styles.background}>
-        <AnimatedContainerNoScroll>
-          <View style={{ paddingVertical: 8 }} />
-          <ActivityIndicator size={96} color={colors.secondary_1} />
-          <Text style={styles.text_white_medium}>Loading...</Text>
-        </AnimatedContainerNoScroll>
-      </View>
-    );
+    return <LoadingFeedback />;
   }
   return (
     <View style={styles.background}>
