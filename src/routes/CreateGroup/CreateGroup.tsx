@@ -99,51 +99,53 @@ export default function CreateGroup({ route }: any) {
         <AnimatedContainerNoScroll>
           <View style={{ zIndex: -1 }}>
             <View style={styles.padding} />
-            <MapView
-              style={{
-                height: Viewport.height * 0.4,
-                width: Viewport.width * 0.8,
-                alignSelf: "center",
-              }}
-              customMapStyle={[
-                {
-                  featureType: "poi",
-                  stylers: [
-                    {
-                      visibility: "off",
-                    },
-                  ],
-                },
-              ]}
-              mapType="none"
-              scrollEnabled={false}
-              zoomEnabled={false}
-              toolbarEnabled={false}
-              rotateEnabled={false}
-              minZoomLevel={18}
-              initialRegion={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              loadingBackgroundColor={colors.secondary_2}
-            >
-              <UrlTile
-                urlTemplate={urlProvider}
-                shouldReplaceMapContent={true}
-                maximumZ={19}
-                flipY={false}
-                zIndex={1}
-              />
-              <Marker
-                coordinate={{
+            <View style={{ borderRadius: 16, overflow: "hidden" }}>
+              <MapView
+                style={{
+                  height: Viewport.height * 0.4,
+                  width: Viewport.width * 0.8,
+                  alignSelf: "center",
+                }}
+                customMapStyle={[
+                  {
+                    featureType: "poi",
+                    stylers: [
+                      {
+                        visibility: "off",
+                      },
+                    ],
+                  },
+                ]}
+                mapType="none"
+                scrollEnabled={false}
+                zoomEnabled={false}
+                toolbarEnabled={false}
+                rotateEnabled={false}
+                minZoomLevel={18}
+                initialRegion={{
                   latitude: location.latitude,
                   longitude: location.longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
                 }}
-                pinColor={colors.primary_1}
-              />
-            </MapView>
+                loadingBackgroundColor={colors.secondary_2}
+              >
+                <UrlTile
+                  urlTemplate={urlProvider}
+                  shouldReplaceMapContent={true}
+                  maximumZ={19}
+                  flipY={false}
+                  zIndex={1}
+                />
+                <Marker
+                  coordinate={{
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                  }}
+                  pinColor={colors.primary_1}
+                />
+              </MapView>
+            </View>
             <View style={styles.padding} />
           </View>
           <TextInput

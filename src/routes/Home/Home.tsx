@@ -980,7 +980,9 @@ export default function Home() {
         </AnimatedContainer>
       </Modal>
       <AnimatedContainer>
-        <CustomMap />
+        <View style={{ borderRadius: 16, overflow: "hidden" }}>
+          <CustomMap />
+        </View>
       </AnimatedContainer>
     </View>
   );
