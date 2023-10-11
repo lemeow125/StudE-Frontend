@@ -1,5 +1,12 @@
 import styles, { colors } from "../../styles";
-import { View, Text, Pressable, ScrollView, Switch } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  Switch,
+  ActivityIndicator,
+} from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
 import MapView, { Circle, Marker, UrlTile } from "react-native-maps";
@@ -42,6 +49,8 @@ export default function Home() {
   const map_distance_override = false;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
+  const [locationFetched, setLocationFetched] = useState(false);
+  const [locationPermitted, setLocationPermitted] = useState(false);
   const [dist, setDist] = useState<number | null>(null);
   const [feedback, setFeedback] = useState(
     "To continue, please allow Stud-E permission to location services"
@@ -55,6 +64,7 @@ export default function Home() {
   async function requestLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
+      setLocationPermitted(true);
       setFeedback("Allow location permissions to continue");
       toast.show(
         "Location permission was denied. Please allow in order to use StudE",
@@ -68,7 +78,7 @@ export default function Home() {
       return;
     }
     if (status == "granted") {
-      let newLocation = await Location.getCurrentPositionAsync({});
+      let newLocation = await Location.getCurrentPositionAsync();
       if (newLocation) {
         // Only update location state if user's location has changed
         if (
@@ -105,6 +115,7 @@ export default function Home() {
       stop_studying.mutate({
         active: false,
       });
+    setLocationFetched(true);
   }
 
   // Student Status
@@ -345,7 +356,23 @@ export default function Home() {
   });
 
   function CustomMap() {
-    if (dist && location) {
+    if (dist && location && locationFetched) {
+      if (
+        (StudentStatusQuery.isFetching && studying) ||
+        StudentStatusListQuery.isFetching ||
+        StudyGroupQuery.isFetching ||
+        (StudentStatusQuery.isFetching && !studying) ||
+        StudentStatusListGlobalQuery.isFetching ||
+        StudyGroupGlobalQuery.isFetching
+      ) {
+        return (
+          <>
+            <View style={{ paddingVertical: 8 }} />
+            <ActivityIndicator size={96} color={colors.secondary_1} />
+            <Text style={styles.text_white_medium}>Loading...</Text>
+          </>
+        );
+      }
       if (dist <= 1 || map_distance_override) {
         return (
           <>
@@ -834,7 +861,7 @@ export default function Home() {
       } else {
         return <MapRendererFar location={location.coords} dist={dist} />;
       }
-    } else {
+    } else if (!locationPermitted) {
       return (
         <>
           <Text style={styles.text_white_medium}>{feedback}</Text>
@@ -843,6 +870,8 @@ export default function Home() {
           </Button>
         </>
       );
+    } else {
+      return <></>;
     }
   }
   return (
