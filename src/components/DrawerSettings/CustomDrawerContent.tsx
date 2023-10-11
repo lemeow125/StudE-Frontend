@@ -24,6 +24,7 @@ import SubjectIcon from "../../icons/SubjectIcon/SubjectIcon";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PatchStudentStatus } from "../Api/Api";
 import { useToast } from "react-native-toast-notifications";
+import MessageIcon from "../../icons/MessageIcon/MessageIcon";
 
 export default function CustomDrawerContent(props: {}) {
   const debug = false;
@@ -136,7 +137,7 @@ export default function CustomDrawerContent(props: {}) {
             navigation.navigate("Conversation");
           }}
         >
-          <SubjectIcon size={32} />
+          <MessageIcon size={32} />
           <Text style={styles.text_white_medium}>Conversation</Text>
         </DrawerButton>
         <DrawerButton
