@@ -43,6 +43,7 @@ import GetDistanceFromUSTP from "../../components/GetDistance/GetDistanceFromUST
 import Modal from "react-native-modal";
 import DropdownIcon from "../../icons/CaretDownIcon/CaretDownIcon";
 import CaretUpIcon from "../../icons/CaretUpIcon/CaretUpIcon";
+import RefreshIcon from "../../icons/RefreshIcon/RefreshIcon";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
@@ -64,7 +65,6 @@ export default function Home() {
   async function requestLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      setLocationPermitted(true);
       setFeedback("Allow location permissions to continue");
       toast.show(
         "Location permission was denied. Please allow in order to use StudE",
@@ -78,6 +78,10 @@ export default function Home() {
       return;
     }
     if (status == "granted") {
+      if (locationPermitted === false) {
+        setLocationPermitted(true);
+      }
+
       let newLocation = await Location.getCurrentPositionAsync();
       if (newLocation) {
         // Only update location state if user's location has changed
@@ -357,26 +361,51 @@ export default function Home() {
   });
 
   function CustomMap() {
-    if (dist && location && locationFetched) {
-      if (
-        (StudentStatusQuery.isFetching && studying) ||
-        StudentStatusListQuery.isFetching ||
-        StudyGroupQuery.isFetching ||
-        (StudentStatusQuery.isFetching && !studying) ||
-        StudentStatusListGlobalQuery.isFetching ||
-        StudyGroupGlobalQuery.isFetching
-      ) {
-        return (
-          <>
-            <View style={{ paddingVertical: 8 }} />
-            <ActivityIndicator size={96} color={colors.secondary_1} />
-            <Text style={styles.text_white_medium}>Loading...</Text>
-          </>
-        );
-      }
+    if (
+      (StudentStatusQuery.isFetching && studying) ||
+      StudentStatusListQuery.isFetching ||
+      StudyGroupQuery.isFetching ||
+      (StudentStatusQuery.isFetching && !studying) ||
+      StudentStatusListGlobalQuery.isFetching ||
+      StudyGroupGlobalQuery.isFetching
+    ) {
+      return (
+        <>
+          <View style={{ paddingVertical: 8 }} />
+          <ActivityIndicator size={96} color={colors.secondary_1} />
+          <Text style={styles.text_white_medium}>Loading...</Text>
+        </>
+      );
+    } else if (!locationPermitted) {
+      console.log(locationPermitted);
+      return (
+        <>
+          <Text style={styles.text_white_medium}>{feedback}</Text>
+          <Button onPress={async () => await requestLocation()}>
+            <Text style={styles.text_white_medium}>Allow Access</Text>
+          </Button>
+        </>
+      );
+    } else if (dist && location && locationFetched) {
       if (dist <= 1 || map_distance_override) {
         return (
           <>
+            <View style={{ alignSelf: "flex-end" }}>
+              <Pressable
+                onPress={() => {
+                  queryClient.invalidateQueries({ queryKey: ["user"] });
+                  queryClient.invalidateQueries({ queryKey: ["user_status"] });
+                  queryClient.invalidateQueries({
+                    queryKey: ["user_status_list"],
+                  });
+                  queryClient.invalidateQueries({
+                    queryKey: ["study_group_list"],
+                  });
+                }}
+              >
+                <RefreshIcon size={32} />
+              </Pressable>
+            </View>
             <MapView
               mapType={"none"}
               style={styles.map}
@@ -862,17 +891,14 @@ export default function Home() {
       } else {
         return <MapRendererFar location={location.coords} dist={dist} />;
       }
-    } else if (!locationPermitted) {
+    } else {
       return (
         <>
-          <Text style={styles.text_white_medium}>{feedback}</Text>
-          <Button onPress={async () => await requestLocation()}>
-            <Text style={styles.text_white_medium}>Allow Access</Text>
-          </Button>
+          <View style={{ paddingVertical: 8 }} />
+          <ActivityIndicator size={96} color={colors.secondary_1} />
+          <Text style={styles.text_white_medium}>Loading...</Text>
         </>
       );
-    } else {
-      return <></>;
     }
   }
   return (
@@ -970,6 +996,47 @@ export default function Home() {
                     ) : (
                       <></>
                     )}
+                    {student_status?.study_group != studygroup.name ? (
+                      <Pressable
+                        style={{
+                          ...styles.button_template,
+                          backgroundColor: colors.secondary_2,
+                        }}
+                        onPress={() => {
+                          change_study_group.mutate({
+                            study_group: studygroup.name,
+                            subject: studygroup.subject,
+                          });
+                          setModalOpen(!modalOpen);
+                        }}
+                      >
+                        <Text style={styles.text_white_tiny_bold}>
+                          Join Group
+                        </Text>
+                      </Pressable>
+                    ) : (
+                      <></>
+                    )}
+                    {student_status?.study_group == studygroup.name ? (
+                      <Pressable
+                        style={{
+                          ...styles.button_template,
+                          backgroundColor: colors.secondary_2,
+                        }}
+                        onPress={() => {
+                          change_study_group.mutate({
+                            study_group: "",
+                          });
+                          setModalOpen(!modalOpen);
+                        }}
+                      >
+                        <Text style={styles.text_white_tiny_bold}>
+                          Leave Group
+                        </Text>
+                      </Pressable>
+                    ) : (
+                      <></>
+                    )}
                   </View>
                 );
               })
@@ -979,6 +1046,7 @@ export default function Home() {
           </ScrollView>
         </AnimatedContainer>
       </Modal>
+
       <AnimatedContainer>
         <View style={{ borderRadius: 16, overflow: "hidden" }}>
           <CustomMap />
