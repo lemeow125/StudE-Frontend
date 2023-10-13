@@ -31,6 +31,7 @@ import MapView, { UrlTile, Marker } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
 import CaretLeftIcon from "../../icons/CaretLeftIcon/CaretLeftIcon";
+import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 
 export default function StartStudying({ route }: any) {
   const { location } = route.params;
@@ -105,11 +106,11 @@ export default function StartStudying({ route }: any) {
   if (StudentInfo.isLoading) {
     return (
       <View style={styles.background}>
-        <AnimatedContainerNoScroll>
+        <AnimatedContainer>
           <View style={{ paddingVertical: 8 }} />
           <ActivityIndicator size={96} color={colors.secondary_1} />
           <Text style={styles.text_white_medium}>Loading...</Text>
-        </AnimatedContainerNoScroll>
+        </AnimatedContainer>
       </View>
     );
   }
