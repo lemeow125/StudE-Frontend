@@ -350,7 +350,7 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              zIndex={4000}
+              zIndex={1000}
               open={yearLevelOpen}
               value={selected_yearlevel}
               items={year_levels}
@@ -372,7 +372,7 @@ export default function UserInfoPage() {
               }}
               dropDownContainerStyle={{
                 backgroundColor: colors.primary_2,
-                zIndex: 4000,
+                zIndex: 1000,
                 borderWidth: 0,
               }}
               dropDownDirection="TOP"
@@ -385,7 +385,7 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              zIndex={3000}
+              zIndex={2000}
               open={semesterOpen}
               value={selected_semester}
               items={semesters}
@@ -407,7 +407,7 @@ export default function UserInfoPage() {
               }}
               dropDownContainerStyle={{
                 backgroundColor: colors.primary_2,
-                zIndex: 3000,
+                zIndex: 2000,
                 borderWidth: 0,
               }}
               dropDownDirection="TOP"
@@ -420,7 +420,7 @@ export default function UserInfoPage() {
           </View>
           <View style={{ flex: 3 }}>
             <DropDownPicker
-              zIndex={2000}
+              zIndex={3000}
               open={courseOpen}
               value={selected_course}
               items={courses}
@@ -442,7 +442,7 @@ export default function UserInfoPage() {
               }}
               dropDownContainerStyle={{
                 backgroundColor: colors.primary_2,
-                zIndex: 2000,
+                zIndex: 3000,
                 borderWidth: 0,
               }}
               dropDownDirection="TOP"
