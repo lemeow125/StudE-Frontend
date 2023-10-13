@@ -43,7 +43,6 @@ export default function CreateGroup({ route }: any) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      queryClient.invalidateQueries({ queryKey: ["study_group_list"] });
       student_status_patch.mutate({
         study_group: name,
       });
@@ -75,13 +74,18 @@ export default function CreateGroup({ route }: any) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status_list"] });
+      queryClient.invalidateQueries({ queryKey: ["study_group_list"] });
       toast.show(`Joined group ${name} successfully`, {
         type: "success",
         placement: "top",
         duration: 2000,
         animationType: "slide-in",
       });
-      navigation.navigate("Home");
+      // Set a delay before going back to homepage to hopefully let the queries refresh in time
+      setTimeout(() => {
+        navigation.navigate("Home");
+      }, 200);
     },
     onError: (error: Error) => {
       toast.show(String(error), {

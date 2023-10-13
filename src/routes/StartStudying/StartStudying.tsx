@@ -79,13 +79,18 @@ export default function StartStudying({ route }: any) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status_list"] });
+      queryClient.invalidateQueries({ queryKey: ["study_group_list"] });
       toast.show("You are now studying  \n" + selected_subject, {
         type: "success",
         placement: "top",
         duration: 2000,
         animationType: "slide-in",
       });
-      navigation.navigate("Home");
+      // Set a delay before going back to homepage to hopefully let the queries refresh in time
+      setTimeout(() => {
+        navigation.navigate("Home");
+      }, 200);
     },
     onError: (error: Error) => {
       toast.show(String(error), {

@@ -93,11 +93,11 @@ export default function Home() {
     }
   }
 
-  // Refresh every 15 seconds
+  // Refresh every 10 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
-    }, 15000);
+    }, 10000);
 
     return () => clearInterval(interval);
   });
