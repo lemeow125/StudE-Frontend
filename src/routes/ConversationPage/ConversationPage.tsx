@@ -34,9 +34,12 @@ import { useToast } from "react-native-toast-notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector } from "react-redux";
+import { RootState } from "../../features/redux/Store/Store";
 
 export default function ConversationPage() {
   const toast = useToast();
+  const user = useSelector((state: RootState) => state.user);
   // Student Status
   const [student_status, setStudentStatus] = useState<StudentStatusType>();
   const StudentStatusQuery = useQuery({
@@ -248,7 +251,10 @@ export default function ConversationPage() {
                     key={message.id}
                     style={{
                       ...styles.message_contentContainer,
-                      alignItems: index % 2 == 0 ? "flex-end" : "flex-start",
+                      alignItems:
+                        message.user === user.user.username
+                          ? "flex-end"
+                          : "flex-start",
                     }}
                   >
                     <View style={styles.flex_row}>
