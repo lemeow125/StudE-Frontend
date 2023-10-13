@@ -91,25 +91,30 @@ export default function Home() {
           newLocation.coords.longitude !== location.coords.longitude
         ) {
           setLocation(newLocation);
-          DistanceHandler(newLocation);
+          await DistanceHandler(newLocation);
         }
       }
     }
   }
 
-  // Refresh every 10 seconds
+  // Refresh when screen loads & every 10 seconds
+  requestLocation();
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
     }, 10000);
-
-    return () => clearInterval(interval);
-  });
-
-  // Refresh when screen loads
-  requestLocation();
-  useEffect(() => {
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user_status_list"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["study_group_list"],
+      });
+    }, 2000);
     requestLocation();
+    return () => clearInterval(interval);
   }, []);
 
   async function DistanceHandler(location: RawLocationType) {
