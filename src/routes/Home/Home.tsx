@@ -97,34 +97,28 @@ export default function Home() {
     }
   }
 
-  // Refresh when screen loads & every 10 seconds
+  // Refresh every 10 seconds
   requestLocation();
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
     }, 10000);
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      queryClient.invalidateQueries({
-        queryKey: ["user_status_list"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["study_group_list"],
-      });
-    }, 2000);
-    requestLocation();
     return () => clearInterval(interval);
   }, []);
 
+  const [stopping_toofar, setStopping] = useState(false);
   async function DistanceHandler(location: RawLocationType) {
     let dist = GetDistanceFromUSTP(location.coords);
     setDist(dist);
     // Deactivate student status if too far away and still studying
-    if (dist >= 2 && !map_distance_override && studying)
-      stop_studying.mutate({
-        active: false,
-      });
+    if (dist >= 2 && !map_distance_override && studying) {
+      if (!stopping_toofar) {
+        stop_studying.mutate({
+          active: false,
+        });
+      }
+      setStopping(true);
+    }
     setLocationFetched(true);
   }
 
@@ -196,6 +190,9 @@ export default function Home() {
       }, 500);
       setStudyGroups([]);
       setStudying(false);
+      if (stopping_toofar) {
+        setStopping(false);
+      }
     },
     onError: (error: Error) => {
       toast.show(String(error), {
