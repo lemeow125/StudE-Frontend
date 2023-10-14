@@ -50,7 +50,6 @@ export default function Home() {
   const map_distance_override = false;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
-  const [locationFetched, setLocationFetched] = useState(false);
   const [locationPermitted, setLocationPermitted] = useState(false);
   const [dist, setDist] = useState<number | null>(null);
   const [feedback, setFeedback] = useState(
@@ -103,6 +102,17 @@ export default function Home() {
     const interval = setInterval(() => {
       requestLocation();
     }, 10000);
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user_status"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user_status_list"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["study_group_list"],
+      });
+    }, 2000);
+    requestLocation();
     return () => clearInterval(interval);
   }, []);
 
@@ -119,7 +129,6 @@ export default function Home() {
       }
       setStopping(true);
     }
-    setLocationFetched(true);
   }
 
   // Student Status
@@ -364,7 +373,6 @@ export default function Home() {
 
   function CustomMap() {
     if (!locationPermitted) {
-      console.log(locationPermitted);
       return (
         <>
           <Text style={styles.text_white_medium}>{feedback}</Text>
@@ -373,7 +381,7 @@ export default function Home() {
           </Button>
         </>
       );
-    } else if (dist && location && locationFetched) {
+    } else if (dist && location) {
       if (dist <= 1 || map_distance_override) {
         if (
           (StudentStatusQuery.isFetching && studying) ||
