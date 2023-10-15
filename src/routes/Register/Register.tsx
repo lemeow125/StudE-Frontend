@@ -170,7 +170,6 @@ export default function Register() {
                         animationType: "slide-in",
                       }
                     );
-                    setRegistering(false);
                     setTimeout(() => {
                       navigation.navigate("Login");
                     }, 10000);
@@ -182,6 +181,7 @@ export default function Register() {
                       animationType: "slide-in",
                     });
                   }
+                  setRegistering(false);
                 });
               } else {
                 toast.show(

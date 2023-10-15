@@ -27,6 +27,7 @@ import { RootState } from "../../features/redux/Store/Store";
 export default function Login() {
   const navigation = useNavigation<RootDrawerParamList>();
   const status = useSelector((state: RootState) => state.status);
+  const [logging_in, setLoggingIn] = useState(false);
   const dispatch = useDispatch();
   const [creds, setCreds] = useState({
     username: "",
@@ -76,49 +77,52 @@ export default function Login() {
         <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
-            await UserLogin({
-              username: creds.username,
-              password: creds.password,
-            }).then(async (result) => {
-              if (result[0]) {
-                setUser({ ...creds, username: "", password: "", error: "" });
-                let user_info = await GetUserInfo();
-                dispatch(login());
-                dispatch(setUser(user_info[1]));
-                // Redirect to onboarding if no year level, course, or semester specified
-                if (
-                  user_info[1].year_level == null ||
-                  user_info[1].course == null ||
-                  user_info[1].semester == null
-                ) {
-                  dispatch(setOnboarding());
-                  navigation.navigate("Onboarding");
-                  toast.show("Successfully logged in", {
-                    type: "success",
-                    placement: "top",
-                    duration: 2000,
-                    animationType: "slide-in",
-                  });
+            if (logging_in) {
+              await UserLogin({
+                username: creds.username,
+                password: creds.password,
+              }).then(async (result) => {
+                if (result[0]) {
+                  setUser({ ...creds, username: "", password: "", error: "" });
+                  let user_info = await GetUserInfo();
+                  dispatch(login());
+                  dispatch(setUser(user_info[1]));
+                  // Redirect to onboarding if no year level, course, or semester specified
+                  if (
+                    user_info[1].year_level == null ||
+                    user_info[1].course == null ||
+                    user_info[1].semester == null
+                  ) {
+                    dispatch(setOnboarding());
+                    navigation.navigate("Onboarding");
+                    toast.show("Successfully logged in", {
+                      type: "success",
+                      placement: "top",
+                      duration: 2000,
+                      animationType: "slide-in",
+                    });
+                  } else {
+                    dispatch(unsetOnboarding());
+                    toast.show("Successfully logged in", {
+                      type: "success",
+                      placement: "top",
+                      duration: 2000,
+                      animationType: "slide-in",
+                    });
+                    navigation.navigate("Home");
+                  }
+                  console.log(JSON.stringify(user_info));
                 } else {
-                  dispatch(unsetOnboarding());
-                  toast.show("Successfully logged in", {
-                    type: "success",
+                  toast.show(JSON.stringify(result[1]), {
+                    type: "warning",
                     placement: "top",
                     duration: 2000,
                     animationType: "slide-in",
                   });
-                  navigation.navigate("Home");
                 }
-                console.log(JSON.stringify(user_info));
-              } else {
-                toast.show(JSON.stringify(result[1]), {
-                  type: "warning",
-                  placement: "top",
-                  duration: 2000,
-                  animationType: "slide-in",
-                });
-              }
-            });
+                setLoggingIn(false);
+              });
+            }
           }}
         >
           <Text style={styles.text_white_small}>Login</Text>
