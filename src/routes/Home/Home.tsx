@@ -379,23 +379,23 @@ export default function Home() {
           </Button>
         </>
       );
+    } else if (
+      (StudentStatusQuery.isFetching && studying) ||
+      StudentStatusListQuery.isFetching ||
+      StudyGroupQuery.isFetching ||
+      (StudentStatusQuery.isFetching && !studying) ||
+      StudentStatusListGlobalQuery.isFetching ||
+      StudyGroupGlobalQuery.isFetching
+    ) {
+      return (
+        <>
+          <View style={{ paddingVertical: 8 }} />
+          <ActivityIndicator size={96} color={colors.secondary_1} />
+          <Text style={styles.text_white_medium}>Loading...</Text>
+        </>
+      );
     } else if (dist && location) {
-      if (
-        (StudentStatusQuery.isFetching && studying) ||
-        StudentStatusListQuery.isFetching ||
-        StudyGroupQuery.isFetching ||
-        (StudentStatusQuery.isFetching && !studying) ||
-        StudentStatusListGlobalQuery.isFetching ||
-        StudyGroupGlobalQuery.isFetching
-      ) {
-        return (
-          <>
-            <View style={{ paddingVertical: 8 }} />
-            <ActivityIndicator size={96} color={colors.secondary_1} />
-            <Text style={styles.text_white_medium}>Loading...</Text>
-          </>
-        );
-      } else if (dist <= 1 || map_distance_override) {
+      if (dist <= 1 || map_distance_override) {
         return (
           <>
             <View style={{ alignSelf: "flex-end" }}>
