@@ -17,7 +17,10 @@ export default function Button({ disabled = false, ...props }: props) {
     <Pressable
       disabled={disabled}
       onPress={props.onPress}
-      style={{ ...styles.button_template, ...{ backgroundColor: props.color } }}
+      style={({ pressed }) => [
+        styles.button_template,
+        { backgroundColor: pressed ? colors.primary_2 : props.color },
+      ]}
     >
       {props.children}
     </Pressable>
