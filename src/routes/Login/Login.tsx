@@ -77,7 +77,7 @@ export default function Login() {
         <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
-            if (logging_in) {
+            if (!logging_in) {
               await UserLogin({
                 username: creds.username,
                 password: creds.password,
