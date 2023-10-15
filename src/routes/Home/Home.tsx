@@ -111,8 +111,8 @@ export default function Home() {
       queryClient.invalidateQueries({
         queryKey: ["study_group_list"],
       });
+      requestLocation();
     }, 2000);
-    requestLocation();
     return () => clearInterval(interval);
   }, []);
 
@@ -121,12 +121,10 @@ export default function Home() {
     let dist = GetDistanceFromUSTP(location.coords);
     setDist(dist);
     // Deactivate student status if too far away and still studying
-    if (dist >= 2 && !map_distance_override && studying) {
-      if (!stopping_toofar) {
-        stop_studying.mutate({
-          active: false,
-        });
-      }
+    if (dist >= 2 && !map_distance_override && studying && !stopping_toofar) {
+      stop_studying.mutate({
+        active: false,
+      });
       setStopping(true);
     }
   }
@@ -382,23 +380,22 @@ export default function Home() {
         </>
       );
     } else if (dist && location) {
-      if (dist <= 1 || map_distance_override) {
-        if (
-          (StudentStatusQuery.isFetching && studying) ||
-          StudentStatusListQuery.isFetching ||
-          StudyGroupQuery.isFetching ||
-          (StudentStatusQuery.isFetching && !studying) ||
-          StudentStatusListGlobalQuery.isFetching ||
-          StudyGroupGlobalQuery.isFetching
-        ) {
-          return (
-            <>
-              <View style={{ paddingVertical: 8 }} />
-              <ActivityIndicator size={96} color={colors.secondary_1} />
-              <Text style={styles.text_white_medium}>Loading...</Text>
-            </>
-          );
-        }
+      if (
+        (StudentStatusQuery.isFetching && studying) ||
+        StudentStatusListQuery.isFetching ||
+        StudyGroupQuery.isFetching ||
+        (StudentStatusQuery.isFetching && !studying) ||
+        StudentStatusListGlobalQuery.isFetching ||
+        StudyGroupGlobalQuery.isFetching
+      ) {
+        return (
+          <>
+            <View style={{ paddingVertical: 8 }} />
+            <ActivityIndicator size={96} color={colors.secondary_1} />
+            <Text style={styles.text_white_medium}>Loading...</Text>
+          </>
+        );
+      } else if (dist <= 1 || map_distance_override) {
         return (
           <>
             <View style={{ alignSelf: "flex-end" }}>
