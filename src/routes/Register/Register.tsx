@@ -23,6 +23,7 @@ export default function Register() {
   const toast = useToast();
   // const dispatch = useDispatch();
   // const creds = useSelector((state: RootState) => state.auth.creds);
+  const [registering, setRegistering] = useState(false);
   const [user, setUser] = useState({
     first_name: "",
     last_name: "",
@@ -30,6 +31,7 @@ export default function Register() {
     username: "",
     email: "",
     password: "",
+    confirm_password: "",
   });
   return (
     <View style={styles.background}>
@@ -121,49 +123,77 @@ export default function Register() {
           }}
         />
         <View style={{ paddingVertical: 4 }} />
+        <TextInput
+          style={styles.text_input}
+          placeholder="Confirm Password"
+          placeholderTextColor={colors.text_default}
+          secureTextEntry={true}
+          value={user.confirm_password}
+          autoCapitalize={"none"}
+          onChange={(
+            e: NativeSyntheticEvent<TextInputChangeEventData>
+          ): void => {
+            setUser({ ...user, confirm_password: e.nativeEvent.text });
+          }}
+        />
+        <View style={{ paddingVertical: 4 }} />
         <Button
           onPress={async () => {
-            await UserRegister({
-              username: user.username,
-              email: user.email,
-              password: user.password,
-              student_id_number: user.student_id_number,
-              first_name: user.first_name,
-              last_name: user.last_name,
-            }).then((result) => {
-              console.log(result);
-              if (result[0]) {
-                setUser({
-                  ...user,
-                  first_name: "",
-                  last_name: "",
-                  student_id_number: "",
-                  username: "",
-                  email: "",
-                  password: "",
+            if (!registering) {
+              if (user.password === user.confirm_password) {
+                setRegistering(true);
+                await UserRegister({
+                  username: user.username,
+                  email: user.email,
+                  password: user.password,
+                  student_id_number: user.student_id_number,
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                }).then((result: any) => {
+                  console.log(result);
+                  if (result[0]) {
+                    setUser({
+                      ...user,
+                      first_name: "",
+                      last_name: "",
+                      student_id_number: "",
+                      username: "",
+                      email: "",
+                      password: "",
+                    });
+                    toast.show(
+                      "Success! An email has been sent to activate your account",
+                      {
+                        type: "success",
+                        placement: "top",
+                        duration: 6000,
+                        animationType: "slide-in",
+                      }
+                    );
+                    setRegistering(false);
+                    setTimeout(() => {
+                      navigation.navigate("Login");
+                    }, 10000);
+                  } else {
+                    toast.show(JSON.parse(JSON.stringify(result[1])), {
+                      type: "warning",
+                      placement: "top",
+                      duration: 6000,
+                      animationType: "slide-in",
+                    });
+                  }
                 });
+              } else {
                 toast.show(
-                  "Success! An email has been sent to activate your account",
+                  "Password does not match confirm password. Please try again"
+                ),
                   {
-                    type: "success",
+                    type: "warning",
                     placement: "top",
                     duration: 6000,
                     animationType: "slide-in",
-                  }
-                );
-                setTimeout(() => {
-                  navigation.navigate("Login");
-                }, 10000);
-              } else {
-                toast.show(JSON.stringify(result[1]), {
-                  type: "warning",
-                  placement: "top",
-                  duration: 6000,
-                  animationType: "slide-in",
-                });
+                  };
               }
-            });
-            {
             }
           }}
         >
