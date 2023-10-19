@@ -101,7 +101,7 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
-    }, 10000);
+    }, 30000);
     setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
@@ -892,7 +892,25 @@ export default function Home() {
                 {studying ? <CaretUpIcon size={32} /> : <></>}
               </Pressable>
             </View>
-
+            {student_status?.active && !student_status?.study_group ? (
+              <Button
+                onPress={() => {
+                  if (student_status?.subject) {
+                    navigation.navigate("Create Group", {
+                      location: {
+                        latitude: student_status?.location.latitude,
+                        longitude: student_status?.location.longitude,
+                      },
+                      subject: student_status?.subject,
+                    });
+                  }
+                }}
+              >
+                <Text style={styles.text_white_tiny_bold}>Create Group</Text>
+              </Button>
+            ) : (
+              <></>
+            )}
             <View style={styles.padding} />
           </>
         );
