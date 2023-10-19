@@ -398,22 +398,6 @@ export default function Home() {
       if (dist <= 1 || map_distance_override) {
         return (
           <>
-            <View style={{ alignSelf: "flex-end" }}>
-              <Pressable
-                onPress={() => {
-                  queryClient.invalidateQueries({ queryKey: ["user"] });
-                  queryClient.invalidateQueries({ queryKey: ["user_status"] });
-                  queryClient.invalidateQueries({
-                    queryKey: ["user_status_list"],
-                  });
-                  queryClient.invalidateQueries({
-                    queryKey: ["study_group_list"],
-                  });
-                }}
-              >
-                <RefreshIcon size={32} />
-              </Pressable>
-            </View>
             <MapView
               mapType={"none"}
               style={styles.map}
@@ -878,9 +862,39 @@ export default function Home() {
               >
                 <Text style={styles.text_white_small}>{buttonLabel}</Text>
               </Button>
+              <View
+                style={{
+                  backgroundColor: colors.secondary_3,
+                  borderRadius: 16,
+                  alignSelf: "center",
+                  marginHorizontal: 8,
+                }}
+              >
+                <Pressable
+                  onPress={() => {
+                    queryClient.invalidateQueries({ queryKey: ["user"] });
+                    queryClient.invalidateQueries({
+                      queryKey: ["user_status"],
+                    });
+                    queryClient.invalidateQueries({
+                      queryKey: ["user_status_list"],
+                    });
+                    queryClient.invalidateQueries({
+                      queryKey: ["study_group_list"],
+                    });
+                    toast.show("Refreshed", {
+                      type: "success",
+                      placement: "top",
+                      duration: 2000,
+                      animationType: "slide-in",
+                    });
+                  }}
+                >
+                  <RefreshIcon size={32} />
+                </Pressable>
+              </View>
               <Pressable
                 style={{
-                  display: modalOpen ? "none" : "flex",
                   backgroundColor: colors.secondary_3,
                   borderRadius: 16,
                   alignSelf: "center",
