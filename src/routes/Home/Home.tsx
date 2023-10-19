@@ -986,6 +986,7 @@ export default function Home() {
                         borderWidth: 1,
                         borderRadius: 16,
                         width: 256,
+                        marginVertical: 4,
                       }}
                     >
                       <Text style={styles.text_white_tiny_bold}>
@@ -1018,6 +1019,7 @@ export default function Home() {
                       borderWidth: 1,
                       borderRadius: 16,
                       width: 256,
+                      marginVertical: 4,
                     }}
                   >
                     <Text style={styles.text_white_tiny_bold}>
