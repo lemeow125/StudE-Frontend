@@ -195,7 +195,13 @@ export default function Onboarding() {
               ...styles.text_white_small_bold,
               ...{ textAlign: "center" },
             }}
-            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
+            modalContentContainerStyle={{
+              backgroundColor: colors.primary_2,
+              borderWidth: 0,
+              zIndex: 1000,
+            }}
+            dropDownDirection="BOTTOM"
+            listMode="MODAL"
           />
           <DropDownPicker
             zIndex={2000}
@@ -215,7 +221,13 @@ export default function Onboarding() {
               ...styles.text_white_small_bold,
               ...{ textAlign: "center" },
             }}
-            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
+            modalContentContainerStyle={{
+              backgroundColor: colors.primary_2,
+              borderWidth: 0,
+              zIndex: 1000,
+            }}
+            dropDownDirection="BOTTOM"
+            listMode="MODAL"
           />
           <DropDownPicker
             zIndex={1000}
@@ -235,7 +247,13 @@ export default function Onboarding() {
               ...styles.text_white_small_bold,
               ...{ textAlign: "center" },
             }}
-            dropDownContainerStyle={{ backgroundColor: colors.primary_2 }}
+            modalContentContainerStyle={{
+              backgroundColor: colors.primary_2,
+              borderWidth: 0,
+              zIndex: 1000,
+            }}
+            dropDownDirection="BOTTOM"
+            listMode="MODAL"
           />
         </MotiView>
         <MotiView
