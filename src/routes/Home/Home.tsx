@@ -381,12 +381,14 @@ export default function Home() {
         </>
       );
     } else if (
-      (StudentStatusQuery.isFetching && studying) ||
-      StudentStatusListQuery.isFetching ||
-      StudyGroupQuery.isFetching ||
-      (StudentStatusQuery.isFetching && !studying) ||
-      StudentStatusListGlobalQuery.isFetching ||
-      StudyGroupGlobalQuery.isFetching
+      (!StudentStatusQuery.isSuccess &&
+        studying &&
+        !StudentStatusListQuery.isSuccess &&
+        !StudyGroupQuery.isSuccess &&
+        !StudentStatusQuery.isSuccess) ||
+      (!studying &&
+        !StudentStatusListGlobalQuery.isSuccess &&
+        !StudyGroupGlobalQuery.isSuccess)
     ) {
       return (
         <>
