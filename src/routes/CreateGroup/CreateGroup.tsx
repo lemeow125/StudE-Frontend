@@ -24,6 +24,7 @@ import MapView, { UrlTile, Marker } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
 import CaretLeftIcon from "../../icons/CaretLeftIcon/CaretLeftIcon";
+import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 
 export default function CreateGroup({ route }: any) {
   const { location, subject } = route.params;
@@ -100,7 +101,7 @@ export default function CreateGroup({ route }: any) {
   if (location) {
     return (
       <View style={styles.background}>
-        <AnimatedContainerNoScroll>
+        <AnimatedContainer>
           <View style={{ zIndex: -1 }}>
             <View style={styles.padding} />
             <View style={{ borderRadius: 16, overflow: "hidden" }}>
@@ -183,7 +184,7 @@ export default function CreateGroup({ route }: any) {
           </View>
 
           <View style={styles.padding} />
-        </AnimatedContainerNoScroll>
+        </AnimatedContainer>
       </View>
     );
   }

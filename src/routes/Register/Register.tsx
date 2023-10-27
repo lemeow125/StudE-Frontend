@@ -17,6 +17,7 @@ import { UserRegister } from "../../components/Api/Api";
 import IsNumber from "../../components/IsNumber/IsNumber";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useToast } from "react-native-toast-notifications";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function Register() {
   const navigation = useNavigation<RootDrawerParamList>();
