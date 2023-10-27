@@ -3,7 +3,7 @@ import { IconProps } from "../../interfaces/Interfaces";
 import { Svg, Path } from "react-native-svg";
 import { colors } from "../../styles";
 
-export default function CaretLeftIcon(props: IconProps) {
+export default function CaretRightIcon(props: IconProps) {
   return (
     <>
       <Svg

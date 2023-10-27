@@ -71,7 +71,7 @@ export default function ConversationPage() {
     enabled:
       student_status?.study_group != "" && student_status?.study_group != null,
     queryKey: ["study_group"],
-    refetchInterval: 20,
+    refetchInterval: 10000,
     queryFn: async () => {
       const data = await GetStudyGroup(student_status?.study_group || "");
       if (data[0] == false) {
@@ -129,7 +129,7 @@ export default function ConversationPage() {
   // Avatar List
   const [users, setUsers] = useState<GroupMessageAvatarType[]>([]);
   const AvatarsQuery = useQuery({
-    refetchInterval: 3000,
+    refetchInterval: 10000,
     enabled:
       student_status?.study_group != null ||
       (student_status?.study_group != "" &&
@@ -211,7 +211,9 @@ export default function ConversationPage() {
                   paddingRight: 4,
                 }}
               >
-                {studygroup.students.length} studying
+                {!StudyGroupQuery.isFetching
+                  ? studygroup.students.length + " studying"
+                  : "Loading"}
               </Text>
               {users.map((user: GroupMessageAvatarType, index: number) => {
                 if (index > 6) {
