@@ -61,7 +61,7 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalByGroup, setModalByGroup] = useState(false);
 
-  async function requestLocation() {
+  async function requestLocationPermission() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setFeedback("Allow location permissions to continue");
@@ -75,12 +75,13 @@ export default function Home() {
         }
       );
       return;
+    } else {
+      setLocationPermitted(true);
     }
-    if (status == "granted") {
-      if (locationPermitted === false) {
-        setLocationPermitted(true);
-      }
+  }
 
+  async function requestLocation() {
+    if (locationPermitted) {
       let newLocation = await Location.getCurrentPositionAsync();
       if (newLocation) {
         // Only update location state if user's location has changed
@@ -96,22 +97,18 @@ export default function Home() {
     }
   }
 
-  // Refresh every 10 seconds
   useEffect(() => {
+    console.log("changed");
+    console.log(locationPermitted);
+    requestLocation();
+  }, [locationPermitted]);
+
+  useEffect(() => {
+    requestLocationPermission();
+    // Refresh every 30 seconds
     const interval = setInterval(() => {
       requestLocation();
     }, 30000);
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["user_status"] });
-      queryClient.invalidateQueries({
-        queryKey: ["user_status_list"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["study_group_list"],
-      });
-      requestLocation();
-    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -219,7 +216,7 @@ export default function Home() {
       return data;
     },
     onSuccess: () => {
-      if (student_status?.study_group) {
+      if (student_status?.study_group == "") {
         // Display separate toast if you stop studying while in a study group
         toast.show("You left study group  \n" + student_status?.study_group, {
           type: "success",
@@ -227,8 +224,8 @@ export default function Home() {
           duration: 2000,
           animationType: "slide-in",
         });
-        navigation.navigate("Conversation");
       }
+
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
 
       // Delay refetching for study groups since backend still needs to delete groups without students after leaving a study group
@@ -383,9 +380,9 @@ export default function Home() {
       (!StudentStatusQuery.isSuccess &&
         studying &&
         !StudentStatusListQuery.isSuccess &&
-        !StudyGroupQuery.isSuccess &&
-        !StudentStatusQuery.isSuccess) ||
-      (!studying &&
+        !StudyGroupQuery.isSuccess) ||
+      (!StudentStatusQuery.isSuccess &&
+        !studying &&
         !StudentStatusListGlobalQuery.isSuccess &&
         !StudyGroupGlobalQuery.isSuccess)
     ) {
@@ -600,6 +597,7 @@ export default function Home() {
                                         study_group: studygroup.name,
                                         subject: studygroup.subject,
                                       });
+                                      navigation.navigate("Conversation");
                                     }}
                                   >
                                     <Text style={styles.text_white_tiny_bold}>
@@ -1051,6 +1049,7 @@ export default function Home() {
                             study_group: studygroup.name,
                             subject: studygroup.subject,
                           });
+                          navigation.navigate("Conversation");
                           setModalOpen(!modalOpen);
                         }}
                       >

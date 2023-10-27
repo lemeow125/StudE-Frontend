@@ -27,7 +27,7 @@ import { useToast } from "react-native-toast-notifications";
 import MessageIcon from "../../icons/MessageIcon/MessageIcon";
 
 export default function CustomDrawerContent(props: {}) {
-  const debug = false;
+  const debug = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();
@@ -143,7 +143,7 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           onPress={async () => {
             // We don't clear student statuses when logging out on debug
-            if (!debug) {
+            if (debug) {
               queryClient.clear();
               dispatch(logout());
               await AsyncStorage.clear();
