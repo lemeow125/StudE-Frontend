@@ -82,9 +82,9 @@ export default function CreateGroup({ route }: any) {
         duration: 2000,
         animationType: "slide-in",
       });
-      // Set a delay before going back to homepage to hopefully let the queries refresh in time
+      // Set a delay before going back to conversation page to hopefully let the queries refresh in time
       setTimeout(() => {
-        navigation.navigate("Home");
+        navigation.navigate("Conversation");
       }, 200);
     },
     onError: (error: Error) => {

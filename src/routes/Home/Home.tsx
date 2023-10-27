@@ -47,7 +47,7 @@ import RefreshIcon from "../../icons/RefreshIcon/RefreshIcon";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_distance_override = false;
+  const map_distance_override = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [locationPermitted, setLocationPermitted] = useState(false);
@@ -228,6 +228,7 @@ export default function Home() {
           duration: 2000,
           animationType: "slide-in",
         });
+        navigation.navigate("Conversation");
       }
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
 
