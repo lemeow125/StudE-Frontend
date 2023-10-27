@@ -27,7 +27,7 @@ import { useToast } from "react-native-toast-notifications";
 import MessageIcon from "../../icons/MessageIcon/MessageIcon";
 
 export default function CustomDrawerContent(props: {}) {
-  const debug = true;
+  const debug = false;
   const navigation = useNavigation<RootDrawerParamList>();
   const status = useSelector((state: RootState) => state.status);
   const dispatch = useDispatch();

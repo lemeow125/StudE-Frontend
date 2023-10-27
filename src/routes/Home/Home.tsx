@@ -44,10 +44,11 @@ import Modal from "react-native-modal";
 import DropdownIcon from "../../icons/CaretDownIcon/CaretDownIcon";
 import CaretUpIcon from "../../icons/CaretUpIcon/CaretUpIcon";
 import RefreshIcon from "../../icons/RefreshIcon/RefreshIcon";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_distance_override = true;
+  const map_distance_override = false;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [locationPermitted, setLocationPermitted] = useState(false);
@@ -125,6 +126,9 @@ export default function Home() {
     }
   }
 
+  async function clear_messages_notification_cache() {
+    AsyncStorage.setItem("messages", "");
+  }
   // Student Status
   const [studying, setStudying] = useState(false);
   const [subject, setSubject] = useState("");
@@ -163,7 +167,7 @@ export default function Home() {
     mutationFn: async (info: StudentStatusPatchType) => {
       const data = await PatchStudentStatus(info);
       if (data[0] != true) {
-        return Promise.reject(new Error());
+        return Promise.reject(new Error(JSON.stringify(data[1])));
       }
       return data;
     },
@@ -224,6 +228,7 @@ export default function Home() {
           duration: 2000,
           animationType: "slide-in",
         });
+        clear_messages_notification_cache();
       }
 
       queryClient.invalidateQueries({ queryKey: ["user_status"] });
@@ -932,6 +937,8 @@ export default function Home() {
         return <MapRendererFar location={location.coords} dist={dist} />;
       }
     } else {
+      requestLocationPermission();
+      requestLocation();
       return (
         <>
           <View style={{ paddingVertical: 8 }} />
