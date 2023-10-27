@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ActivityIndicator, Image } from "react-native";
+import { ActivityIndicator, Image, Pressable } from "react-native";
 import styles from "../../styles";
 import {
   View,
@@ -36,6 +36,7 @@ import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContai
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
 import { RootState } from "../../features/redux/Store/Store";
+import CaretRightIcon from "../../icons/CaretLeftIcon/CaretLeftIcon";
 
 export default function ConversationPage() {
   const toast = useToast();
@@ -70,6 +71,7 @@ export default function ConversationPage() {
     enabled:
       student_status?.study_group != "" && student_status?.study_group != null,
     queryKey: ["study_group"],
+    refetchInterval: 20,
     queryFn: async () => {
       const data = await GetStudyGroup(student_status?.study_group || "");
       if (data[0] == false) {
@@ -162,7 +164,7 @@ export default function ConversationPage() {
     mutationFn: async (info: MessagePostType) => {
       const data = await PostMessage(info);
       if (data[0] != true) {
-        return Promise.reject(new Error());
+        return Promise.reject(new Error(data[1]));
       }
       return data;
     },
@@ -293,23 +295,41 @@ export default function ConversationPage() {
               <Text style={styles.text_white_small}>There are no messages</Text>
             )}
           </ScrollView>
-          <TextInput
-            style={styles.chatbox}
-            placeholder="Send a message..."
-            placeholderTextColor="white"
-            value={message}
-            onChange={(
-              e: NativeSyntheticEvent<TextInputChangeEventData>
-            ): void => {
-              setMessage(e.nativeEvent.text);
-            }}
-            onSubmitEditing={() => {
-              send_message.mutate({
-                message_content: message,
-              });
-              setMessage("");
-            }}
-          />
+          <View style={styles.flex_row}>
+            <TextInput
+              style={styles.chatbox}
+              placeholder="Send a message..."
+              placeholderTextColor="white"
+              value={message}
+              onChange={(
+                e: NativeSyntheticEvent<TextInputChangeEventData>
+              ): void => {
+                setMessage(e.nativeEvent.text);
+              }}
+              onSubmitEditing={() => {
+                send_message.mutate({
+                  message_content: message,
+                });
+                setMessage("");
+              }}
+            />
+            <Pressable
+              style={{
+                backgroundColor: colors.secondary_3,
+                borderRadius: 16,
+                alignSelf: "center",
+                marginLeft: 16,
+              }}
+              onPress={() => {
+                send_message.mutate({
+                  message_content: message,
+                });
+                setMessage("");
+              }}
+            >
+              <CaretRightIcon size={48} />
+            </Pressable>
+          </View>
         </AnimatedContainer>
       </View>
     );
