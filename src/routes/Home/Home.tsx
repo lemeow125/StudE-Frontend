@@ -97,7 +97,6 @@ export default function Home() {
   }
 
   // Refresh every 10 seconds
-  requestLocation();
   useEffect(() => {
     const interval = setInterval(() => {
       requestLocation();
