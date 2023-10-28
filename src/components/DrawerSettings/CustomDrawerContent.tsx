@@ -143,7 +143,7 @@ export default function CustomDrawerContent(props: {}) {
         <DrawerButton
           onPress={async () => {
             // We don't clear student statuses when logging out on debug
-            if (!debug) {
+            if (debug) {
               queryClient.clear();
               dispatch(logout());
               await AsyncStorage.clear();
