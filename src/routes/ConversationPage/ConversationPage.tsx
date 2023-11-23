@@ -200,9 +200,17 @@ export default function ConversationPage() {
           >
             <View style={styles.flex_row}>
               <Text style={{ ...styles.text_white_medium }}>
-                {`Group: ${studygroup?.name ? studygroup.name : ""}`}
+                {`Group: ${studygroup?.name ? studygroup.name : "Loading..."}`}
               </Text>
             </View>
+            {studygroup.landmark ? (
+              <Text style={{...styles.text_white_tiny_bold,...{textAlign:'left'}}}>
+              {studygroup.landmark}
+              </Text>
+            ) : (
+              <></>
+            )}
+
             <View style={{ ...styles.flex_row }}>
               <Text
                 style={{
