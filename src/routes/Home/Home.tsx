@@ -85,15 +85,8 @@ export default function Home() {
     if (locationPermitted) {
       let newLocation = await Location.getCurrentPositionAsync();
       if (newLocation) {
-        // Only update location state if user's location has changed
-        if (
-          !location ||
-          newLocation.coords.latitude !== location.coords.latitude ||
-          newLocation.coords.longitude !== location.coords.longitude
-        ) {
           setLocation(newLocation);
-          await DistanceHandler(newLocation);
-        }
+          await DistanceHandler(newLocation);      
       }
     }
   }
