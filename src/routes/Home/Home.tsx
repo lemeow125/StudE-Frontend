@@ -48,7 +48,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_distance_override = false;
+  const map_distance_override = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [locationPermitted, setLocationPermitted] = useState(false);
@@ -117,7 +117,7 @@ export default function Home() {
   async function DistanceHandler(location: RawLocationType) {
     let dist = GetDistanceFromUSTP(location.coords);
     setDist(dist);
-    // Deactivate student status if too far away and still studying
+    // Deactivate student status if too far away from USTP and still studying
     if (dist >= 2 && !map_distance_override && studying && !stopping_toofar) {
       stop_studying.mutate({
         active: false,
@@ -152,6 +152,28 @@ export default function Home() {
       setSubject(data[1].subject);
       setStudying(data[1].active);
       setStudentStatus(data[1]);
+      // Deactivate student status if too far away from current location you are studying in
+      if(student_status && location){
+        const dist = GetDistance(
+          student_status.location.latitude,
+          student_status.location.longitude,
+          location.coords.latitude,
+          location.coords.longitude
+        );
+        console.log('Distance:',dist)
+        console.log(student_status.location.latitude,
+          student_status.location.longitude,
+          location.coords.latitude,
+          location.coords.longitude)
+        if (dist > 0.02 && studying && !stopping_toofar) {
+          console.log('Too far from current studying location')
+          stop_studying.mutate({
+            active: false,
+          });
+          setStopping(true);
+        }
+      }
+
     },
     onError: (error: Error) => {
       toast.show(String(error), {
@@ -197,9 +219,7 @@ export default function Home() {
       }, 500);
       setStudyGroups([]);
       setStudying(false);
-      if (stopping_toofar) {
         setStopping(false);
-      }
     },
     onError: (error: Error) => {
       toast.show(String(error), {
@@ -893,6 +913,7 @@ export default function Home() {
                       duration: 2000,
                       animationType: "slide-in",
                     });
+                    requestLocation()
                   }}
                 >
                   <RefreshIcon size={32} />
@@ -908,7 +929,7 @@ export default function Home() {
                   setModalOpen(true);
                 }}
               >
-                {studying ? <CaretUpIcon size={32} /> : <></>}
+                <CaretUpIcon size={32} />
               </Pressable>
             </View>
             {student_status?.active && !student_status?.study_group ? (
@@ -967,14 +988,16 @@ export default function Home() {
           >
             <DropdownIcon size={32} />
           </Pressable>
-          <View style={styles.flex_row}>
+          <View style={styles.flex_column}>
+
+            <Text style={styles.text_white_medium}>List View</Text>
             <Switch
               value={modalByGroup}
               onChange={() => {
                 setModalByGroup(!modalByGroup);
               }}
+              style={{alignSelf:'center'}}
             />
-            <Text style={styles.text_white_medium}>List View</Text>
           </View>
 
           <ScrollView>
@@ -1096,7 +1119,102 @@ export default function Home() {
           </ScrollView>
         </AnimatedContainer>
       </Modal>
+      <Modal
+        coverScreen={false}
+        isVisible={modalOpen && !studying}
+        style={{ opacity: 0.85 }}
+        hasBackdrop={false}
+      >
+        <AnimatedContainer>
+          <Pressable
+            style={{
+              alignContent: "flex-start",
+              backgroundColor: colors.secondary_3,
+              borderRadius: 16,
+            }}
+            onPress={() => setModalOpen(false)}
+          >
+            <DropdownIcon size={32} />
+          </Pressable>
+          <View style={styles.flex_column}>
 
+            <Text style={styles.text_white_medium}>List View</Text>
+            <Switch
+              value={modalByGroup}
+              onChange={() => {
+                setModalByGroup(!modalByGroup);
+              }}
+              style={{alignSelf:'center'}}
+            />
+          </View>
+
+          <ScrollView>
+            {!modalByGroup ? (
+              student_statuses_global.map(
+                (student_status: StudentStatusFilterType, index: number) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        alignContent: "center",
+                        alignSelf: "center",
+                        justifyContent: "center",
+                        backgroundColor: colors.secondary_3,
+                        borderColor: colors.primary_2,
+                        borderWidth: 1,
+                        borderRadius: 16,
+                        width: 256,
+                        marginVertical: 4,
+                      }}
+                    >
+                      <Text style={styles.text_white_tiny_bold}>
+                        Student: {student_status.user}
+                      </Text>
+                      <Text style={styles.text_white_tiny_bold}>
+                        {`Studying ${student_status.subject}`}
+                      </Text>
+                    </View>
+                  );
+                }
+              )
+            ) : (
+              <></>
+            )}
+            {modalByGroup ? (
+              study_groups_global.map((studygroup: StudyGroupType, index: number) => {
+                return (
+                  <View
+                    key={index}
+                    style={{
+                      alignContent: "center",
+                      alignSelf: "center",
+                      justifyContent: "center",
+                      backgroundColor: colors.secondary_3,
+                      borderColor: colors.primary_2,
+                      borderWidth: 1,
+                      borderRadius: 16,
+                      width: 256,
+                      marginVertical: 4,
+                    }}
+                  >
+                    <Text style={styles.text_white_tiny_bold}>
+                      Group Name: {studygroup.name}
+                    </Text>
+                    <Text style={styles.text_white_tiny_bold}>
+                      {`Studying ${studygroup.subject}`}
+                    </Text>
+                    <Text style={styles.text_white_tiny_bold}>
+                      Students Studying: {studygroup.students.length}
+                    </Text>
+                  </View>
+                );
+              })
+            ) : (
+              <></>
+            )}
+          </ScrollView>
+        </AnimatedContainer>
+      </Modal>
       <AnimatedContainer>
         <View style={{ borderRadius: 16, overflow: "hidden" }}>
           <CustomMap />
