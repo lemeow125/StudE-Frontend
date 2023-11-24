@@ -6,10 +6,11 @@ import {
   ScrollView,
   Switch,
   ActivityIndicator,
+  TouchableHighlight,
 } from "react-native";
 import AnimatedContainer from "../../components/AnimatedContainer/AnimatedContainer";
 import { useState, useEffect } from "react";
-import MapView, { Circle, Marker, UrlTile } from "react-native-maps";
+import MapView, { Callout, Circle, Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 import GetDistance from "../../components/GetDistance/GetDistance";
 import Button from "../../components/Button/Button";
@@ -45,10 +46,11 @@ import DropdownIcon from "../../icons/CaretDownIcon/CaretDownIcon";
 import CaretUpIcon from "../../icons/CaretUpIcon/CaretUpIcon";
 import RefreshIcon from "../../icons/RefreshIcon/RefreshIcon";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AnimatedContainerNoScroll from "../../components/AnimatedContainer/AnimatedContainerNoScroll";
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_distance_override = false;
+  const map_distance_override = true;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [locationPermitted, setLocationPermitted] = useState(false);
@@ -84,10 +86,10 @@ export default function Home() {
   async function requestLocation() {
     if (locationPermitted) {
       let newLocation = await Location.getCurrentPositionAsync();
-      if (newLocation) {
+
         setLocation(newLocation);
         await DistanceHandler(newLocation);
-      }
+    
     }
   }
 
@@ -412,6 +414,19 @@ export default function Home() {
           <Text style={styles.text_white_medium}>Loading...</Text>
         </>
       );
+    } else if (
+      study_groups == undefined ||
+      study_groups_global == undefined ||
+      student_statuses  == undefined||
+      student_statuses_global == undefined
+    ) {
+      return (
+        <>
+          <View style={{ paddingVertical: 8 }} />
+          <ActivityIndicator size={96} color={colors.secondary_1} />
+          <Text style={styles.text_white_medium}>Loading...</Text>
+        </>
+      );
     } else if (dist && location) {
       if (dist <= 1 || map_distance_override) {
         return (
@@ -472,6 +487,7 @@ export default function Home() {
                         zIndex={1000}
                         onPress={() => {
                           toast.hideAll();
+
                           toast.show(
                             <View
                               style={{
@@ -500,7 +516,26 @@ export default function Home() {
                             }
                           );
                         }}
-                      />
+                      >
+                        <Callout>
+                          <Text style={styles.text_white_tiny_bold}>
+                            Student: {student_status.user}
+                          </Text>
+                          <Text style={styles.text_white_tiny_bold}>
+                            {`Studying ${student_status.subject}`}
+                          </Text>
+                          <Text style={styles.text_black_tiny}>
+                            {`${Math.round(
+                              GetDistance(
+                                student_status.location.latitude,
+                                student_status.location.longitude,
+                                location.coords.latitude,
+                                location.coords.longitude
+                              ) * 1000
+                            )}m away`}
+                          </Text>
+                        </Callout>
+                      </Marker>
                     );
                   }
                 )
@@ -581,6 +616,7 @@ export default function Home() {
                           zIndex={1000}
                           onPress={() => {
                             toast.hideAll();
+
                             toast.show(
                               <View
                                 style={{
@@ -663,7 +699,35 @@ export default function Home() {
                               }
                             );
                           }}
-                        />
+                        >
+                          <Callout>
+                            <Text style={styles.text_black_tiny}>
+                              Study Group: {studygroup.name}
+                            </Text>
+                            <Text style={styles.text_black_tiny}>
+                              Studying: {studygroup.subject}
+                            </Text>
+                            {studygroup.landmark ? (
+                              <Text style={styles.text_black_tiny}>
+                                {studygroup.landmark}
+                              </Text>
+                            ) : (
+                              <></>
+                            )}
+                            <Text style={styles.text_black_tiny}>
+                              {`${studygroup.students.length} ${
+                                studygroup.students.length > 1
+                                  ? "students"
+                                  : "student"
+                              } studying`}
+                            </Text>
+                            <Text style={styles.text_black_tiny}>
+                              {`${Math.round(
+                                studygroup.distance * 1000
+                              )}m away`}
+                            </Text>
+                          </Callout>
+                        </Marker>
                         <Circle
                           center={studygroup.location}
                           radius={studygroup.radius}
@@ -745,7 +809,40 @@ export default function Home() {
                               }
                             );
                           }}
-                        />
+                        >
+                          <Callout>
+                            <Text style={styles.text_black_tiny}>
+                              Study Group: {studygroup.name}
+                            </Text>
+                            <Text style={styles.text_black_tiny}>
+                              Studying: {studygroup.subject}
+                            </Text>
+                            {studygroup.landmark ? (
+                              <Text style={styles.text_black_tiny}>
+                                {studygroup.landmark}
+                              </Text>
+                            ) : (
+                              <></>
+                            )}
+                            <Text style={styles.text_black_tiny}>
+                              {`${studygroup.students.length} ${
+                                studygroup.students.length > 1
+                                  ? "students"
+                                  : "student"
+                              } studying`}
+                            </Text>
+                            <Text style={styles.text_black_tiny}>
+                              {`${Math.round(
+                                GetDistance(
+                                  studygroup.location.latitude,
+                                  studygroup.location.longitude,
+                                  location.coords.latitude,
+                                  location.coords.longitude
+                                )
+                              )}m away`}
+                            </Text>
+                          </Callout>
+                        </Marker>
                         <Circle
                           center={studygroup.location}
                           radius={studygroup.radius}
@@ -1035,6 +1132,20 @@ export default function Home() {
                       <Text style={styles.text_white_tiny_bold}>
                         {`${Math.round(student_status.distance * 1000)}m away`}
                       </Text>
+                      {location && location.coords ? (
+                        <Text style={styles.text_black_tiny}>
+                          {`${Math.round(
+                            GetDistance(
+                              student_status.location.latitude,
+                              student_status.location.longitude,
+                              location.coords.latitude,
+                              location.coords.longitude
+                            )
+                          )}m away`}
+                        </Text>
+                      ) : (
+                        <></>
+                      )}
                     </View>
                   );
                 }
@@ -1063,12 +1174,12 @@ export default function Home() {
                       Group Name: {studygroup.name}
                     </Text>
                     {studygroup.landmark ? (
-                                  <Text style={styles.text_white_tiny_bold}>
-                                    {studygroup.landmark}
-                                  </Text>
-                                ) : (
-                                  <></>
-                                )}
+                      <Text style={styles.text_white_tiny_bold}>
+                        {studygroup.landmark}
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
                     <Text style={styles.text_white_tiny_bold}>
                       {`Studying ${studygroup.subject}`}
                     </Text>
@@ -1186,6 +1297,20 @@ export default function Home() {
                       <Text style={styles.text_white_tiny_bold}>
                         {`Studying ${student_status.subject}`}
                       </Text>
+                      {location && location.coords ? (
+                        <Text style={styles.text_white_tiny}>
+                          {`${Math.round(
+                            GetDistance(
+                              student_status.location.latitude,
+                              student_status.location.longitude,
+                              location.coords.latitude,
+                              location.coords.longitude
+                            )
+                          )}m away`}
+                        </Text>
+                      ) : (
+                        <></>
+                      )}
                     </View>
                   );
                 }
@@ -1215,18 +1340,32 @@ export default function Home() {
                         Group Name: {studygroup.name}
                       </Text>
                       {studygroup.landmark ? (
-                                  <Text style={styles.text_white_tiny_bold}>
-                                    {studygroup.landmark}
-                                  </Text>
-                                ) : (
-                                  <></>
-                                )}
+                        <Text style={styles.text_white_tiny_bold}>
+                          {studygroup.landmark}
+                        </Text>
+                      ) : (
+                        <></>
+                      )}
                       <Text style={styles.text_white_tiny_bold}>
                         {`Studying ${studygroup.subject}`}
                       </Text>
                       <Text style={styles.text_white_tiny_bold}>
                         Students Studying: {studygroup.students.length}
                       </Text>
+                      {location && location.coords ? (
+                        <Text style={styles.text_white_tiny}>
+                          {`${Math.round(
+                            GetDistance(
+                              studygroup.location.latitude,
+                              studygroup.location.longitude,
+                              location.coords.latitude,
+                              location.coords.longitude
+                            )
+                          )}m away`}
+                        </Text>
+                      ) : (
+                        <></>
+                      )}
                     </View>
                   );
                 }
@@ -1237,6 +1376,7 @@ export default function Home() {
           </ScrollView>
         </AnimatedContainer>
       </Modal>
+
       <AnimatedContainer>
         <View style={{ borderRadius: 16, overflow: "hidden" }}>
           <CustomMap />
