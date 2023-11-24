@@ -50,7 +50,7 @@ import AnimatedContainerNoScroll from "../../components/AnimatedContainer/Animat
 
 export default function Home() {
   // Switch this condition to see the main map when debugging
-  const map_distance_override = true;
+  const map_distance_override = false;
   const navigation = useNavigation<RootDrawerParamList>();
   const [location, setLocation] = useState<RawLocationType | null>(null);
   const [locationPermitted, setLocationPermitted] = useState(false);
@@ -87,9 +87,8 @@ export default function Home() {
     if (locationPermitted) {
       let newLocation = await Location.getCurrentPositionAsync();
 
-        setLocation(newLocation);
-        await DistanceHandler(newLocation);
-    
+      setLocation(newLocation);
+      await DistanceHandler(newLocation);
     }
   }
 
@@ -417,7 +416,7 @@ export default function Home() {
     } else if (
       study_groups == undefined ||
       study_groups_global == undefined ||
-      student_statuses  == undefined||
+      student_statuses == undefined ||
       student_statuses_global == undefined
     ) {
       return (
