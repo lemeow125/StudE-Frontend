@@ -93,8 +93,8 @@ export default function Home() {
   }
 
   useEffect(() => {
-    console.log("changed");
-    console.log(locationPermitted);
+    // console.log("Location Update");
+    // console.log(locationPermitted);
     requestLocation();
   }, [locationPermitted]);
 
@@ -112,7 +112,7 @@ export default function Home() {
     let dist = GetDistanceFromUSTP(location.coords);
     setDist(dist);
     // Deactivate student status if too far away from USTP and still studying
-    if (dist >= 2 && !map_distance_override && studying && !stopping_toofar) {
+    if (dist >= 1 && !map_distance_override && studying && !stopping_toofar) {
       stop_studying.mutate({
         active: false,
       });
@@ -154,14 +154,7 @@ export default function Home() {
           location.coords.latitude,
           location.coords.longitude
         );
-        console.log("Distance:", dist);
-        console.log(
-          student_status.location.latitude,
-          student_status.location.longitude,
-          location.coords.latitude,
-          location.coords.longitude
-        );
-        if (dist > 0.02 && studying && !stopping_toofar) {
+        if (dist > 0.5 && studying && !stopping_toofar) {
           console.log("Too far from current studying location");
           stop_studying.mutate({
             active: false,
@@ -427,7 +420,7 @@ export default function Home() {
         </>
       );
     } else if (dist && location) {
-      if (dist <= 1 || map_distance_override) {
+      if (dist <= 0.25 || map_distance_override) {
         return (
           <>
             <MapView
